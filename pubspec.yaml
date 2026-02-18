@@ -1,0 +1,11 @@
+name: xw-dart
+description: Classes and Functions, meant to help other devs.
+version: 2.7.0
+# repository: https://github.com/manifestedmf/xw-dart
+
+environment:
+  sdk: ^3.11.0
+
+# Add regular dependencies here.
+dependencies:
+  # path: ^1.9.0
