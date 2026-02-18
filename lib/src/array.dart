@@ -1,4 +1,5 @@
 import 'mixins.dart';
+import 'internal.dart';
 
 class ArrayException {
   String? message;
@@ -114,6 +115,7 @@ class _ArrayIterator<T> implements Iterator<T> {
   int get hashCode => Object.hash(_index,current);
 }
 
+@Added("2.7","1.2")
 extension IterableExtension<E> on Iterable<E> {
   Array<E> toArray() {
     Array<E> array = Array(length);
