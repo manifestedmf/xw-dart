@@ -113,3 +113,13 @@ class _ArrayIterator<T> implements Iterator<T> {
   @override
   int get hashCode => Object.hash(_index,current);
 }
+
+extension IterableExtension<E> on Iterable<E> {
+  Array<E> toArray() {
+    Array<E> array = Array(length);
+    for (int index = 0; index < length; index++) {
+      array[index] = elementAt(index);
+    }
+    return array;
+  }
+}
