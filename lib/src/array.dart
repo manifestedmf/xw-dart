@@ -1,5 +1,4 @@
 import 'mixins.dart';
-import 'internal.dart';
 
 class ArrayException {
   String? message;
@@ -34,7 +33,23 @@ class Array<T> extends Iterable<T> {
     _length = amount;
   }
 
-  List<T?> get array => _array;
+  factory Array.fromList(List<T> list) {
+    Array<T> array = Array(list.length);
+    for (int index = 0; index < array.length; index++) {
+      array[index] = list[index];
+    }
+    return array;
+  }
+
+  factory Array.fromIterable(Iterable<T> iterable) {
+    Array<T> array = Array(iterable.length);
+    for (int index = 0; index < array.length; index++) {
+      array[index] = iterable.elementAt(index);
+    }
+    return array;
+  }
+
+  List<T?> get arrayInternal => _array;
   String get _positions {
     if (_length == 0) {return "NO VALID POSITIONS";}
     else if (_length == 1) {return "0";}
@@ -115,7 +130,6 @@ class _ArrayIterator<T> implements Iterator<T> {
   int get hashCode => Object.hash(_index,current);
 }
 
-@Added("2.7","1.2")
 extension IterableExtension<E> on Iterable<E> {
   Array<E> toArray() {
     Array<E> array = Array(length);

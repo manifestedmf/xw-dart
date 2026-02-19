@@ -1,5 +1,5 @@
 import 'mixins.dart';
-import 'internal.dart';
+import 'standard.dart' as std;
 
 // class Char {
 //   final int char;
@@ -28,7 +28,6 @@ extension NumExtension on num {
   /// Added in {\$`uV`, \$`uV`};
   bool get isWhole => this is int || this == roundToDouble();
 
-  @Added("2.7","1.6")
   /// Gets the [unsigned] length of the number;
   ///
   /// For [signed] do [lengthSigned];
@@ -50,7 +49,6 @@ extension NumExtension on num {
       (isSigned)
           ? lengthSigned-1
           : lengthSigned;
-  @Added("2.7","1.6")
   /// Gets the [unsigned] length of the number;
   ///
   /// For [signed] do [lengthSigned];
@@ -69,7 +67,6 @@ extension NumExtension on num {
   ///
   /// Added in {\$`2.7`, \$`1.6`};
   int get lengthUnsigned => length;
-  @Added("2.7","1.6")
   /// Gets the [signed] length of the number;
   ///
   /// For [unsigned] do [length] or [lengthUnsigned];
@@ -89,7 +86,6 @@ extension NumExtension on num {
   /// Added in {\$`2.7`, \$`1.6`};
   int get lengthSigned => "$this".length;
 
-  @Added("2.7","1.6")
   /// Gets the [unsigned] whole number length;
   ///
   /// For [signed] do [intLengthSigned];
@@ -102,30 +98,22 @@ extension NumExtension on num {
       (isSigned)
           ? intLengthSigned-1
           : intLengthSigned;
-  @Added("2.7","1.6")
   int get intLengthUnsigned => intLength;
-  @Added("2.7","1.6")
   int get intLengthSigned => "${truncate()}".length;
 
-  @Added("2.7","1.6")
   int get decimalLength =>
       (isSigned)
           ? decimalLengthSigned-1
           : decimalLengthSigned;
-  @Added("2.7","1.6")
   int get decimalLengthUnsigned => decimalLength;
-  @Added("2.7","1.6")
   int get decimalLengthSigned =>
       (isWhole)
           ? 0
           : length - (intLengthSigned + 1);
 
-  @Added("2.7","1.6")
   bool get isSigned => isNegative;
-  @Added("2.7","1.6")
   bool get isPositive => this >= 0;
 
-  @Added("2.7","1.6")
   static num get signNum => -1;
 }
 
@@ -151,27 +139,19 @@ extension IntExtension on int {
 
   bool toBool() => this != 0;
 
-  @Added("2.7","1.6")
   int get lengthSigned => "$this".length;
 
-  @Added("2.7","1.6")
   int get intLengthSigned => length;
 
-  @Added("2.7","1.6")
   int get decimalLength => 0;
-  @Added("2.7","1.6")
   int get decimalLengthUnsigned => decimalLength;
-  @Added("2.7","1.6")
   int get decimalLengthSigned => (isSigned) ? 1 : 0;
 
   int addAtEnd(int newDigit) => int.parse("$this$newDigit");
 
-  @Added("2.7","1.6")
   bool get isWhole => true;
 }
-@Added("2.7","1.6")
 extension DoubleExtensioon on double {
-  @Added("2.7","1.6")
   double towards(double value, [double amount = 1]) {
     if (value < this) {
       if (this-amount < value) {return value;}
@@ -184,7 +164,6 @@ extension DoubleExtensioon on double {
     else {return this;}
   }
 
-  @Added("2.7","1.6")
   bool get isWhole => this == roundToDouble();
 }
 
@@ -204,6 +183,19 @@ extension IterableExtension on Iterable {
   bool equals(Iterable other) => iterableEquals(this,other);
 }
 
+extension IterableBool<B> on Iterable<bool> {
+  bool get and => std.and(this);
+  bool get nand => std.nand(this);
+  bool get xand => std.xand(this);
+  bool get xnand => std.xnand(this);
+  bool get or => std.or(this);
+  bool get nor => std.nor(this);
+  bool get xor => std.xor(this);
+  bool get xnor => std.xnor(this);
+  Iterable<bool> get not => std.not(this);
+}
+
+
 extension BoolExtension on bool {
   int toInt() => (this) ? 1 : 0;
 }
@@ -217,9 +209,15 @@ extension StringExtension on String {
     if (index+string.length >= length) {return "${truncate(index)}$string";}
     else {return "${truncate(index)}$string${after(index+string.length)}";}
   }
-  @Added("2.6.3","1.4")
+  String safeSubstring(int start, [int? end]) {
+    if (start < 0) {start = 0;}
+    else if (start > length) {start = length;}
+    if (end == null) {end = length;}
+    else if (end < start) {end = start;}
+    else if (end > length) {end = length;}
+    return substring(start,end);
+  }
   ({String start, String end}) splitAt(int index) => (start: truncate(index),end:after(index));
-  @Added("2.6.4","1.5")
   String toTitle() {
     String previous = "";
     String mule = "";
@@ -233,21 +231,16 @@ extension StringExtension on String {
     }
     return mule;
   }
-  @Added("2.6.4","1.5")
   bool get containsWhiteSpace {
     for (int index = 0; index < length; index++) {
       if (this[index].isWhiteSpace) {return true;}
     }
     return false;
   }
-  @Added("2.6.4","1.5")
   bool get isWhiteSpace => computeIsWhiteSpace(this);
-  @Added("2.6.4","1.5")
   static bool computeIsWhiteSpace(String character) =>
       character == " " || character == "\n";
-  @Added("2.7","1.6")
   bool get isDigit => computeIsDigit(this);
-  @Added("2.7","1.6")
   static bool computeIsDigit(String character) =>
       switch (character) {
         "0" => true, "1" => true, "2" => true, "3" => true, "4" => true,
@@ -255,7 +248,6 @@ extension StringExtension on String {
         String() => false,
       };
 
-  @Added("2.7","1.6")
   String get spaced {
     String mule = this;
     int index = 1;
@@ -268,8 +260,6 @@ extension StringExtension on String {
     return mule;
   }
 
-  @Added("2.7","1.6")
   bool get isUpperCase => toUpperCase() == this;
-  @Added("2.7","1.6")
   bool get isLowerCase => toLowerCase() == this;
 }

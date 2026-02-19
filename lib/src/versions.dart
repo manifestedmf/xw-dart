@@ -1,7 +1,6 @@
 import 'date/date.dart';
 import 'extension.dart';
 import 'array.dart';
-import 'internal.dart';
 
 
 enum VersionId {
@@ -1071,23 +1070,4 @@ class VersionToken {
 
   @override
   int get hashCode => Object.hash(major,standard,manor,minor,_name,prev,_date);
-
-/*@override
-  int get hashCode {
-    int garbInt1 = _name.hashCode ^ _date.hashCode << major;
-    int garbInt2 = garbInt1 >> manor;
-    int garbInt3 = garbInt2 ^ standard.hashCode | minor.hashCode;
-    return garbInt3 ^ prev.hashCode;
-  }
-
-  int get random {
-    int garbInt1 = _name.hashCode ^ _date.hashCode << major;
-    int garbInt2 = garbInt1 >> manor;
-    int garbInt3 = garbInt2 ^ standard.hashCode | minor.hashCode;
-    return garbInt3 ^ prev.hashCode & ((minor % 3 == 1) ? 760906259 : 349194851);
-  }
-
-  int get hash3 {
-    return Object.hash(major,standard,manor,minor,_name,prev,_date);
-  }*/
 }

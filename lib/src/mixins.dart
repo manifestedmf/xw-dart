@@ -1,3 +1,4 @@
+
 mixin CompareMixin<T> {
   bool operator <(T other);
   bool operator <=(T other) => this < other || this == other;

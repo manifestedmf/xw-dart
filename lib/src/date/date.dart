@@ -141,7 +141,7 @@ enum Weekday {
 /// date = date.setFormat("ww3"); // uses first 3 letters of weekday's name
 /// print(date); // 'Wed'
 /// ```
-final class Date with CompareMixin<Date> {
+class Date with CompareMixin<Date> {
   final int _day;
   final int _month;
   final int _year;

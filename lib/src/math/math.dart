@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import '../extension.dart';
-import '../internal.dart';
 
 int abs(int signed) => (signed < 0) ? -signed : signed;
 
@@ -30,7 +29,6 @@ int binConvert(String bin) {
   return number;
 }
 
-@Added("2.7","1.6")
 N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   if (numbers.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -44,7 +42,6 @@ N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   return max;
 }
 
-@Added("2.7","1.6")
 Fraction maxFraction(Iterable<Fraction> fractions, [Fraction? ifNone]) {
   if (fractions.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -58,7 +55,6 @@ Fraction maxFraction(Iterable<Fraction> fractions, [Fraction? ifNone]) {
   return max;
 }
 
-@Added("2.7","1.6")
 MapEntry<K,V> maxMapKey<K extends num, V>(Map<K, V> map, [MapEntry<K, V>? ifNone]) {
   if (map.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -73,7 +69,6 @@ MapEntry<K,V> maxMapKey<K extends num, V>(Map<K, V> map, [MapEntry<K, V>? ifNone
   return max;
 }
 
-@Added("2.7","1.6")
 Set<MapEntry<K,V>> maxMapValue<K, V extends num>(Map<K, V> map, [MapEntry<K, V>? ifNone]) {
   if (map.isEmpty) {
     if (ifNone == null) {throw StateError("No Optional Parameter Set");}
@@ -92,7 +87,6 @@ Set<MapEntry<K,V>> maxMapValue<K, V extends num>(Map<K, V> map, [MapEntry<K, V>?
   return maxSet;
 }
 
-@Added("2.7","1.6")
 Set<MapEntry<K,Fraction>> maxMapValueFraction<K>(Map<K, Fraction> map, [MapEntry<K,Fraction>? ifNone]) {
   if (map.isEmpty) {
     if (ifNone == null) {throw StateError("No Optional Parameter Set");}
@@ -111,7 +105,6 @@ Set<MapEntry<K,Fraction>> maxMapValueFraction<K>(Map<K, Fraction> map, [MapEntry
   return maxSet;
 }
 
-@Added("2.7","1.6")
 MapEntry<Fraction,V> maxMapKeyFraction<V>(Map<Fraction, V> map, [MapEntry<Fraction,V>? ifNone]) {
   if (map.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -126,7 +119,6 @@ MapEntry<Fraction,V> maxMapKeyFraction<V>(Map<Fraction, V> map, [MapEntry<Fracti
   return max;
 }
 
-@Added("2.7","1.6")
 N min<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   if (numbers.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -140,7 +132,6 @@ N min<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   return min;
 }
 
-@Added("2.7","1.6")
 Fraction minFraction(Iterable<Fraction> fractions, [Fraction? ifNone]) {
   if (fractions.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -154,7 +145,6 @@ Fraction minFraction(Iterable<Fraction> fractions, [Fraction? ifNone]) {
   return min;
 }
 
-@Added("2.7","1.6")
 MapEntry<K,V> minMapKey<K extends num, V>(Map<K,V> map, [MapEntry<K,V>? ifNone]) {
   if (map.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -167,7 +157,6 @@ MapEntry<K,V> minMapKey<K extends num, V>(Map<K,V> map, [MapEntry<K,V>? ifNone])
   return min;
 }
 
-@Added("2.7","1.6")
 Set<MapEntry<K,V>> minMapValue<K,V extends num>(Map<K,V> map, [MapEntry<K,V>? ifNone]) {
   if (map.isEmpty) {
     if (ifNone == null) {throw StateError("No Optional Parameter Set");}
@@ -186,7 +175,6 @@ Set<MapEntry<K,V>> minMapValue<K,V extends num>(Map<K,V> map, [MapEntry<K,V>? if
   return minSet;
 }
 
-@Added("2.7","1.6")
 MapEntry<Fraction,V> minMapKeyFraction<V>(Map<Fraction,V> map, [MapEntry<Fraction,V>? ifNone]) {
   if (map.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -199,7 +187,6 @@ MapEntry<Fraction,V> minMapKeyFraction<V>(Map<Fraction,V> map, [MapEntry<Fractio
   return min;
 }
 
-@Added("2.7","1.6")
 Set<MapEntry<K,Fraction>> minMapValueFraction<K>(Map<K,Fraction> map, [MapEntry<K,Fraction>? ifNone]) {
   if (map.isEmpty) {
     if (ifNone == null) {throw StateError("No Optional Parameter Set");}
@@ -219,7 +206,6 @@ Set<MapEntry<K,Fraction>> minMapValueFraction<K>(Map<K,Fraction> map, [MapEntry<
 }
 
 
-@Added("2.7","1.6")
 N sum<N extends num>(Iterable<N> numbers, [N? starting]) {
   N sum;
   sum = (starting == null) ? 0 as N : starting;
@@ -229,7 +215,6 @@ N sum<N extends num>(Iterable<N> numbers, [N? starting]) {
   return sum;
 }
 
-@Added("2.7","1.6")
 Fraction sumFraction(Iterable<Fraction> fractions, [Fraction? starting]) {
   Fraction sum;
   sum = (starting == null) ? Fraction(0,0) : starting;
@@ -239,7 +224,6 @@ Fraction sumFraction(Iterable<Fraction> fractions, [Fraction? starting]) {
   return sum;
 }
 
-@Added("2.7","1.6")
 K sumMapKey<K extends num,V>(Map<K,V> map, [K? starting]) {
   K sum;
   sum = (starting == null) ? 0 as K : starting;
@@ -250,7 +234,6 @@ K sumMapKey<K extends num,V>(Map<K,V> map, [K? starting]) {
   return sum;
 }
 
-@Added("2.7","1.6")
 V sumMapValue<K,V extends num>(Map<K,V> map, [V? starting]) {
   V sum;
   sum = (starting == null) ? 0 as V : starting;
@@ -261,7 +244,7 @@ V sumMapValue<K,V extends num>(Map<K,V> map, [V? starting]) {
   return sum;
 }
 
-/*@Added("2.7","1.6")
+/*
 ({K keySum, V valueSum}) sumMap<K,V>(Map<K,V> map) {
   MapEntry<K,V> sumEntries;
   K keySum;
@@ -279,19 +262,15 @@ int powInt(int base, int exponent) {
   return base;
 }
 
-@Added("2.7","1.6")
 @Deprecated("2.8")
 num powNum(num base, num exponent) => math.pow(base,exponent);
-@Added("2.7","1.6")
 @Deprecated("2.8")
 double powDouble(double base, double exponent) => math.pow(base,exponent).toDouble();
 
 N pow<N extends num>(N base, N exponent) => math.pow(base,exponent) as N;
 
-@Added("2.7","1.6")
 Fraction powFraction(Fraction base, int exponent) => base ^ exponent;
 
-@Added("2.7","1.6")
 N sqrt<N extends num>(N number) => math.sqrt(number) as N;
 
 /*
@@ -329,12 +308,9 @@ String baseConvert(num decimalNum, Base base) {
   }
 }*/
 
-@Added("\$unknownKey","\$unknownKey")
 bool isLow(num number) => (number % 1 < 0.5);
-@Added("\$unknownKey","\$unknownKey")
 bool isHigh(num number) => !isLow(number);
 
-@Added("\$unknownKey","\$unknownKey")
 bool isDivBy(int oper, int number) => oper % number == 0;
 
 /// explicit that the first is 1
@@ -393,7 +369,6 @@ bool isMadeUpOf(int number, List<int> primes) {
   return true;
 }
 
-@Added("\$unknownKey","\$unknownKey")
 /// adds very specific fraction class
 ///
 /// current version: 1.1
@@ -551,12 +526,9 @@ class Fraction {
 
   String get string => "$_oper/$_div";
 
-  @Added("2.7","1.6")
   factory Fraction.fromDouble(double number) =>
       Fraction(number.truncate(),pow(10,number.decimalLength));
-  @Added("2.7","1.6")
   factory Fraction.fromInt(int number) => Fraction(number,1);
-  @Added("2.7","1.6")
   factory Fraction.fromNum(num number) {
     if (number is double) {return Fraction.fromDouble(number);}
     else if (number is int) {return Fraction.fromInt(number);}
@@ -678,17 +650,11 @@ class Fraction {
   Fraction operator ~() => Fraction(_div,_oper);
 
 
-  @Added("2.7","1.6")
   bool get isNaN => _div == 0;
-  @Added("2.7","1.6")
   bool get isInfinite => _div == 0;
-  @Added("2.7","1.6")
   bool get isFinite => _div != 0;
-  @Added("2.7","1.6")
   bool get isNegative => _div.isNegative ^ _oper.isNegative;
-  @Added("2.7","1.6")
   bool get isPositive => !isNegative;
-  @Added("2.7","1.6")
   Fraction floorToFraction() {
     if (_div == 1) {return this;}
     else {
@@ -698,23 +664,16 @@ class Fraction {
 }
 
 
-@Added("2.7","1.6")
 int getPreviousFactor(int number, int divisor) => (number ~/ divisor) * divisor;
-@Added("2.7","1.6")
 int getNextFactor(int number, int divisor) => (number ~/ divisor + 1) * divisor;
 
-@Added("2.7","1.6")
 extension FractionExtension on int {
-  @Added("2.7","1.6")
   Fraction toFraction() => Fraction(this,1);
 }
 
-@Added("2.7","1.6")
 extension FractionExtension2 on double {
-  @Added("2.7","1.6")
   Fraction toFraction() => Fraction(truncate(),powInt(10,decimalLength));
 }
 
-@Added("2.7","1.6")
 Fraction percentage<N extends num>(N number) =>
     Fraction(number.truncate(),number.decimalLength);
