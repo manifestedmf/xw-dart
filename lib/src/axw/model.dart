@@ -30,7 +30,8 @@ class World {
         switch (definition) {
           case null: {throw "'${expression.id.name}' doesn't exist";}
           case ValueDefinition(): {return definition.value;}
-          case StructDefinition(): {return definition.struct;}
+          /*case StructDefinition(): {/*return definition.struct;*/}*/
+          case _: {return expression;}
         }
       }
       case _: {return expression;}

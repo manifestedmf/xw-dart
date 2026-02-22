@@ -46,3 +46,27 @@ bool xand(Iterable<bool> bools) =>
         == 0;
 
 bool xnand(Iterable<bool> bools) => !xand(bools);
+
+int wrapper({required ({int lowest, int highest}) properties, required int value}) {
+  var (:lowest, :highest) = properties;
+  int size = highest-lowest;
+  if (lowest < highest) {
+    throw "lowest: $lowest, can't be before highest: $highest";
+  } else if (lowest == highest) {
+    return lowest;
+  } else if (lowest == 0) {
+    return value % highest;
+  } else {
+    if (value >= lowest && value <= highest) {
+    } else if (value < lowest) {
+      do {
+        value += size;
+      } while (value < lowest);
+    } else {
+      do {
+        value -= size;
+      } while (value > highest);
+    }
+    return value;
+  }
+}

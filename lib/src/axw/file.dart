@@ -5,6 +5,88 @@ import 'ast.dart';
 
 
 
+/// The Current Grammar:
+///
+/// [Manager] :
+/// -   [Header]
+/// -   [Declaration]*
+///
+/// [Header] :
+/// -   `AXW` [IntegerExp]`.`[IntegerExp] `;`
+///
+/// [Declaration] :
+/// -   | [ExpressionDeclaration]
+/// -   | [StructDeclaration]
+/// -   | [EnumDeclaration]
+///
+/// [ExpressionDeclaration] :
+/// -   [Identifier] `=` [Expression] `;`
+///
+/// [StructDeclaration] :
+/// -   `Struct` [Identifier] `{` ( [StructFieldDeclaration]
+/// ( `,` [StructFieldDeclaration] )* )? `}` `;`
+///
+/// [EnumDeclaration] :
+/// -   `enum` [Identifier] `{` [EnumFieldDeclaration]
+/// ( `,` [EnumFieldDeclaration] )* `}` `;`
+///
+/// [StructFieldDeclaration] :
+/// -   [Identifier] ( `=` [Expression] )? `;`
+///
+/// [EnumFieldDeclaration] :
+/// -   [Identifier]
+///
+/// [Expression] :
+/// -   | [StringExp]
+/// -   | [IntegerExp]
+/// -   | [ListExp]
+/// -   | [FloatExp]
+/// -   | [VarExp]
+/// -   | [HexadecimalExp]
+/// -   | [BinaryExp]
+/// -   | [DictExp]
+/// -   | [VoidExp]
+/// -   | [CharExp]
+/// -   | [BoolExp]
+///
+/// [StringExp] :
+/// -   `"` [String] `"`
+///
+/// [IntegerExp] :
+/// -   ( `0` | `1` | `2` | `3` | `4` | `5` | `6` | `7` | `8` | `9` )+
+///
+/// [ListExp] :
+/// -   [[] ( [Expression] ( `,` [Expression] )* )? `]`
+///
+/// [FloatExp] :
+/// -   [IntegerExp]`.`[IntegerExp]
+///
+/// [VarExp] :
+/// -   [Identifier]
+///
+/// [HexadecimalExp] :
+/// -   `0x`( `0` | `1` | `2` | `3` | `4` | `5` | `6` | `7` | `8` | `9` |
+/// `a` | `A` | `b` | `B` | `c` | `C` | `d` | `D` | `e` `E` | `f` | `F` )+
+///
+/// [BinaryExp] :
+/// -   `0n`( `0` | `1` )+
+///
+/// [DictExp] :
+/// -   `{` ( [Identifier] `:` [Expression] ( `,` [Identifier] `:`
+/// [Expression] )* )? `}`
+///
+/// [VoidExp] :
+/// -   ( `void` | `null` )?
+///
+/// [CharExp] :
+/// -   `'` [SingleCharacter] `'`
+///
+/// [BoolExp] :
+/// -   | `false`
+/// -   | `true`
+///
+/// [Identifier] :
+/// -   [String]
 class AXW {
   Version _version = Version.AXW20;
   List<Declaration> _environment = [];
@@ -34,7 +116,7 @@ class AXW {
             case _:
               environment.add(declaration);
               if (expecting.contains(declaration)) {
-                environment.add(expecting.at)
+                //environment.add(expecting.at)
               }
           }
         }

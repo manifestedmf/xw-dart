@@ -33,6 +33,29 @@ class Array<T> extends Iterable<T> {
     _length = amount;
   }
 
+  factory Array.generate(int amount, T Function(int) complex) {
+    Array<T> array = Array(amount);
+    for (int index = 0; index < array.length; index++) {
+      array[index] = complex(index);
+    }
+    return array;
+  }
+
+  /// The first iteration for array creation, though now for
+  /// [withArray], instead of `Array<T?>?` it is `Array<T>?`.
+  factory Array.fill(int amount, {T? fill, Array<T>? withArray}) {
+    Array<T> array = Array(amount);
+    if (amount != 0) {
+      withArray ??= Array(0);
+      int index = 0;
+      for (T i in withArray) {
+        if (index >= array.length) {break;}
+        array[index++] = i;
+      }
+    }
+    return array;
+  }
+
   factory Array.fromList(List<T> list) {
     Array<T> array = Array(list.length);
     for (int index = 0; index < array.length; index++) {
@@ -49,6 +72,14 @@ class Array<T> extends Iterable<T> {
     return array;
   }
 
+  factory Array.withIterator(Iterable<T> Function() iterableGen) {
+    return Array.fromIterable(iterableGen());
+  }
+
+  static ArrayCreator get std => ArrayCreator._();
+  static ArrayCreator<int> get stdInt => ArrayCreator<int>._();
+  static ArrayCreator<double> get stdDouble => ArrayCreator<double>._();
+
   List<T?> get arrayInternal => _array;
   String get _positions {
     if (_length == 0) {return "NO VALID POSITIONS";}
@@ -62,7 +93,7 @@ class Array<T> extends Iterable<T> {
     if (index < 0 && index >= -_length) {index %= _length;}
     if (index >= _length || index < -_length) {
       throw ArrayException("$index out of range, valid positions are $_positions");}
-    else {return _array[index] ?? (throw ArrayException("$index out of bounds"));}
+    else {return _array[index] ?? (throw ArrayException("$index is empty"));}
   }
   void operator []=(int index, T value) {
     if (index < 0 && index >= -_length) {index %= _length;}
@@ -70,6 +101,14 @@ class Array<T> extends Iterable<T> {
       throw ArrayException("$index out of range, valid positions are $_positions");}
     else {_array[index] = value;}
   }
+
+  @override
+  T get first => _array[0] ?? (throw ArrayException("0 is empty"));
+
+  @override
+  T elementAt(int index) => elementAtAdmin(index) ?? (throw ArrayException("$index is empty"));
+
+  T? elementAtAdmin(int index) => _array[index];
 
   @override
   String toString() => "$_array";
@@ -107,6 +146,11 @@ class Array<T> extends Iterable<T> {
 
   @override
   int get hashCode => Object.hashAll(this);
+
+  static get _noItems => ArrayException("There is no items in the array, "
+      "Array: []");
+  static _emptyPlace(int index) => ArrayException("$index has no item, "
+      "don't use ${null} as a empty space");
 }
 
 class _ArrayIterator<T> implements Iterator<T> {
@@ -138,4 +182,10 @@ extension IterableExtension<E> on Iterable<E> {
     }
     return array;
   }
+}
+
+class ArrayCreator<T> {
+  const ArrayCreator._();
+
+  Array<T?> operator [](int length) => Array(length);
 }

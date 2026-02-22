@@ -1,0 +1,14 @@
+{
+  "roots": [
+    "xw"
+  ],
+  "packages": [
+    {
+      "name": "xw",
+      "version": "2.7.0",
+      "dependencies": [],
+      "devDependencies": []
+    }
+  ],
+  "configVersion": 1
+}

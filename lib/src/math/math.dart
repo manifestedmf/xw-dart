@@ -388,42 +388,43 @@ class Fraction {
   static const one = Fraction._(1,1);
   static const half = Fraction._(1,2);
   static const third = Fraction._(1,3);
-  static final quarter = half*half;
+  static const quarter = Fraction._(1,4);
   static const fifth = Fraction._(1,5);
-  static final sixth = half*third;
+  static const sixth = Fraction._(1,6);
   static const seventh = Fraction._(1,7);
-  static final eighth = half*quarter;
+  static const eighth = Fraction._(1,8);
   static const ninth = Fraction._(1,9);
-  static final tenth = half*fifth;
+  static const tenth = Fraction._(1,10);
 
-  static final twoThirds = third*2;
+  static const twoThirds = Fraction._(2,3);
 
-  static final threeQuarters = quarter*3;
+  static const threeQuarters = Fraction._(3,4);
 
-  static final twoFifths = fifth*2;
-  static final threeFifths = fifth*3;
-  static final fourFifths = fifth*4;
+  static const twoFifths = Fraction._(2,5);
+  static const threeFifths = Fraction._(3,5);
+  static const fourFifths = Fraction._(4,5);
 
-  static final fiveSixths = sixth*5;
+  static const fiveSixths = Fraction._(5,6);
 
-  static final twoSevenths = seventh*2;
-  static final threeSevenths = seventh*3;
-  static final fourSevenths = seventh*4;
-  static final fiveSevenths = seventh*5;
-  static final sixSevenths = seventh*6;
+  static const twoSevenths = Fraction._(2,7);
+  static const threeSevenths = Fraction._(3,7);
+  static const fourSevenths = Fraction._(4,7);
+  static const fiveSevenths = Fraction._(5,7);
+  static const sixSevenths = Fraction._(6,7);
 
-  static final threeEighths = eighth*3;
-  static final fiveEighths = eighth*5;
-  static final sevenEights = eighth*7;
+  static const threeEighths = Fraction._(3,8);
+  static const fiveEighths = Fraction._(5,8);
+  static const sevenEights = Fraction._(7,8);
 
-  static final twoNinths = ninth*2;
-  static final fourNinths = ninth*4;
-  static final sevenNinths = ninth*7;
-  static final eightNinths = ninth*8;
+  static const twoNinths = Fraction._(2,9);
+  static const fourNinths = Fraction._(4,9);
+  static const fiveNinths = Fraction._(5,9);
+  static const sevenNinths = Fraction._(7,9);
+  static const eightNinths = Fraction._(8,9);
 
-  static final threeTenths = tenth*3;
-  static final sevenTenths = tenth*7;
-  static final nineTenths = tenth*9;
+  static const threeTenths = Fraction._(3,10);
+  static const sevenTenths = Fraction._(7,10);
+  static const nineTenths = Fraction._(9,10);
 
   /*
   int get _operand {
@@ -527,7 +528,7 @@ class Fraction {
   String get string => "$_oper/$_div";
 
   factory Fraction.fromDouble(double number) =>
-      Fraction(number.truncate(),pow(10,number.decimalLength));
+    Fraction(number.truncate(),pow(10,number.decimalLength));
   factory Fraction.fromInt(int number) => Fraction(number,1);
   factory Fraction.fromNum(num number) {
     if (number is double) {return Fraction.fromDouble(number);}

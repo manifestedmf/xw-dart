@@ -627,6 +627,7 @@ class BoolExp extends Expression with CompareMixin<BoolExp> {
     if (boolean) {return 1;}
     else {return 0;}
   }
+  bool toBool() => boolean;
 
   @override
   bool operator <(BoolExp other) => toInt() < other.toInt();
@@ -639,6 +640,10 @@ class BoolExp extends Expression with CompareMixin<BoolExp> {
 
   @override
   int get hashCode => boolean.hashCode;
+
+  bool operator ~() => !boolean;
+  bool operator ^(BoolExp other) => boolean ^ other.boolean;
+  bool operator &(BoolExp other) => boolean ^ other.boolean;
 }
 
 /// grammar:
