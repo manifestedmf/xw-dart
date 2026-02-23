@@ -3,6 +3,7 @@ import '../extension.dart';
 
 int abs(int signed) => (signed < 0) ? -signed : signed;
 
+//@Deprecated("2.7.3, getting replaced with strToBase(hex,16)")
 int hexConvert(String hex) {
   int number = 0;
   int value = 0;
@@ -19,6 +20,7 @@ int hexConvert(String hex) {
   return number;
 }
 
+//@Deprecated("2.7.3, getting replaced with strToBase(bin,2)")
 int binConvert(String bin) {
   int number = 0;
   int value = 0;
@@ -254,7 +256,7 @@ V sumMapValue<K,V extends num>(Map<K,V> map, [V? starting]) {
   return MapEntry<keySum,0>;
 }*/
 
-@Deprecated("2.8")
+@Deprecated("2.8, use pow<int>(base, exponent)")
 int powInt(int base, int exponent) {
   for (int i = 0; i < exponent;i++) {
     base *= exponent;
@@ -262,9 +264,9 @@ int powInt(int base, int exponent) {
   return base;
 }
 
-@Deprecated("2.8")
+@Deprecated("2.8, use pow<num>(base, exponent)")
 num powNum(num base, num exponent) => math.pow(base,exponent);
-@Deprecated("2.8")
+@Deprecated("2.8, use pow<double>(base, exponent)")
 double powDouble(double base, double exponent) => math.pow(base,exponent).toDouble();
 
 N pow<N extends num>(N base, N exponent) => math.pow(base,exponent) as N;

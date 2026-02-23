@@ -43,6 +43,8 @@ bool iterableEquals<T>(Iterable<T> a, Iterable<T> b) {
   return true;
 }
 
+// TODO: add deepEquals for each item
+
 // bool deepEquals(Object? a, Object? b) {
 //   if (a is Map && b is Map) {mapEquals(a,b);}
 // }

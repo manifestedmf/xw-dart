@@ -1,4 +1,5 @@
 import 'extension.dart';
+import 'array.dart';
 /// [List] of [fahr]-[cels] for Fahrenheit-Celsius table;
 ///
 /// Set start with [lower]; And end with [upper];
@@ -43,4 +44,24 @@ enum _State {
     }
   }
   return (lines: lines, whitespaces: whitespaces, characters: characters);
+}
+
+/// Reverse a [List];
+void reverse<E>(List<E> list) {
+  int i = 0; int j = list.length - 1;
+  E first, last;
+  for (; i < j; i++, j--) {
+    first = list[i]; last = list[j];
+    list[i] = last; list[j] = first;
+  }
+}
+
+/// Reverse a [Array];
+void reverseArray<T>(Array<T> array) {
+  int i = 0; int j = array.length - 1;
+  T first, last;
+  for (; i < j; i++, j--) {
+    first = array[i]; last = array[j];
+    array[i] = last; array[j] = first;
+  }
 }

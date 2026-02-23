@@ -18,7 +18,7 @@ class Point {
 
   const Point({required this.x, required this.y, required this.z});
 
-  @Deprecated("2.8, use Point()")
+  @Deprecated("2.8, use Point(x: x, y: y, z: z)")
   const Point.xyz({required this.x, required this.y, required this.z});
 
   const Point.xy(this.x,this.y) : z = 0;
@@ -121,7 +121,7 @@ class Triangle extends Vertex {
   const Triangle(super.a, super.b, super.c);
 }
 
-@Deprecated("2.8, use Square.sameY()")
+@Deprecated("2.8, use Square.sameY(a, b)")
 class SquareFlat extends VertexProvider {
 
   const SquareFlat(super.a, super.b);
@@ -301,7 +301,7 @@ class Cube extends VertexProvider {
   String get denotation => "cube";
 }
 
-@Deprecated("2.8, use Point()")
+@Deprecated("2.8, use Point(x: x, y: y, z: z)")
 class PointXYZ extends Point {
   const PointXYZ({required super.x, required super.y, required super.z});
 }
@@ -360,7 +360,7 @@ class Model {
   }
 }
 
-@Deprecated("2.8, use Point.xy()")
+@Deprecated("2.8, use Point.xy(x, y)")
 class PointShort extends Point {
-  const PointShort(int x, int y) : super(x: x, y: 0, z: y);
+  const PointShort(int x, int y) : super.xy(x, y);
 }

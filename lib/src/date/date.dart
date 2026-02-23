@@ -10,6 +10,27 @@ String monthName(int month) {
   return monthsName[month-1];
 }
 // DENOTER IS A REAL WORD
+/// Makes [number] into place denotation.
+///
+/// Example:
+/// ```
+/// print(placeDenoter(1)); // 1st
+/// print(placeDenoter(15)); // 15th
+/// print(placeDenoter(232)); // 232nd;
+/// print(placeDenoter(-33)); // -33rd;
+/// ```
+///
+/// Any [number] that is from 11 to 21 ends with `th`.
+///
+/// Any [number] that ends with `0` ends with `th`.
+///
+/// Any [number] that ends with `1` ends with `st`.
+///
+/// Any [number] that ends with `2` ends with `nd`.
+///
+/// Any [number] that ends with `3` ends with `rd`.
+///
+/// Else it ends with `th`.
 String placeDenoter(int number) {
   if (number >= 10 && number <= 20) {return "${number}th";}
   switch (number % 10) {
@@ -21,10 +42,15 @@ String placeDenoter(int number) {
 }
 
 String usaTime(int hour) {
-  if (hour == 0 || hour == 24) {return "12AM";}
-  else if (hour == 12) {return "12PM";}
-  else if (hour < 12) {return "${hour}AM";}
-  else {return "${hour}PM";}
+  if (hour == 0 || hour == 24) {
+    return "12AM";
+  } else if (hour == 12) {
+    return "12PM";
+  } else if (hour < 12) {
+    return "${hour}AM";
+  } else {
+    return "${hour}PM";
+  }
 }
 
 enum Weekday {
@@ -142,6 +168,7 @@ enum Weekday {
 /// print(date); // 'Wed'
 /// ```
 class Date with CompareMixin<Date> {
+  // TODO: should be changed to a non-private day.
   final int _day;
   final int _month;
   final int _year;
@@ -790,21 +817,27 @@ class Date with CompareMixin<Date> {
 //int get hashCode => year*303 ^ (day*5067 ^ month*6153);
 }
 
-/// makes so there is at least [amount] of zeroes
+/// Makes so there is at least [amount] of zeroes.
 ///
-/// [amount] being one or less will only return [number] (in a string form)
+/// [amount] being one or less will only return [number] (in a string form).
 ///
-/// the `return`s length will always at least be above [amount], indicated by `return.length`
+/// the `return`s length will always at least be above [amount],
+/// indicated by `return.length`.
 ///
-/// used in the by-product of `package:xw/date.dart`
+/// used in the by-product of `package:xw/date.dart`.
 ///
 /// ` `
 ///
-/// [hAdder]`(50,2)` => `50`
+/// [hAdder]`(50,2)` => `50`.
 ///
-/// [hAdder]`(56,4)` => `0056`
+/// [hAdder]`(56,4)` => `0056`.
 ///
-/// [hAdder]`(1896,4)` => `1896`
+/// [hAdder]`(1896,4)` => `1896`.
+///
+/// Do note, that there is a problem if any instance of
+/// `int.parse(hAdder(n, x))` is not n (Where n & x is an unknown int).
+/// Do please report it to the creator of this function
+/// (manifestedmf on github) or on their repository (xw-dart).
 String hAdder(int number, int amount) {
   String mule = "$number";
   if (number.length < amount) {

@@ -142,7 +142,7 @@ class Array<T> extends Iterable<T> {
     }
   }*/
 
-
+  // TODO: make special variable to denote a empty array part.
 
   @override
   int get hashCode => Object.hashAll(this);

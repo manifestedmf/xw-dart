@@ -28,8 +28,8 @@ Iterable<int> boolValues(Iterable<bool> bools) => [
 ];
 
 bool and(Iterable<bool> bools) =>
-    sum(boolValues(bools))
-        == bools.length;
+  sum(boolValues(bools))
+      == bools.length;
 
 bool or(Iterable<bool> bools) => bools.contains(true);
 bool xor(Iterable<bool> bools) => sum(boolValues(bools)).isOdd;
@@ -42,20 +42,20 @@ bool nand(Iterable<bool> bools) => !and(bools);
 bool nor(Iterable<bool> bools) => !or(bools);
 bool xnor(Iterable<bool> bools) => !xor(bools);
 bool xand(Iterable<bool> bools) =>
-    sum(boolValues(bools))
-        == 0;
+  sum(boolValues(bools))
+      == 0;
 
 bool xnand(Iterable<bool> bools) => !xand(bools);
 
 int wrapper({required ({int lowest, int highest}) properties, required int value}) {
   var (:lowest, :highest) = properties;
-  int size = highest-lowest;
-  if (lowest < highest) {
-    throw "lowest: $lowest, can't be before highest: $highest";
+  int size = highest+1-lowest;
+  if (lowest > highest) {
+    throw "lowest: $lowest, can't be after highest: $highest";
   } else if (lowest == highest) {
     return lowest;
   } else if (lowest == 0) {
-    return value % highest;
+    return value % (highest+1);
   } else {
     if (value >= lowest && value <= highest) {
     } else if (value < lowest) {
