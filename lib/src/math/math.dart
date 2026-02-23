@@ -273,7 +273,13 @@ N pow<N extends num>(N base, N exponent) => math.pow(base,exponent) as N;
 
 Fraction powFraction(Fraction base, int exponent) => base ^ exponent;
 
-N sqrt<N extends num>(N number) => math.sqrt(number) as N;
+N sqrt<N extends num>(N number) {
+  if (N is int) {
+    return math.sqrt(number).toInt() as N;
+  } else {
+    return math.sqrt(number) as N;
+  }
+}
 
 /*
 enum Base {
