@@ -171,8 +171,10 @@ extension ListExtension on List {
   bool equals(List other) => listEquals(this,other);
 }
 
-extension MapExtension on Map {
+extension MapExtension<K,V> on Map<K,V> {
   bool equals(Map other) => mapEquals(this,other);
+  /// This might lose some entries.
+  Map<V,K> reverse() => entries.reverseEntries().toMap();
 }
 
 extension SetExtension on Set {
@@ -193,6 +195,23 @@ extension IterableBool<B> on Iterable<bool> {
   bool get xor => std.xor(this);
   bool get xnor => std.xnor(this);
   Iterable<bool> get not => std.not(this);
+}
+
+extension IterableMapEntry<K,V> on Iterable<MapEntry<K,V>> {
+  /// Reverses each `MapEntry<K,V>` to be `MapEntry<V,K>`.
+  /*Iterable<MapEntry<V,K>> reverseEntries() {
+    Iterable<MapEntry<V,K>> mule = [
+      for (MapEntry<K,V> current in this)
+        MapEntry(current.value, current.key)
+    ];
+    return mule;
+  }*/
+  Iterable<MapEntry<V,K>> reverseEntries() => [
+    for (MapEntry<K,V> current in this)
+      MapEntry(current.value, current.key)
+  ];
+  /// Returns [this] to a [Map].
+  Map<K,V> toMap() => Map.fromEntries(this);
 }
 
 

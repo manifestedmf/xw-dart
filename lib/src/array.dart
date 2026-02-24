@@ -79,6 +79,7 @@ class Array<T> extends Iterable<T> {
   static ArrayCreator get std => ArrayCreator._();
   static ArrayCreator<int> get stdInt => ArrayCreator<int>._();
   static ArrayCreator<double> get stdDouble => ArrayCreator<double>._();
+  static ArrayCreator<T> stdCreate<T>() => ArrayCreator<T>._();
 
   List<T?> get arrayInternal => _array;
   String get _positions {

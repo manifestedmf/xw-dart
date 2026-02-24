@@ -79,11 +79,6 @@ sealed class VertexProvider {
   String get denotation;
 
   String join([String seperator = " "]);
-
-  @Deprecated("2.7.2, getting removed")
-  String contexter([String starter = "\$vertexProvider:",String ender = " "]) =>
-      throw VertexError("Function is deprecated till 2.7.2, "
-          "$runtimeType can't support it");
 }
 
 class Vertex extends VertexProvider {
@@ -108,10 +103,6 @@ class Vertex extends VertexProvider {
 
   @override
   join([String seperator = " "]) => "$a$seperator$b$seperator$c$seperator";
-
-  @override
-  String contexter([String starter = "\$vertex:", String ender = " "]) =>
-      "$starter$a$ender$starter$b$ender$starter$c$ender";
 
   @override
   String get denotation => "vertex";
@@ -147,10 +138,6 @@ class SquareFlat extends VertexProvider {
 
   @override
   join([String seperator = " "]) => "$a$seperator$b$seperator";
-
-  @override
-  String contexter([String starter = "\$vertex:", String ender = " "]) =>
-      "$starter$a$ender$starter$b$ender";
 
   @override
   String get denotation => "squareF";
@@ -264,10 +251,6 @@ class Square extends VertexProvider {
 
   @override
   join([String seperator = " "]) => "$a$seperator$b$seperator";
-
-  @override
-  String contexter([String starter = "\$vertex:", String ender = " "]) =>
-      "$starter$a$ender$starter$b$ender";
 
   @override
   String get denotation =>
