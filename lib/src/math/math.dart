@@ -181,6 +181,14 @@ String baseToStr(
   return mule.reverse();
 }
 
+/// Gives back a [String] in the base: [baseTo],
+/// from [from] in base: [baseFrom]
+String baseToBase({
+  required String from,
+  required int baseFrom,
+  required int baseTo,
+  }) => baseToStr(strToBase(from, baseFrom), baseTo);
+
 
 N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   if (numbers.isEmpty) {

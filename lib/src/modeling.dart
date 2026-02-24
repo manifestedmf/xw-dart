@@ -259,17 +259,45 @@ class Square extends VertexProvider {
           : "square";
 }
 
-class Cube extends VertexProvider {
-  const Cube(super.a,super.b);
+/*class Cube extends VertexProvider {
+  /// topTopLeft
+  final Point tTL;
+  /// bottomBottomRight
+  final Point bBR;
 
-  Point get _topB => Point(x: b.x, y: a.y, z: b.z);
-  Point get _bottomA => Point(x: a.x, y: b.y, z: a.z);
+  /*/// Viewing is the middle of the [Cube],
+  /// (`Y` is a undetermined point, `X` is bottom of the screen,
+  /// `Z` is left of the screen)
+  const Cube.fromXTop(this.tTL,this.bBR):super(tTL,bBR);*/
 
-  /*
- Point get _bottomC => Point(x: a.x, y: )*/
+  /// fromTop means that
+  const Cube.fromTop({required this.tTL, required this.bBR}):super(tTL,bBR);
 
-  Square get top => Square.sameY(a,_topB);
-  Square get bottom => Square.sameY(a,_bottomA);
+  @Deprecated("2.7.3 use Cube.fromTop(tTL: Point, bBR: Point)")
+  const Cube(this.tTL,this.bBR):super(tTL,bBR);
+
+  /// topBottomLeft
+  Point get tBL => Point.whd(
+    width: tTL.width,
+    height: tTL.height,
+    depth: bBR.depth,
+  );
+  /// topBottomRight
+  Point get tBR => Point.whd(
+    width: bBR.width,
+    height: tTL.height,
+    depth: bBR.depth,
+  );
+  Point get _bottomA => Point.whd(
+    width: tTL.width,
+    height: bBR.height,
+    depth: tTL.depth,
+  );
+
+  Point get _bottomB => Point(x: a.x, y: )
+
+  Square get top => Square.sameY(tTL,tBR);
+  Square get bottom => Square.sameY(bTL,bBR);
 
   @override
   String join([String seperator = " "]) =>
@@ -282,7 +310,7 @@ class Cube extends VertexProvider {
 
   @override
   String get denotation => "cube";
-}
+}*/
 
 @Deprecated("2.8, use Point(x: x, y: y, z: z)")
 class PointXYZ extends Point {
