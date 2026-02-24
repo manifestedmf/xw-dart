@@ -281,4 +281,22 @@ extension StringExtension on String {
 
   bool get isUpperCase => toUpperCase() == this;
   bool get isLowerCase => toLowerCase() == this;
+
+  /// Gets the reverse of this string.
+  ///
+  /// ```
+  /// print(reverse("abc")); // 'cba'
+  /// print(reverse("the small dog")); // 'god llams eht'
+  /// print(reverse("α is alpha, β is beta")); // 'ateb si β ,ahpla si α'
+  /// ```
+  String reverse() {
+    String mule = "";
+    int i = length-1;
+    while (i >= 0) {
+      mule += this[i--];
+    }
+    return mule;
+  }
+
+  // TODO: add List<String> toWords().
 }

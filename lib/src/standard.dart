@@ -47,8 +47,16 @@ bool xand(Iterable<bool> bools) =>
 
 bool xnand(Iterable<bool> bools) => !xand(bools);
 
-int wrapper({required ({int lowest, int highest}) properties, required int value}) {
-  var (:lowest, :highest) = properties;
+/// [lowest] is the lowest possible number for [value].
+///
+/// [highest] is the highest possible number for [value].
+///
+/// [value] is guaranteed to be in the ranges of [lowest] & [highest].
+///
+/// If [value] is not in bounds, then report it to the creator of this
+/// function (mainfestedmf on github) or on their repository
+/// (manifestedmf/xw-dart on github)
+int wrapper({required int lowest, required int highest, required int value}) {
   int size = highest+1-lowest;
   if (lowest > highest) {
     throw "lowest: $lowest, can't be after highest: $highest";
@@ -70,3 +78,11 @@ int wrapper({required ({int lowest, int highest}) properties, required int value
     return value;
   }
 }
+
+/// [min] is the value that is placed if [value] is below [min].
+///
+/// [max] is the value that is placed if [value] is above [max].
+///
+/// [value] is the inputted number, guaranteed to be inbetween [min] & [max].
+int trim({required int min, required int max, required int value}) =>
+  maxSimple(min, minSimple(max, value));

@@ -3,7 +3,7 @@ import '../extension.dart';
 
 int abs(int signed) => (signed < 0) ? -signed : signed;
 
-//@Deprecated("2.7.3, getting replaced with strToBase(hex,16)")
+@Deprecated("2.7.3, use strToBase(hex,16)")
 int hexConvert(String hex) {
   int number = 0;
   int value = 0;
@@ -20,7 +20,7 @@ int hexConvert(String hex) {
   return number;
 }
 
-//@Deprecated("2.7.3, getting replaced with strToBase(bin,2)")
+@Deprecated("2.7.3, use strToBase(bin,2)")
 int binConvert(String bin) {
   int number = 0;
   int value = 0;
@@ -30,6 +30,157 @@ int binConvert(String bin) {
   }
   return number;
 }
+/// The Representation for each digit, so for example `'0'` is `0` and
+/// `'A'` is `10`.
+const Map<String,int> baseDigitToNumRepr = {
+  "0": 0,
+  "1": 1,
+  "2": 2,
+  "3": 3,
+  "4": 4,
+  "5": 5,
+  "6": 6,
+  "7": 7,
+  "8": 8,
+  "9": 9,
+  "A": 10,
+  "B": 11,
+  "C": 12,
+  "D": 13,
+  "E": 14,
+  "F": 15,
+  "G": 16,
+  "H": 17,
+  "I": 18,
+  "J": 19,
+  "K": 20,
+  "L": 21,
+  "M": 22,
+  "N": 23,
+  "O": 24,
+  "P": 25,
+  "Q": 26,
+  "R": 27,
+  "S": 28,
+  "T": 29,
+  "U": 30,
+  "V": 31,
+  "W": 32,
+  "X": 33,
+  "Y": 34,
+  "Z": 35,
+  "a": 36,
+  "b": 37,
+  "c": 38,
+  "d": 39,
+  "e": 40,
+  "f": 41,
+  "g": 42,
+  "h": 43,
+  "i": 44,
+  "j": 45,
+  "k": 46,
+  "l": 47,
+  "m": 48,
+  "n": 49,
+  "o": 50,
+  "p": 51,
+  "q": 52,
+  "r": 53,
+  "s": 54,
+  "t": 55,
+  "u": 56,
+  "v": 57,
+  "w": 58,
+  "x": 59,
+  "y": 60,
+  "z": 61,
+  "!": 62,
+  "?": 63,
+  "<": 64,
+  ">": 65,
+};
+
+/// The Representation for each number, so for example `0` is `'0'` and `10`
+/// is `'A'`
+final Map<int, String> baseNumToDigitRepr = baseDigitToNumRepr.reverse();
+const String minusRepr = "-";
+
+/// Returns a [int] that the [base] is in from the [string]
+///
+/// Example:
+/// ```
+/// print(strToBase("34", 11)); // 37
+/// print(strToBase("55", 5)); // CRASH
+/// print(strToBase("332", 16)); // 818
+/// ```
+///
+/// Note: `strToBase(baseToStr(a, b), b);` should give `a` back. Unless `b` is a
+/// base that doesn't encapsulate all `repr`.
+int strToBase(
+  String string, int base,
+  {Map<String, int>? repr,
+  String minus = minusRepr,}) {
+  repr ??= baseDigitToNumRepr;
+  if (base > repr.length) {
+    throw "$base can't be longer than the length of repr, which is "
+      "${repr.length}";
+  }
+  String digit; int value;
+  int mule = 0; int index = string.length-1; int j = 0;
+  do {
+    digit = string[index--];
+    value = baseDigitToNumRepr[digit] ?? (throw "Expected $digit to be in $repr");
+    if (value >= base) {
+      throw "'$digit': $value can't be a higher than ${base-1}, happened on "
+          "string[${index+1}].";
+    }
+    mule += pow(base, j++) * value;
+  } while (index > 0); // Doesn't do last part
+  digit = string[index--];
+  if (digit == minusRepr) {
+    mule = -mule;
+  } else {
+    value = baseDigitToNumRepr[digit] ?? (throw "Expected $digit to be in $repr");
+    if (value >= base) {
+      throw "'$digit': $value can't be a higher than ${base-1}, happened on "
+          "string[0].";
+    }
+    mule += pow(base,j++) * value;
+  }
+  return mule;
+}
+
+/// Returns a [String] in the [base] form of the [input].
+///
+/// Example:
+/// ```
+/// print(baseToStr(25, 32)); // 'P'
+/// print(baseToStr(298, 11)); // '251'
+/// print(baseToStr(77, 5)); // '302'
+/// ```
+///
+/// Note: `baseToStr(strToBase(a, b), b);` should give `a` back.
+/// Unless `a` is not a valid base input for `b` or if `b` is a base that
+/// doesn't encapsulate all `repr`.
+String baseToStr(
+  int input, int base,
+  {Map<int, String>? repr,
+  String minus = minusRepr,}) {
+  repr ??= baseNumToDigitRepr;
+  String mule = ""; bool sign = input.isSigned;
+  int value; String digit;
+  do {
+    value = input % base;
+    digit = repr[value] ?? (throw "Expected $value to be listed in $repr");
+    mule += digit;
+  } while ((input ~/= base) > 0);
+  if (sign) {
+    mule += minusRepr;
+  }
+  return mule.reverse();
+}
+
 
 N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   if (numbers.isEmpty) {
@@ -56,6 +207,10 @@ Fraction maxFraction(Iterable<Fraction> fractions, [Fraction? ifNone]) {
   }
   return max;
 }
+
+N maxSimple<N extends num>(N a, N b) => (a > b) ? a : b;
+
+Fraction maxSimpleFraction(Fraction a, Fraction b) => (a > b) ? a : b;
 
 MapEntry<K,V> maxMapKey<K extends num, V>(Map<K, V> map, [MapEntry<K, V>? ifNone]) {
   if (map.isEmpty) {
@@ -146,6 +301,10 @@ Fraction minFraction(Iterable<Fraction> fractions, [Fraction? ifNone]) {
   }
   return min;
 }
+
+N minSimple<N extends num>(N a, N b) => (a < b) ? a : b;
+
+Fraction minSimpleFraction(Fraction a, Fraction b) => (a < b) ? a : b;
 
 MapEntry<K,V> minMapKey<K extends num, V>(Map<K,V> map, [MapEntry<K,V>? ifNone]) {
   if (map.isEmpty) {
@@ -273,12 +432,11 @@ N pow<N extends num>(N base, N exponent) => math.pow(base,exponent) as N;
 
 Fraction powFraction(Fraction base, int exponent) => base ^ exponent;
 
-N sqrt<N extends num>(N number) {
-  if (N is int) {
-    return math.sqrt(number).toInt() as N;
-  } else {
-    return math.sqrt(number) as N;
-  }
+/// If [number] is a `pow(int, 2)`, then it returns a `int`,
+/// else it returns a `double`.
+num sqrt(num number) {
+  double value = math.sqrt(number);
+  return (value.isWhole) ? value.toInt() : value;
 }
 
 /*

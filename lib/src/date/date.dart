@@ -837,7 +837,8 @@ class Date with CompareMixin<Date> {
 /// Do note, that there is a problem if any instance of
 /// `int.parse(hAdder(n, x))` is not n (Where n & x is an unknown int).
 /// Do please report it to the creator of this function
-/// (manifestedmf on github) or on their repository (xw-dart).
+/// (manifestedmf on github) or on their repository
+/// (manifestedmf/xw-dart on github).
 String hAdder(int number, int amount) {
   String mule = "$number";
   if (number.length < amount) {
