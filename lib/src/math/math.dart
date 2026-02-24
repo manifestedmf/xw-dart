@@ -103,7 +103,7 @@ const Map<String,int> baseDigitToNumRepr = {
 
 /// The Representation for each number, so for example `0` is `'0'` and `10`
 /// is `'A'`
-final Map<int, String> baseNumToDigitRepr = baseDigitToNumRepr.reverse();
+final Map<int, String> baseNumToDigitRepr = baseDigitToNumRepr.toReversed();
 const String minusRepr = "-";
 
 /// Returns a [int] that the [base] is in from the [string]
@@ -178,7 +178,7 @@ String baseToStr(
   if (sign) {
     mule += minusRepr;
   }
-  return mule.reverse();
+  return mule.toReversed();
 }
 
 /// Gives back a [String] in the base: [baseTo],

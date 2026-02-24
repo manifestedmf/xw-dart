@@ -151,7 +151,7 @@ extension IntExtension on int {
 
   bool get isWhole => true;
 }
-extension DoubleExtensioon on double {
+extension DoubleExtension on double {
   double towards(double value, [double amount = 1]) {
     if (value < this) {
       if (this-amount < value) {return value;}
@@ -172,9 +172,26 @@ extension ListExtension on List {
 }
 
 extension MapExtension<K,V> on Map<K,V> {
-  bool equals(Map other) => mapEquals(this,other);
+  bool equals(Map<K, V> other) => mapEquals(this,other);
+  /// This might lose some entries.
+  Map<V,K> toReversed() => entries.reverseEntries().toMap();
+  @Deprecated("2.7.4 use toReversed()")
   /// This might lose some entries.
   Map<V,K> reverse() => entries.reverseEntries().toMap();
+}
+
+extension MapExtension2<KV> on Map<KV,KV> {
+  /// This might lose some entries.
+  /// makes [this] map to the reverse.
+  void reverse() {
+    final Iterable<MapEntry<KV, KV>> entries = this.entries.toList();
+    for (var a in entries) {
+      this.remove(a.key);
+    }
+    for (MapEntry<KV, KV> current in entries) {
+      this[current.key] = current.value;
+    }
+  }
 }
 
 extension SetExtension on Set {
@@ -289,7 +306,24 @@ extension StringExtension on String {
   /// print(reverse("the small dog")); // 'god llams eht'
   /// print(reverse("α is alpha, β is beta")); // 'ateb si β ,ahpla si α'
   /// ```
+  @Deprecated("2.7.4 use toReversed()")
   String reverse() {
+    String mule = "";
+    int i = length-1;
+    while (i >= 0) {
+      mule += this[i--];
+    }
+    return mule;
+  }
+
+  /// Gets the reverse of this string.
+  ///
+  /// ```
+  /// print(toReversed("abc")); // 'cba'
+  /// print(toReversed("the small dog")); // 'god llams eht'
+  /// print(toReversed("α is alpha, β is beta")); // 'ateb si β ,ahpla si α'
+  /// ```
+  String toReversed() {
     String mule = "";
     int i = length-1;
     while (i >= 0) {

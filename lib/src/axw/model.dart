@@ -23,7 +23,7 @@ class World {
     }
     return world;
   }
-  static Expression evaluate(Expression expression,Map<String,Definition> environment) {
+  static Expression evaluate(Expression expression, Map<String,Definition> environment) {
     switch (expression) {
       case VarExp(): {
         Definition? definition = environment[expression.id.name];

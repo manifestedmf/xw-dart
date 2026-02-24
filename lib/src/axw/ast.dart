@@ -192,6 +192,8 @@ sealed class Expression {
   String get name => "expression";
   /// naming for the assigning of this type
   String get typeName => name;
+
+  const Expression();
 }
 /// input: ( `0` | `1` | `2` | `3` | `4` | `5` | `6` | `7` | `8` | `9` )+
 ///
@@ -203,7 +205,7 @@ sealed class Expression {
 class IntegerExp extends Expression with CompareMixin<IntegerExp> {
   final int integer;
 
-  IntegerExp(this.integer);
+  const IntegerExp(this.integer);
 
   @override
   toString() => "$integer";
@@ -270,7 +272,7 @@ class HexadecimalExp extends Expression with CompareMixin<HexadecimalExp> {
 class BinaryExp extends Expression with CompareMixin<BinaryExp> {
   final String bin;
 
-  BinaryExp(this.bin);
+  const BinaryExp(this.bin);
 
   @override
   toString() => "0n$bin";
@@ -295,7 +297,7 @@ class BinaryExp extends Expression with CompareMixin<BinaryExp> {
 class FloatExp extends Expression with CompareMixin<FloatExp> {
   final Fraction fraction;
 
-  FloatExp(this.fraction);
+  const FloatExp(this.fraction);
 
   @override
   toString() => fraction.afterVisualRepr;
@@ -327,7 +329,7 @@ class FloatExp extends Expression with CompareMixin<FloatExp> {
 class StringExp extends Expression {
   final String string;
 
-  StringExp(this.string);
+  const StringExp(this.string);
 
   @override
   toString() => "\"$string\"";
@@ -354,7 +356,7 @@ class StringExp extends Expression {
 class CharExp extends Expression with CompareMixin<CharExp> {
   final String character;
 
-  CharExp(this.character);
+  const CharExp(this.character);
 
   /// gotten from Code Page 437
   // currently only to 7F
@@ -512,7 +514,7 @@ class CharExp extends Expression with CompareMixin<CharExp> {
 class ListExp extends Expression {
   final List<Expression> list;
 
-  ListExp(this.list);
+  const ListExp(this.list);
 
   @override
   toString() => "[${list.join(", ")}]";
@@ -539,7 +541,7 @@ class ListExp extends Expression {
 class DictExp extends Expression {
   final Map<Identifier,Expression> dict;
 
-  DictExp(this.dict);
+  const DictExp(this.dict);
 
   @override
   toString() => "$dict";
@@ -585,7 +587,7 @@ class VarExp extends Expression {
 ///
 /// added in Version: `AXW1.4` `;`
 class VoidExp extends Expression {
-  VoidExp();
+  const VoidExp();
 
   @override
   toString() => "${null}";
@@ -611,9 +613,9 @@ class VoidExp extends Expression {
 ///
 /// added in Version: `AXW2.0` `;`
 class BoolExp extends Expression with CompareMixin<BoolExp> {
-  bool boolean;
+  final bool boolean;
 
-  BoolExp(this.boolean);
+  const BoolExp(this.boolean);
 
   @override
   toString() => "$boolean";
@@ -644,6 +646,12 @@ class BoolExp extends Expression with CompareMixin<BoolExp> {
   bool operator ~() => !boolean;
   bool operator ^(BoolExp other) => boolean ^ other.boolean;
   bool operator &(BoolExp other) => boolean ^ other.boolean;
+}
+
+class StructExp extends Expression {
+  final Identifier identifier;
+
+  const StructExp(this.identifier);
 }
 
 /// grammar:
