@@ -9,7 +9,7 @@ class uint2 {
   final uint1 _first, _second;
 
   const uint2(int num)
-    :_second = uint1(num % 2);
+    :_second = const uint1(num);
   const uint2.set(this._first, this._second);
 
 }

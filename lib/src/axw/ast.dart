@@ -1,3 +1,4 @@
+import '../extension.dart';
 import '../math/math.dart';
 import '../mixins.dart';
 import 'parser.dart';
@@ -246,7 +247,7 @@ class HexadecimalExp extends Expression with CompareMixin<HexadecimalExp> {
   toString() => "0x$hex";
   @override
   /// hex conversion
-  toInt() => hexConvert(hex);
+  toInt() => strToBase(hex,16);
   @override
   get name => "hexadecimal";
   @override
@@ -254,9 +255,9 @@ class HexadecimalExp extends Expression with CompareMixin<HexadecimalExp> {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is HexadecimalExp && runtimeType == other.runtimeType &&
-              hex == other.hex;
+    identical(this, other) ||
+      other is HexadecimalExp && runtimeType == other.runtimeType &&
+        hex == other.hex;
 
   @override
   int get hashCode => hex.hashCode;
@@ -278,7 +279,7 @@ class BinaryExp extends Expression with CompareMixin<BinaryExp> {
   toString() => "0n$bin";
   @override
   /// binary conversion
-  toInt() => binConvert(bin);
+  toInt() => strToBase(bin,2);
   @override
   get name => "binary";
   @override
@@ -311,9 +312,9 @@ class FloatExp extends Expression with CompareMixin<FloatExp> {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is FloatExp && runtimeType == other.runtimeType &&
-              fraction == other.fraction;
+    identical(this, other) ||
+      other is FloatExp && runtimeType == other.runtimeType &&
+        fraction == other.fraction;
 
   @override
   int get hashCode => fraction.hashCode;
@@ -338,9 +339,9 @@ class StringExp extends Expression {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is StringExp && runtimeType == other.runtimeType &&
-              string == other.string;
+    identical(this, other) ||
+      other is StringExp && runtimeType == other.runtimeType &&
+        string == other.string;
 
   @override
   int get hashCode => string.hashCode;
@@ -354,13 +355,14 @@ class StringExp extends Expression {
 ///
 /// added in Version: `AXW2.0` `;`
 class CharExp extends Expression with CompareMixin<CharExp> {
-  final String character;
+  final int character;
 
-  const CharExp(this.character);
+  const CharExp.dir(this.character);
+  CharExp(String char):this.dir(valuesStrToInt[char]!);
 
   /// gotten from Code Page 437
   // currently only to 7F
-  static Map<String,int> values = {
+  static const Map<String,int> valuesStrToInt = {
     "":0x00,
     "\u236A":0x01,
     "\u236B":0x02,
@@ -490,12 +492,13 @@ class CharExp extends Expression with CompareMixin<CharExp> {
     "~":0x7E,
     "\u2302":0x7F
   };
+  static final Map<int,String> valuesIntToStr = valuesStrToInt.toReversed();
 
   @override
-  toString() => "'$character'";
+  toString() => "'${valuesIntToStr[character]}'";
   @override
   /// position
-  toInt() => values[character]!;
+  toInt() => character;
   @override
   get name => "character";
   @override
@@ -523,9 +526,9 @@ class ListExp extends Expression {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is ListExp && runtimeType == other.runtimeType &&
-              listEquals(list,other.list);
+    identical(this, other) ||
+      other is ListExp && runtimeType == other.runtimeType &&
+        listEquals(list,other.list);
 
   @override
   int get hashCode => list.hashCode;
@@ -571,9 +574,9 @@ class VarExp extends Expression {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is VarExp && runtimeType == other.runtimeType &&
-              id == other.id;
+    identical(this, other) ||
+      other is VarExp && runtimeType == other.runtimeType &&
+        id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -598,8 +601,8 @@ class VoidExp extends Expression {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is VoidExp && runtimeType == other.runtimeType;
+    identical(this, other) ||
+      other is VoidExp && runtimeType == other.runtimeType;
 
   @override
   int get hashCode => 0;
@@ -636,9 +639,9 @@ class BoolExp extends Expression with CompareMixin<BoolExp> {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is BoolExp && runtimeType == other.runtimeType &&
-              boolean == other.boolean;
+    identical(this, other) ||
+      other is BoolExp && runtimeType == other.runtimeType &&
+        boolean == other.boolean;
 
   @override
   int get hashCode => boolean.hashCode;
