@@ -6,7 +6,7 @@ import 'ast.dart';
 import 'scan.dart';
 
 
-enum Version with CompareMixin<Version> {
+enum Version with Compare<Version> {
   AXW10("AXW1.0","AXW1"),
   AXW11("AXW1.1"),
   AXW12("AXW1.2"),

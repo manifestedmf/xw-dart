@@ -1,4 +1,5 @@
 import '../extension.dart';
+import '../math/core.dart';
 import '../math/fraction.dart';
 import '../mixins.dart';
 import 'parser.dart';
@@ -203,7 +204,7 @@ sealed class Expression {
 /// ` `
 ///
 /// added in Version: `AXW1.0` `;`
-class IntegerExp extends Expression with CompareMixin<IntegerExp> {
+class IntegerExp extends Expression with Compare<IntegerExp> {
   final int integer;
 
   const IntegerExp(this.integer);
@@ -238,7 +239,7 @@ class IntegerExp extends Expression with CompareMixin<IntegerExp> {
 /// ` `
 ///
 /// added in Version: `AXW1.3` `;`
-class HexadecimalExp extends Expression with CompareMixin<HexadecimalExp> {
+class HexadecimalExp extends Expression with Compare<HexadecimalExp> {
   final String hex;
 
   HexadecimalExp(String hex):hex = hex.toUpperCase();
@@ -270,7 +271,7 @@ class HexadecimalExp extends Expression with CompareMixin<HexadecimalExp> {
 /// ` `
 ///
 /// added in Version: `AXW1.3` `;`
-class BinaryExp extends Expression with CompareMixin<BinaryExp> {
+class BinaryExp extends Expression with Compare<BinaryExp> {
   final String bin;
 
   const BinaryExp(this.bin);
@@ -295,7 +296,7 @@ class BinaryExp extends Expression with CompareMixin<BinaryExp> {
 /// ` `
 ///
 /// added in Version: `AXW1.1` `;`
-class FloatExp extends Expression with CompareMixin<FloatExp> {
+class FloatExp extends Expression with Compare<FloatExp> {
   final Fraction fraction;
 
   const FloatExp(this.fraction);
@@ -354,7 +355,7 @@ class StringExp extends Expression {
 /// ` `
 ///
 /// added in Version: `AXW2.0` `;`
-class CharExp extends Expression with CompareMixin<CharExp> {
+class CharExp extends Expression with Compare<CharExp> {
   final int character;
 
   const CharExp.dir(this.character);
@@ -615,7 +616,7 @@ class VoidExp extends Expression {
 /// ` `
 ///
 /// added in Version: `AXW2.0` `;`
-class BoolExp extends Expression with CompareMixin<BoolExp> {
+class BoolExp extends Expression with Compare<BoolExp> {
   final bool boolean;
 
   const BoolExp(this.boolean);

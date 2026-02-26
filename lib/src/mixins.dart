@@ -1,11 +1,13 @@
 
-mixin CompareMixin<T> {
-  bool operator <(T other);
-  bool operator <=(T other) => this < other || this == other;
-  bool operator >(T other) => !(this <= other);
-  bool operator >=(T other) => !(this < other);
+/// Added in `2.7.0`.
+mixin Compare<O> {
+  bool operator <(O other);
+  bool operator <=(O other) => this < other || this == other;
+  bool operator >(O other) => !(this <= other);
+  bool operator >=(O other) => !(this < other);
 }
 
+/// Added in `2.7.0`.
 bool listEquals<T>(List<T> a, List<T> b) {
   if (a == b) {return true;}
   if (a.length != b.length) {return false;}
@@ -15,6 +17,7 @@ bool listEquals<T>(List<T> a, List<T> b) {
   return true;
 }
 
+/// Added in `2.7.0`.
 bool mapEquals<K,V>(Map<K,V> a, Map<K,V> b) {
   if (a == b) {return true;}
   if (a.length != b.length) {return false;}
@@ -25,6 +28,7 @@ bool mapEquals<K,V>(Map<K,V> a, Map<K,V> b) {
   return true;
 }
 
+/// Added in `2.7.0`.
 bool setEquals<T>(Set<T> a, Set<T> b) {
   if (a == b) {return true;}
   if (a.length != b.length) {return false;}
@@ -34,6 +38,7 @@ bool setEquals<T>(Set<T> a, Set<T> b) {
   return true;
 }
 
+/// Added in `2.7.0`.
 bool iterableEquals<T>(Iterable<T> a, Iterable<T> b) {
   if (a == b) {return true;}
   if (a.length != b.length) {return false;}

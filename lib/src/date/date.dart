@@ -167,7 +167,7 @@ enum Weekday {
 /// date = date.setFormat("ww3"); // uses first 3 letters of weekday's name
 /// print(date); // 'Wed'
 /// ```
-class Date with CompareMixin<Date> {
+class Date with Compare<Date> {
   // TODO: should be changed to a non-private day.
   final int _day;
   final int _month;
@@ -839,6 +839,8 @@ class Date with CompareMixin<Date> {
 /// Do please report it to the creator of this function
 /// (manifestedmf on github) or on their repository
 /// (manifestedmf/xw-dart on github).
+///
+/// Added in `2.7.0`.
 String hAdder(int number, int amount) {
   String mule = "$number";
   if (number.length < amount) {

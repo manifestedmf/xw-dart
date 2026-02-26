@@ -1,37 +1,21 @@
 import 'dart:math' as math;
 import '../extension.dart';
 
+/// The |absolute| value of [signed].
+///
+/// ```
+/// print(abs(-15)); // 15
+/// print(abs(12)); // 12
+/// print(abs(17262)); // 17262
+/// ```
+///
+/// Added in `2.7.0`.
 int abs(int signed) => (signed < 0) ? -signed : signed;
 
-@Deprecated("2.7.3, use strToBase(hex,16)")
-int hexConvert(String hex) {
-  int number = 0;
-  int value = 0;
-  for(int index = 0; index < hex.length; ++index) {
-    if (hex[index].toLowerCase() == "f") {value = 15;}
-    else if (hex[index].toLowerCase() == "e") {value = 14;}
-    else if (hex[index].toLowerCase() == "d") {value = 13;}
-    else if (hex[index].toLowerCase() == "c") {value = 12;}
-    else if (hex[index].toLowerCase() == "b") {value = 12;}
-    else if (hex[index].toLowerCase() == "a") {value = 11;}
-    else {value = int.parse(hex[index]);}
-    number += powInt(value,hex.length-index-1);
-  }
-  return number;
-}
-
-@Deprecated("2.7.3, use strToBase(bin,2)")
-int binConvert(String bin) {
-  int number = 0;
-  int value = 0;
-  for(int index = 0; index < bin.length; ++index) {
-    value = int.parse(bin[index]);
-    number += powInt(value,bin.length-index-1);
-  }
-  return number;
-}
 /// The Representation for each digit, so for example `'0'` is `0` and
 /// `'A'` is `10`.
+///
+/// Added in `2.7.2`.
 const Map<String,int> baseDigitToNumRepr = {
   "0": 0,
   "1": 1,
@@ -103,12 +87,17 @@ const Map<String,int> baseDigitToNumRepr = {
 
 /// The Representation for each number, so for example `0` is `'0'` and `10`
 /// is `'A'`
+///
+/// Added in `2.7.2`.
 final Map<int, String> baseNumToDigitRepr = baseDigitToNumRepr.toReversed();
+
+/// The standard representation for Minus.
+///
+/// Added in `2.7.2`.
 const String minusRepr = "-";
 
 /// Returns a [int] that the [base] is in from the [string]
 ///
-/// Example:
 /// ```
 /// print(strToBase("34", 11)); // 37
 /// print(strToBase("55", 5)); // CRASH
@@ -117,6 +106,8 @@ const String minusRepr = "-";
 ///
 /// Note: `strToBase(baseToStr(a, b), b);` should give `a` back. Unless `b` is a
 /// base that doesn't encapsulate all `repr`.
+///
+/// Added in `2.7.2`.
 int strToBase(String string, int base,
     {Map<String, int>? repr,
     String minus = minusRepr,}) {
@@ -162,6 +153,8 @@ int strToBase(String string, int base,
 /// Note: `baseToStr(strToBase(a, b), b);` should give `a` back.
 /// Unless `a` is not a valid base input for `b` or if `b` is a base that
 /// doesn't encapsulate all `repr`.
+///
+/// Added in `2.7.2`.
 String baseToStr(int input, int base,
     {Map<int, String>? repr,
     String minus = minusRepr,}) {
@@ -180,14 +173,28 @@ String baseToStr(int input, int base,
 }
 
 /// Gives back a [String] in the base: [baseTo],
-/// from [from] in base: [baseFrom]
+/// from [from] in base: [baseFrom].
+///
+/// Added in `2.7.2`.
 String baseToBase({
   required String from,
   required int baseFrom,
   required int baseTo,
 }) => baseToStr(strToBase(from, baseFrom), baseTo);
 
-
+/// Gets the max value in [numbers].
+///
+/// If there are no values in [numbers], then it returns [ifNone].
+///
+/// ```
+/// print(max([0, 15, 23, 29, 11, -6])); // 29
+/// print(max([], -5)); // -5
+/// print(max([])); // CRASH
+/// print(max([3.2, 5.22, 69.03], -5.3)); // 69.03
+/// print(max<num>([5, 6.2, 9, pi])); // 9
+/// ```
+///
+/// Added in `2.7.0`.
 N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   if (numbers.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -201,8 +208,20 @@ N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   return max;
 }
 
+/// Gives the max of Two values, being [a] & [b].
+///
+/// ```
+/// print(maxSimple(5, 9)); // 9
+/// print(maxSimple(5.2, 9.0)); // 9.0
+/// print(maxSimple<num>(5.2, 9)); // 9
+/// ```
+///
+/// Added in `2.7.3`.
 N maxSimple<N extends num>(N a, N b) => (a > b) ? a : b;
 
+/// Gives the [MapEntry] with the highest key([K]) value.
+///
+/// Added in `2.7.0`.
 MapEntry<K,V> maxMapKey<K extends num, V>(Map<K, V> map, [MapEntry<K, V>? ifNone]) {
   if (map.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -217,6 +236,9 @@ MapEntry<K,V> maxMapKey<K extends num, V>(Map<K, V> map, [MapEntry<K, V>? ifNone
   return max;
 }
 
+/// Gives the [MapEntry]s with the highest value([V]) value.
+///
+/// Added in `2.7.0`.
 Set<MapEntry<K,V>> maxMapValue<K, V extends num>(Map<K, V> map, [MapEntry<K, V>? ifNone]) {
   if (map.isEmpty) {
     if (ifNone == null) {throw StateError("No Optional Parameter Set");}
@@ -235,6 +257,11 @@ Set<MapEntry<K,V>> maxMapValue<K, V extends num>(Map<K, V> map, [MapEntry<K, V>?
   return maxSet;
 }
 
+/// Gets the min value in [numbers].
+///
+/// If there are no values in [numbers], then it returns [ifNone].
+///
+/// Added in `2.7.0`.
 N min<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   if (numbers.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -248,8 +275,12 @@ N min<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   return min;
 }
 
+/// Gets the min of Two values, [a] & [b].
+///
+/// Added in `2.7.3`.
 N minSimple<N extends num>(N a, N b) => (a < b) ? a : b;
 
+/// Added in `2.7.0`.
 MapEntry<K,V> minMapKey<K extends num, V>(Map<K,V> map, [MapEntry<K,V>? ifNone]) {
   if (map.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -262,6 +293,7 @@ MapEntry<K,V> minMapKey<K extends num, V>(Map<K,V> map, [MapEntry<K,V>? ifNone])
   return min;
 }
 
+/// Added in `2.7.0`.
 Set<MapEntry<K,V>> minMapValue<K,V extends num>(Map<K,V> map, [MapEntry<K,V>? ifNone]) {
   if (map.isEmpty) {
     if (ifNone == null) {throw StateError("No Optional Parameter Set");}
@@ -280,7 +312,9 @@ Set<MapEntry<K,V>> minMapValue<K,V extends num>(Map<K,V> map, [MapEntry<K,V>? if
   return minSet;
 }
 
-
+/// Gets the sum of [numbers], The starting value is [starting].
+///
+/// Added in `2.7.0`.
 N sum<N extends num>(Iterable<N> numbers, [N? starting]) {
   N sum;
   sum = (starting == null) ? 0 as N : starting;
@@ -290,6 +324,7 @@ N sum<N extends num>(Iterable<N> numbers, [N? starting]) {
   return sum;
 }
 
+/// Added in `2.7.0`.
 K sumMapKey<K extends num,V>(Map<K,V> map, [K? starting]) {
   K sum;
   sum = (starting == null) ? 0 as K : starting;
@@ -300,6 +335,7 @@ K sumMapKey<K extends num,V>(Map<K,V> map, [K? starting]) {
   return sum;
 }
 
+/// Added in `2.7.0`.
 V sumMapValue<K,V extends num>(Map<K,V> map, [V? starting]) {
   V sum;
   sum = (starting == null) ? 0 as V : starting;
@@ -323,21 +359,29 @@ num powNum(num base, num exponent) => math.pow(base,exponent);
 @Deprecated("2.8, use pow<double>(base, exponent)")
 double powDouble(double base, double exponent) => math.pow(base,exponent).toDouble();
 
+/// Added in `2.7.0`.
 N pow<N extends num>(N base, N exponent) => math.pow(base,exponent) as N;
 
 /// If [number] is a `pow(int, 2)`, then it returns a `int`,
 /// else it returns a `double`.
+///
+/// Added in `2.7.0`.
 num sqrt(num number) {
   double value = math.sqrt(number);
   return (value.isWhole) ? value.toInt() : value;
 }
 
+/// Added in `2.7.0`.
 bool isLow(num number) => (number % 1 < 0.5);
+/// Added in `2.7.0`.
 bool isHigh(num number) => !isLow(number);
 
+/// Added in `2.7.0`.
 bool isDivBy(int oper, int number) => oper % number == 0;
 
-/// explicit that the first is 1
+/// Explicit that the first is 1.
+///
+/// Added in `2.7.0`.
 List<int> primeFactors(int number) {
   List<int> list = [];
   int div = 2;
@@ -355,9 +399,13 @@ List<int> primeFactors(int number) {
   return list;
 }
 
-/// if number is prime
+/// If [number] is prime.
+///
+/// Added in `2.7.0`.
 bool isPrime(int number) => (primeFactors(number).length == 1);
 /// if number is constructed of primes
+///
+/// Added in `2.7.0`.
 bool isComprime(int number) {
   List<int> list = primeFactors(number);
   if (list.length <= 1) {return false;}
@@ -368,8 +416,11 @@ bool isComprime(int number) {
 /// 64, 2 // true
 ///
 /// 63, 3 // false
+///
+/// Added in `2.7.0`.
 bool isExponentOf(int number, int base) => isMadeUpOf(number, [base]);
 
+/// Added in `2.7.0`.
 bool isMadeUpOf(int number, List<int> primes) {
   List<int> list = primeFactors(number);
   int index = 0;
