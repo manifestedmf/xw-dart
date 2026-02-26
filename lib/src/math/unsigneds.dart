@@ -1,4 +1,5 @@
 
+/*
 class uint1 {
   final bool _integer;
   const uint1(int num):_integer = (num % 2 == 0) ? true : false;
@@ -12,4 +13,4 @@ class uint2 {
     :_second = const uint1(num);
   const uint2.set(this._first, this._second);
 
-}
+}*/

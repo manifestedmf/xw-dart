@@ -1,5 +1,5 @@
 import '../extension.dart';
-import '../math/math.dart';
+import '../math/fraction.dart';
 import '../mixins.dart';
 import 'parser.dart';
 

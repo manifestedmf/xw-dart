@@ -7,4 +7,5 @@
 /// isPrime
 library;
 
-export 'src/math/math.dart';
+export 'src/math/fraction.dart';
+export 'src/math/core.dart';

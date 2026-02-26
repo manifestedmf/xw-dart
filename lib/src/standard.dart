@@ -1,5 +1,5 @@
 import 'extension.dart';
-import 'math/math.dart';
+import 'math/core.dart';
 
 /// `true` = [a],
 /// `false` = [b],

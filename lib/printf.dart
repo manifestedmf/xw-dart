@@ -1,4 +1,4 @@
-/// The package for the function [printf]
+/// The package for the function [printf] & [printg]
 library;
 
 import 'dart:io';
@@ -11,6 +11,10 @@ import 'dart:io';
 ///
 /// `%n`, grabs the next item, which can be [nullable].
 void printf(String input, [Iterable<Object?> items = const []]) {
+  if (items == []) {
+    printg(input);
+    return;
+  }
   String output = "";
   List<Object?> objects = items.toList(); // makes items removable
   _State state = _State.unknown; // which state we were in
@@ -38,21 +42,21 @@ void printf(String input, [Iterable<Object?> items = const []]) {
                 break;
               }
             }
-            output += "$heldValue";
+            output += heldValue.toString();
             objects.removeAt(offset);
             state = _State.percentage;
             starter = pointer;
           }
           case _State.nullable: {
             heldValue = objects[0];
-            output += "$heldValue";
+            output += heldValue.toString();
             objects.removeAt(0);
             offset--;
             state = _State.percentage;
             starter = pointer;
           }
           case _State.text: {
-            output += "${input.substring(starter, pointer)}";
+            output += input.substring(starter, pointer);
             state = _State.percentage;
             starter = pointer;
           }
@@ -74,14 +78,14 @@ void printf(String input, [Iterable<Object?> items = const []]) {
                 break;
               }
             }
-            output += "$heldValue";
+            output += heldValue.toString();
             objects.removeAt(offset);
             state = _State.text;
             starter = pointer;
           }
           case _State.nullable: {
             heldValue = objects[0];
-            output += "$heldValue";
+            output += heldValue.toString();
             objects.removeAt(0);
             offset--;
             state = _State.text;
@@ -103,14 +107,14 @@ void printf(String input, [Iterable<Object?> items = const []]) {
                 break;
               }
             }
-            output += "$heldValue";
+            output += heldValue.toString();
             objects.removeAt(offset);
             state = _State.text;
             starter = pointer;
           }
           case _State.nullable: {
             heldValue = objects[0];
-            output += "$heldValue";
+            output += heldValue.toString();
             objects.removeAt(0);
             offset--;
             state = _State.text;
@@ -132,14 +136,14 @@ void printf(String input, [Iterable<Object?> items = const []]) {
                 break;
               }
             }
-            output += "$heldValue";
+            output += heldValue.toString();
             objects.removeAt(offset);
             state = _State.text;
             starter = pointer;
           }
           case _State.nullable: {
             heldValue = objects[0];
-            output += "$heldValue";
+            output += heldValue.toString();
             objects.removeAt(0);
             offset--;
             state = _State.text;
@@ -153,7 +157,7 @@ void printf(String input, [Iterable<Object?> items = const []]) {
     pointer++; // increments
   }
   switch (state) {
-    case _State.percentage: output += "${input.substring(starter)}";
+    case _State.percentage: output += input.substring(starter);
     case _State.object: {
       while (true) {
         heldValue = objects[offset];
@@ -163,14 +167,14 @@ void printf(String input, [Iterable<Object?> items = const []]) {
           break;
         }
       }
-      output += "$heldValue";
+      output += heldValue.toString();
     }
     case _State.nullable: {
       heldValue = objects[0];
-      output += "$heldValue";
+      output += heldValue.toString();
     }
-    case _State.text: output += "${input.substring(starter)}";
-    case _State.unknown: output += "";
+    case _State.text: output += input.substring(starter);
+    case _State.unknown: {}
   }
   stdout.write(output);
 }
@@ -197,4 +201,14 @@ _Char _character(String char) {
     case "n": return _Char.n;
     case _: return _Char.text;
   }
+}
+
+/// The sequel to [printf], this takes only input and just does output.
+void printg(String input) {
+  stdout.write(input);
+}
+
+/// [printg] but it has some more computation before sending it.
+void printh(Object? input) {
+  printg(input.toString());
 }
