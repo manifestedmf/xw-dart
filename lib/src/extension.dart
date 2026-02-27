@@ -180,7 +180,7 @@ extension MapExtension<K,V> on Map<K,V> {
   Map<V,K> reverse() => entries.reverseEntries().toMap();
 }
 
-extension MapExtension2<KV> on Map<KV,KV> {
+/*extension MapExtension2<KV> on Map<KV,KV> {
   /// This might lose some entries.
   /// makes [this] map to the reverse.
   void reverse() {
@@ -192,7 +192,7 @@ extension MapExtension2<KV> on Map<KV,KV> {
       this[current.key] = current.value;
     }
   }
-}
+}*/
 
 extension SetExtension on Set {
   bool equals(Set other) => setEquals(this,other);

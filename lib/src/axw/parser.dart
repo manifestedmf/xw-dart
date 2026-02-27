@@ -234,7 +234,7 @@ class Parser {
         String integerText = text.substring(0,position) + text.substring(position+1);
         int integer = int.parse(integerText);
         int denominator = pow(10,text.substring(position+1).length).toInt();
-        return FloatExp(Fraction(integer,denominator));
+        return FloatExp(Fraction.compressed(integer,denominator));
       case TokenType.string:
         return StringExp(text.substring(1,text.length-1));
       case TokenType.char:
