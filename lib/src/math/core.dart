@@ -385,18 +385,63 @@ bool isDivBy(int oper, int number) => oper % number == 0;
 List<int> primeFactors(int number) {
   List<int> list = [];
   int div = 2;
-  if (number < 0) {list.add(-1); number*=-1;}
-  int highestDiv = math.sqrt(number).toInt();
+  if (number < 0) {
+    list.add(-1);
+    number *= -1;
+  }
+  int highestDiv = sqrt(number).toInt();
   while (div <= highestDiv) {
     if (isDivBy(number,div)) {
       list.add(div);
       number ~/= div;
-      highestDiv = math.sqrt(number).toInt();
-      div = 2;}
-    else {div++;}
+      highestDiv = sqrt(number).toInt();
+      div = 2;
+    }
+    else {
+      div++;
+    }
   }
   if (number != 1) {list.add(number);}
   return list;
+}
+
+/// Greatest Common Denominator.
+///
+/// Added in `2.7.3`.
+({int a, int b}) gcd(int a, int b) {
+  if (a == 0 && b == 0) {
+    return (a: a, b: b);
+  } else if (a == 0) {
+    return (a: a, b: 1);
+  } if (b == 0) {
+    return (a: 1, b: b);
+  } else if (
+      b == 1
+      || a == 1
+      || a == b-1
+      || a == b+1) {
+    return (a: a, b: b);
+  }
+  List<int> aFactors = primeFactors(a);
+  List<int> bFactors = primeFactors(b);
+  int currentA, currentB;
+  int bIndex, aIndex;
+  bIndex = aIndex = 0;
+  while (bIndex < bFactors.length && aIndex < aFactors.length) {
+    currentA = aFactors[aIndex];
+    currentB = bFactors[bIndex];
+    if (currentA == currentB) {
+      a ~/= currentA;
+      b ~/= currentB;
+      aFactors.removeAt(aIndex);
+      bFactors.removeAt(bIndex);
+    } else if (currentB < currentA) {
+      ++aIndex;
+    } else if (currentA > currentB) {
+      ++bIndex;
+    }
+  }
+  return (a: a, b: b);
 }
 
 /// If [number] is prime.
@@ -406,11 +451,14 @@ bool isPrime(int number) => (primeFactors(number).length == 1);
 /// if number is constructed of primes
 ///
 /// Added in `2.7.0`.
-bool isComprime(int number) {
-  List<int> list = primeFactors(number);
-  if (list.length <= 1) {return false;}
-  else if (list[0] != list[1] && list.length == 2) {return true;}
-  else {return false;}
+bool isComprime(List<int> factors) {
+  if (factors.length <= 1) {
+    return false;
+  } else if (factors[0] != factors[1] && factors.length == 2) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 /// 64, 2 // true
@@ -425,9 +473,12 @@ bool isMadeUpOf(int number, List<int> primes) {
   List<int> list = primeFactors(number);
   int index = 0;
   while (index < list.length) {
-    if (primes.contains(list[index])) {list.removeAt(index);
-    index = index.towardsZero;}
-    else {return false;}
+    if (primes.contains(list[index])) {
+      list.removeAt(index);
+      index = index.towardsZero;
+    } else {
+      return false;
+    }
   }
   return true;
 }
