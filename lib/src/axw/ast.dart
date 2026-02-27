@@ -2,6 +2,7 @@ import '../extension.dart';
 import '../math/core.dart';
 import '../math/fraction.dart';
 import '../mixins.dart';
+import '../equals.dart';
 import 'parser.dart';
 
 /// grammar:
@@ -105,7 +106,7 @@ class StructDeclaration extends Declaration {
   bool operator ==(Object other) =>
       identical(this, other) ||
           other is StructDeclaration && runtimeType == other.runtimeType &&
-              id == other.id && listEquals(fields,other.fields);
+              id == other.id && listEqualsDeep(fields,other.fields);
 
   @override
   int get hashCode => id.hashCode ^ fields.hashCode;
@@ -289,7 +290,7 @@ class BinaryExp extends Expression with Compare<BinaryExp> {
   operator <(BinaryExp other) => toInt() < other.toInt();
 }
 
-/// input: `Fraction(oper,div)`
+/// input: `Fraction.compressed(oper,div)`
 ///
 /// output: [Fraction.afterVisualRepr]
 ///
@@ -529,7 +530,7 @@ class ListExp extends Expression {
   bool operator ==(Object other) =>
     identical(this, other) ||
       other is ListExp && runtimeType == other.runtimeType &&
-        listEquals(list,other.list);
+        listEqualsDeep(list,other.list);
 
   @override
   int get hashCode => list.hashCode;

@@ -273,7 +273,6 @@ class Square extends VertexProvider {
   /// fromTop means that
   const Cube.fromTop({required this.tTL, required this.bBR}):super(tTL,bBR);
 
-  @Deprecated("2.7.3 use Cube.fromTop(tTL: Point, bBR: Point)")
   const Cube(this.tTL,this.bBR):super(tTL,bBR);
 
   /// topBottomLeft

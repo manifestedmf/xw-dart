@@ -1,4 +1,4 @@
-import 'mixins.dart';
+import 'equals.dart';
 
 class ArrayException {
   String? message;
@@ -129,7 +129,7 @@ class Array<T> extends Iterable<T> {
       identical(this, other) ||
           other is Array &&
               runtimeType == other.runtimeType &&
-              listEquals(_array, other._array);
+              listEqualsDeep(_array, other._array);
 
   /*Array<T?> subar({int start = 0, int? end}) {
     if (start == 0 && end == null) {return this;}

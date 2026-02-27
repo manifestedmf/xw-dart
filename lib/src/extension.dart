@@ -1,4 +1,4 @@
-import 'mixins.dart';
+import 'equals.dart';
 import 'standard.dart' as std;
 
 // class Char {
@@ -167,42 +167,57 @@ extension DoubleExtension on double {
   bool get isWhole => this == roundToDouble();
 }
 
-extension ListExtension on List {
-  bool equals(List other) => listEquals(this,other);
+extension ListExtension<E> on List<E> {
+  /// Added in `2.7.0`.
+  @Deprecated("2.8, use equalsShallow or equalsDeep")
+  bool equals(List<E> other, [bool isShallow = true]) =>
+    listEquals(this, other, isShallow);
+  /// Added in `2.7.4`.
+  bool equalsShallow(List<E> other) => listEqualsShallow(this, other);
+  /// Added in `2.7.4`.
+  bool equalsDeep(List<E> other) => listEqualsDeep(this, other);
 }
 
 extension MapExtension<K,V> on Map<K,V> {
-  bool equals(Map<K, V> other) => mapEquals(this,other);
+  /// Added in `2.7.0`.
+  @Deprecated("2.8, use equalsShallow or equalsDeep")
+  bool equals(Map<K, V> other, [bool isShallow = true]) =>
+    mapEquals(this, other, isShallow);
+  /// Added in `2.7.4`.
+  bool equalsShallow(Map<K, V> other) => mapEqualsShallow(this, other);
+  /// Added in `2.7.4`.
+  bool equalsDeep(Map<K, V> other) => mapEqualsDeep(this, other);
+
+
   /// This might lose some entries.
+  ///
+  /// Added in `2.7.3`.
   Map<V,K> toReversed() => entries.reverseEntries().toMap();
-  @Deprecated("2.7.4 use toReversed()")
-  /// This might lose some entries.
-  Map<V,K> reverse() => entries.reverseEntries().toMap();
 }
 
-/*extension MapExtension2<KV> on Map<KV,KV> {
-  /// This might lose some entries.
-  /// makes [this] map to the reverse.
-  void reverse() {
-    final Iterable<MapEntry<KV, KV>> entries = this.entries.toList();
-    for (var a in entries) {
-      this.remove(a.key);
-    }
-    for (MapEntry<KV, KV> current in entries) {
-      this[current.key] = current.value;
-    }
-  }
-}*/
-
-extension SetExtension on Set {
-  bool equals(Set other) => setEquals(this,other);
+extension SetExtension<E> on Set<E> {
+  /// Added in `2.7.0`.
+  @Deprecated("2.8, use equalsShallow or equalsDeep")
+  bool equals(Set<E> other, [bool isShallow = true]) =>
+    setEquals(this, other, isShallow);
+  /// Added in `2.7.4`.
+  bool equalsShallow(Set<E> other) => setEqualsShallow(this, other);
+  /// Added in `2.7.4`.
+  bool equalsDeep(Set<E> other) => setEqualsDeep(this, other);
 }
 
-extension IterableExtension on Iterable {
-  bool equals(Iterable other) => iterableEquals(this,other);
+extension IterableExtension<E> on Iterable<E> {
+  /// Added in `2.7.0`.
+  @Deprecated("2.8, use equalsShallow or equalsDeep")
+  bool equals(Iterable<E> other, [bool isShallow = true]) =>
+    iterableEquals(this, other, true);
+  /// Added in `2.7.4`.
+  bool equalsShallow(Iterable<E> other) => iterableEqualsShallow(this, other);
+  /// Added in `2.7.4`.
+  bool equalsDeep(Iterable<E> other) => iterableEqualsDeep(this, other);
 }
 
-extension IterableBool<B> on Iterable<bool> {
+extension IterableBool on Iterable<bool> {
   bool get and => std.and(this);
   bool get nand => std.nand(this);
   bool get xand => std.xand(this);
@@ -302,27 +317,12 @@ extension StringExtension on String {
   /// Gets the reverse of this string.
   ///
   /// ```
-  /// print(reverse("abc")); // 'cba'
-  /// print(reverse("the small dog")); // 'god llams eht'
-  /// print(reverse("α is alpha, β is beta")); // 'ateb si β ,ahpla si α'
-  /// ```
-  @Deprecated("2.7.4 use toReversed()")
-  String reverse() {
-    String mule = "";
-    int i = length-1;
-    while (i >= 0) {
-      mule += this[i--];
-    }
-    return mule;
-  }
-
-  /// Gets the reverse of this string.
-  ///
-  /// ```
   /// print(toReversed("abc")); // 'cba'
   /// print(toReversed("the small dog")); // 'god llams eht'
   /// print(toReversed("α is alpha, β is beta")); // 'ateb si β ,ahpla si α'
   /// ```
+  ///
+  /// Added in `2.7.3`.
   String toReversed() {
     String mule = "";
     int i = length-1;
