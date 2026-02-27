@@ -45,10 +45,8 @@ extension NumExtension on num {
   /// ```
   ///
   /// Added in {\$`2.7`, \$`1.6`};
-  int get length =>
-      (isSigned)
-          ? lengthSigned-1
-          : lengthSigned;
+  int get length => (isSigned) ? lengthSigned - 1 : lengthSigned;
+
   /// Gets the [unsigned] length of the number;
   ///
   /// For [signed] do [lengthSigned];
@@ -67,6 +65,7 @@ extension NumExtension on num {
   ///
   /// Added in {\$`2.7`, \$`1.6`};
   int get lengthUnsigned => length;
+
   /// Gets the [signed] length of the number;
   ///
   /// For [unsigned] do [length] or [lengthUnsigned];
@@ -94,24 +93,19 @@ extension NumExtension on num {
   /// ```
   /// (553).intLength // 3
   /// ```
-  int get intLength =>
-      (isSigned)
-          ? intLengthSigned-1
-          : intLengthSigned;
+  int get intLength => (isSigned) ? intLengthSigned - 1 : intLengthSigned;
   int get intLengthUnsigned => intLength;
   int get intLengthSigned => "${truncate()}".length;
 
   int get decimalLength =>
-      (isSigned)
-          ? decimalLengthSigned-1
-          : decimalLengthSigned;
+    (isSigned) ? decimalLengthSigned - 1 : decimalLengthSigned;
+
   int get decimalLengthUnsigned => decimalLength;
-  int get decimalLengthSigned =>
-      (isWhole)
-          ? 0
-          : length - (intLengthSigned + 1);
+
+  int get decimalLengthSigned => (isWhole) ? 0 : length - (intLengthSigned + 1);
 
   bool get isSigned => isNegative;
+
   bool get isPositive => this >= 0;
 
   static num get signNum => -1;
@@ -119,22 +113,37 @@ extension NumExtension on num {
 
 extension IntExtension on int {
   int towards(int value) {
-    if (value < this) {return this-1;}
-    else if (value > this) {return this+1;}
-    else {return this;}
+    if (value < this) {
+      return this - 1;
+    } else if (value > this) {
+      return this + 1;
+    } else {
+      return this;
+    }
   }
+
   int get towardsZero => towards(0);
+
   /// is automatically true if 0
   bool higher(int value) {
-    if (value >= this) {return true;}
-    else {return false;}
+    if (value >= this) {
+      return true;
+    } else {
+      return false;
+    }
   }
+
   /// is automatically true if 0
   bool lower(int value) {
-    if (value <= this) {return true;}
-    else {return false;}
+    if (value <= this) {
+      return true;
+    } else {
+      return false;
+    }
   }
+
   bool get plusSide => higher(0);
+
   bool get minusSide => lower(0);
 
   bool toBool() => this != 0;
@@ -144,24 +153,33 @@ extension IntExtension on int {
   int get intLengthSigned => length;
 
   int get decimalLength => 0;
+
   int get decimalLengthUnsigned => decimalLength;
+
   int get decimalLengthSigned => (isSigned) ? 1 : 0;
 
   int addAtEnd(int newDigit) => int.parse("$this$newDigit");
 
   bool get isWhole => true;
 }
+
 extension DoubleExtension on double {
   double towards(double value, [double amount = 1]) {
     if (value < this) {
-      if (this-amount < value) {return value;}
-      else {return this-amount;}
+      if (this - amount < value) {
+        return value;
+      } else {
+        return this - amount;
+      }
+    } else if (value > this) {
+      if (this + amount > value) {
+        return value;
+      } else {
+        return this + amount;
+      }
+    } else {
+      return this;
     }
-    else if (value > this) {
-      if (this+amount > value) {return value;}
-      else {return this+amount;}
-    }
-    else {return this;}
   }
 
   bool get isWhole => this == roundToDouble();
@@ -172,27 +190,44 @@ extension ListExtension<E> on List<E> {
   @Deprecated("2.8, use equalsShallow or equalsDeep")
   bool equals(List<E> other, [bool isShallow = true]) =>
     listEquals(this, other, isShallow);
+
   /// Added in `2.7.4`.
   bool equalsShallow(List<E> other) => listEqualsShallow(this, other);
+
   /// Added in `2.7.4`.
   bool equalsDeep(List<E> other) => listEqualsDeep(this, other);
+
+  /// Removes all occurrences of [value].
+  ///
+  /// Returns [false] if there is no occurrence of [value].
+  ///
+  /// Added in `2.7.4`.
+  bool removeAll(E value) {
+    if (!contains(E)) {
+      return false;
+    } else {
+      do {} while (remove(value)); // removes value while it still exists.
+      return true;
+    }
+  }
 }
 
-extension MapExtension<K,V> on Map<K,V> {
+extension MapExtension<K, V> on Map<K, V> {
   /// Added in `2.7.0`.
   @Deprecated("2.8, use equalsShallow or equalsDeep")
   bool equals(Map<K, V> other, [bool isShallow = true]) =>
     mapEquals(this, other, isShallow);
+
   /// Added in `2.7.4`.
   bool equalsShallow(Map<K, V> other) => mapEqualsShallow(this, other);
+
   /// Added in `2.7.4`.
   bool equalsDeep(Map<K, V> other) => mapEqualsDeep(this, other);
-
 
   /// This might lose some entries.
   ///
   /// Added in `2.7.3`.
-  Map<V,K> toReversed() => entries.reverseEntries().toMap();
+  Map<V, K> toReversed() => entries.reverseEntries().toMap();
 }
 
 extension SetExtension<E> on Set<E> {
@@ -200,8 +235,10 @@ extension SetExtension<E> on Set<E> {
   @Deprecated("2.8, use equalsShallow or equalsDeep")
   bool equals(Set<E> other, [bool isShallow = true]) =>
     setEquals(this, other, isShallow);
+
   /// Added in `2.7.4`.
   bool equalsShallow(Set<E> other) => setEqualsShallow(this, other);
+
   /// Added in `2.7.4`.
   bool equalsDeep(Set<E> other) => setEqualsDeep(this, other);
 }
@@ -211,8 +248,10 @@ extension IterableExtension<E> on Iterable<E> {
   @Deprecated("2.8, use equalsShallow or equalsDeep")
   bool equals(Iterable<E> other, [bool isShallow = true]) =>
     iterableEquals(this, other, true);
+
   /// Added in `2.7.4`.
   bool equalsShallow(Iterable<E> other) => iterableEqualsShallow(this, other);
+
   /// Added in `2.7.4`.
   bool equalsDeep(Iterable<E> other) => iterableEqualsDeep(this, other);
 }
@@ -229,7 +268,7 @@ extension IterableBool on Iterable<bool> {
   Iterable<bool> get not => std.not(this);
 }
 
-extension IterableMapEntry<K,V> on Iterable<MapEntry<K,V>> {
+extension IterableMapEntry<K, V> on Iterable<MapEntry<K, V>> {
   /// Reverses each `MapEntry<K,V>` to be `MapEntry<V,K>`.
   /*Iterable<MapEntry<V,K>> reverseEntries() {
     Iterable<MapEntry<V,K>> mule = [
@@ -238,37 +277,53 @@ extension IterableMapEntry<K,V> on Iterable<MapEntry<K,V>> {
     ];
     return mule;
   }*/
-  Iterable<MapEntry<V,K>> reverseEntries() => [
-    for (MapEntry<K,V> current in this)
-      MapEntry(current.value, current.key)
+  Iterable<MapEntry<V, K>> reverseEntries() => [
+    for (MapEntry<K, V> current in this)
+      MapEntry(current.value, current.key),
   ];
-  /// Returns [this] to a [Map].
-  Map<K,V> toMap() => Map.fromEntries(this);
-}
 
+  /// Returns [this] to a [Map].
+  Map<K, V> toMap() => Map.fromEntries(this);
+}
 
 extension BoolExtension on bool {
   int toInt() => (this) ? 1 : 0;
 }
 
 extension StringExtension on String {
-  String truncate(int characters) => substring(0,characters);
-  String safeTruncate(int characters) => (characters >= length) ? substring(0,length-1) : truncate(characters);
+  String truncate(int characters) => substring(0, characters);
+  String safeTruncate(int characters) =>
+    (characters >= length) ? substring(0, length - 1) : truncate(characters);
   String after(int start) => substring(start);
-  String insert(String string, [int index = 0]) => "${truncate(index)}$string${after(index)}";
+  String insert(String string, [int index = 0]) =>
+    "${truncate(index)}$string${after(index)}";
   String overwrite(String string, [int index = 0]) {
-    if (index+string.length >= length) {return "${truncate(index)}$string";}
-    else {return "${truncate(index)}$string${after(index+string.length)}";}
+    if (index + string.length >= length) {
+      return "${truncate(index)}$string";
+    } else {
+      return "${truncate(index)}$string${after(index + string.length)}";
+    }
   }
+
   String safeSubstring(int start, [int? end]) {
-    if (start < 0) {start = 0;}
-    else if (start > length) {start = length;}
-    if (end == null) {end = length;}
-    else if (end < start) {end = start;}
-    else if (end > length) {end = length;}
-    return substring(start,end);
+    if (start < 0) {
+      start = 0;
+    } else if (start > length) {
+      start = length;
+    }
+    if (end == null) {
+      end = length;
+    } else if (end < start) {
+      end = start;
+    } else if (end > length) {
+      end = length;
+    }
+    return substring(start, end);
   }
-  ({String start, String end}) splitAt(int index) => (start: truncate(index),end:after(index));
+
+  ({String start, String end}) splitAt(int index) =>
+    (start: truncate(index), end: after(index));
+
   String toTitle() {
     String previous = "";
     String mule = "";
@@ -282,29 +337,41 @@ extension StringExtension on String {
     }
     return mule;
   }
+
   bool get containsWhiteSpace {
     for (int index = 0; index < length; index++) {
-      if (this[index].isWhiteSpace) {return true;}
+      if (this[index].isWhiteSpace) {
+        return true;
+      }
     }
     return false;
   }
+
   bool get isWhiteSpace => computeIsWhiteSpace(this);
   static bool computeIsWhiteSpace(String character) =>
-      character == " " || character == "\n";
+    character == " " || character == "\n";
+
   bool get isDigit => computeIsDigit(this);
-  static bool computeIsDigit(String character) =>
-      switch (character) {
-        "0" => true, "1" => true, "2" => true, "3" => true, "4" => true,
-        "5" => true, "6" => true, "7" => true, "8" => true, "9" => true,
-        String() => false,
-      };
+  static bool computeIsDigit(String character) => switch (character) {
+    "0" => true,
+    "1" => true,
+    "2" => true,
+    "3" => true,
+    "4" => true,
+    "5" => true,
+    "6" => true,
+    "7" => true,
+    "8" => true,
+    "9" => true,
+    String() => false,
+  };
 
   String get spaced {
     String mule = this;
     int index = 1;
     while (index < mule.length) {
       if (mule[index].isUpperCase) {
-        mule = mule.insert(" ",index++);
+        mule = mule.insert(" ", index++);
       }
       ++index;
     }
@@ -314,7 +381,7 @@ extension StringExtension on String {
   bool get isUpperCase => toUpperCase() == this;
   bool get isLowerCase => toLowerCase() == this;
 
-  /// Gets the reverse of this string.
+  /// Gets the reverse of [this] [String].
   ///
   /// ```
   /// print(toReversed("abc")); // 'cba'
@@ -325,12 +392,30 @@ extension StringExtension on String {
   /// Added in `2.7.3`.
   String toReversed() {
     String mule = "";
-    int i = length-1;
-    while (i >= 0) {
-      mule += this[i--];
+    int index = length - 1;
+    while (index >= 0) {
+      mule += this[index--];
     }
     return mule;
   }
 
-  // TODO: add List<String> toWords().
+  /// Puts each word into a [List].
+  ///
+  /// Added in `2.7.4`.
+  Iterable<String> toWords() {
+    List<String> mule = [];
+    String char, builder;
+    builder = "";
+    for (int index = 0; index < length; index++) {
+      char = this[index];
+      if (char.isWhiteSpace) {
+        mule.add(builder);
+        builder = "";
+      } else {
+        builder += char;
+      }
+      mule.removeAll("");
+    }
+    return mule;
+  }
 }
