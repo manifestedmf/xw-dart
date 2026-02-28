@@ -16,7 +16,7 @@ int abs(int signed) => (signed < 0) ? -signed : signed;
 /// `'A'` is `10`.
 ///
 /// Added in `2.7.2`.
-const Map<String,int> baseDigitToNumRepr = {
+const Map<String, int> baseDigitToNumRepr = {
   "0": 0,
   "1": 1,
   "2": 2,
@@ -108,22 +108,29 @@ const String minusRepr = "-";
 /// base that doesn't encapsulate all `repr`.
 ///
 /// Added in `2.7.2`.
-int strToBase(String string, int base,
-    {Map<String, int>? repr,
-    String minus = minusRepr,}) {
+int strToBase(
+  String string,
+  int base, {
+  Map<String, int>? repr,
+  String minus = minusRepr,
+}) {
   repr ??= baseDigitToNumRepr;
   if (base > repr.length) {
     throw "$base can't be longer than the length of repr, which is "
-      "${repr.length}";
+        "${repr.length}";
   }
-  String digit; int value;
-  int mule = 0; int index = string.length-1; int j = 0;
+  String digit;
+  int value;
+  int mule = 0;
+  int index = string.length - 1;
+  int j = 0;
   do {
     digit = string[index--];
-    value = baseDigitToNumRepr[digit] ?? (throw "Expected $digit to be in $repr");
+    value =
+        baseDigitToNumRepr[digit] ?? (throw "Expected $digit to be in $repr");
     if (value >= base) {
-      throw "'$digit': $value can't be a higher than ${base-1}, happened on "
-        "string[${index+1}].";
+      throw "'$digit': $value can't be a higher than ${base - 1}, happened on "
+          "string[${index + 1}].";
     }
     mule += pow(base, j++) * value;
   } while (index > 0); // Doesn't do last part
@@ -131,12 +138,13 @@ int strToBase(String string, int base,
   if (digit == minusRepr) {
     mule = -mule;
   } else {
-    value = baseDigitToNumRepr[digit] ?? (throw "Expected $digit to be in $repr");
+    value =
+        baseDigitToNumRepr[digit] ?? (throw "Expected $digit to be in $repr");
     if (value >= base) {
-      throw "'$digit': $value can't be a higher than ${base-1}, happened on "
-        "string[0].";
+      throw "'$digit': $value can't be a higher than ${base - 1}, happened on "
+          "string[0].";
     }
-    mule += pow(base,j++) * value;
+    mule += pow(base, j++) * value;
   }
   return mule;
 }
@@ -155,12 +163,17 @@ int strToBase(String string, int base,
 /// doesn't encapsulate all `repr`.
 ///
 /// Added in `2.7.2`.
-String baseToStr(int input, int base,
-    {Map<int, String>? repr,
-    String minus = minusRepr,}) {
+String baseToStr(
+  int input,
+  int base, {
+  Map<int, String>? repr,
+  String minus = minusRepr,
+}) {
   repr ??= baseNumToDigitRepr;
-  String mule = ""; bool sign = input.isSigned;
-  int value; String digit;
+  String mule = "";
+  bool sign = input.isSigned;
+  int value;
+  String digit;
   do {
     value = input % base;
     digit = repr[value] ?? (throw "Expected $value to be listed in $repr");
@@ -222,13 +235,16 @@ N maxSimple<N extends num>(N a, N b) => (a > b) ? a : b;
 /// Gives the [MapEntry] with the highest key([K]) value.
 ///
 /// Added in `2.7.0`.
-MapEntry<K,V> maxMapKey<K extends num, V>(Map<K, V> map, [MapEntry<K, V>? ifNone]) {
+MapEntry<K, V> maxMapKey<K extends num, V>(
+  Map<K, V> map, [
+  MapEntry<K, V>? ifNone,
+]) {
   if (map.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
   }
-  Iterable<MapEntry<K,V>> entries = map.entries;
-  MapEntry<K,V> max = entries.first;
-  for (MapEntry<K,V> current in entries) {
+  Iterable<MapEntry<K, V>> entries = map.entries;
+  MapEntry<K, V> max = entries.first;
+  for (MapEntry<K, V> current in entries) {
     if (current.key > max.key) {
       max = current;
     }
@@ -239,20 +255,26 @@ MapEntry<K,V> maxMapKey<K extends num, V>(Map<K, V> map, [MapEntry<K, V>? ifNone
 /// Gives the [MapEntry]s with the highest value([V]) value.
 ///
 /// Added in `2.7.0`.
-Set<MapEntry<K,V>> maxMapValue<K, V extends num>(Map<K, V> map, [MapEntry<K, V>? ifNone]) {
+Set<MapEntry<K, V>> maxMapValue<K, V extends num>(
+  Map<K, V> map, [
+  MapEntry<K, V>? ifNone,
+]) {
   if (map.isEmpty) {
-    if (ifNone == null) {throw StateError("No Optional Parameter Set");}
+    if (ifNone == null) {
+      throw StateError("No Optional Parameter Set");
+    }
     return {ifNone};
   }
-  Iterable<MapEntry<K,V>> entries = map.entries;
-  Set<MapEntry<K,V>> maxSet = {entries.first};
+  Iterable<MapEntry<K, V>> entries = map.entries;
+  Set<MapEntry<K, V>> maxSet = {entries.first};
   V max = entries.first.value;
-  for (MapEntry<K,V> current in entries) {
+  for (MapEntry<K, V> current in entries) {
     if (current.value > max) {
       maxSet = {current};
       max = current.value;
+    } else if (current.value == max) {
+      maxSet.add(current);
     }
-    else if (current.value == max) {maxSet.add(current);}
   }
   return maxSet;
 }
@@ -281,33 +303,44 @@ N min<N extends num>(Iterable<N> numbers, [N? ifNone]) {
 N minSimple<N extends num>(N a, N b) => (a < b) ? a : b;
 
 /// Added in `2.7.0`.
-MapEntry<K,V> minMapKey<K extends num, V>(Map<K,V> map, [MapEntry<K,V>? ifNone]) {
+MapEntry<K, V> minMapKey<K extends num, V>(
+  Map<K, V> map, [
+  MapEntry<K, V>? ifNone,
+]) {
   if (map.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
   }
-  Iterable<MapEntry<K,V>> entries = map.entries;
-  MapEntry<K,V> min = entries.first;
-  for (MapEntry<K,V> current in entries) {
-    if (current.key < min.key) {min = current;}
+  Iterable<MapEntry<K, V>> entries = map.entries;
+  MapEntry<K, V> min = entries.first;
+  for (MapEntry<K, V> current in entries) {
+    if (current.key < min.key) {
+      min = current;
+    }
   }
   return min;
 }
 
 /// Added in `2.7.0`.
-Set<MapEntry<K,V>> minMapValue<K,V extends num>(Map<K,V> map, [MapEntry<K,V>? ifNone]) {
+Set<MapEntry<K, V>> minMapValue<K, V extends num>(
+  Map<K, V> map, [
+  MapEntry<K, V>? ifNone,
+]) {
   if (map.isEmpty) {
-    if (ifNone == null) {throw StateError("No Optional Parameter Set");}
+    if (ifNone == null) {
+      throw StateError("No Optional Parameter Set");
+    }
     return {ifNone};
   }
-  Iterable<MapEntry<K,V>> entries = map.entries;
-  Set<MapEntry<K,V>> minSet = {entries.first};
+  Iterable<MapEntry<K, V>> entries = map.entries;
+  Set<MapEntry<K, V>> minSet = {entries.first};
   V min = entries.first.value;
-  for (MapEntry<K,V> current in entries) {
+  for (MapEntry<K, V> current in entries) {
     if (current.value < min) {
       minSet = {current};
       min = current.value;
+    } else if (current.value == min) {
+      minSet.add(current);
     }
-    else if (current.value == min) {minSet.add(current);}
   }
   return minSet;
 }
@@ -325,22 +358,22 @@ N sum<N extends num>(Iterable<N> numbers, [N? starting]) {
 }
 
 /// Added in `2.7.0`.
-K sumMapKey<K extends num,V>(Map<K,V> map, [K? starting]) {
+K sumMapKey<K extends num, V>(Map<K, V> map, [K? starting]) {
   K sum;
   sum = (starting == null) ? 0 as K : starting;
-  Iterable<MapEntry<K,V>> entries = map.entries;
-  for (MapEntry<K,V> current in entries) {
+  Iterable<MapEntry<K, V>> entries = map.entries;
+  for (MapEntry<K, V> current in entries) {
     sum = sum + current.key as K;
   }
   return sum;
 }
 
 /// Added in `2.7.0`.
-V sumMapValue<K,V extends num>(Map<K,V> map, [V? starting]) {
+V sumMapValue<K, V extends num>(Map<K, V> map, [V? starting]) {
   V sum;
   sum = (starting == null) ? 0 as V : starting;
-  Iterable<MapEntry<K,V>> entries = map.entries;
-  for (MapEntry<K,V> current in entries) {
+  Iterable<MapEntry<K, V>> entries = map.entries;
+  for (MapEntry<K, V> current in entries) {
     sum = sum + current.value as V;
   }
   return sum;
@@ -348,19 +381,20 @@ V sumMapValue<K,V extends num>(Map<K,V> map, [V? starting]) {
 
 @Deprecated("2.8, use pow<int>(base, exponent)")
 int powInt(int base, int exponent) {
-  for (int i = 0; i < exponent;i++) {
+  for (int i = 0; i < exponent; i++) {
     base *= exponent;
   }
   return base;
 }
 
 @Deprecated("2.8, use pow<num>(base, exponent)")
-num powNum(num base, num exponent) => math.pow(base,exponent);
+num powNum(num base, num exponent) => math.pow(base, exponent);
 @Deprecated("2.8, use pow<double>(base, exponent)")
-double powDouble(double base, double exponent) => math.pow(base,exponent).toDouble();
+double powDouble(double base, double exponent) =>
+    math.pow(base, exponent).toDouble();
 
 /// Added in `2.7.0`.
-N pow<N extends num>(N base, N exponent) => math.pow(base,exponent) as N;
+N pow<N extends num>(N base, N exponent) => math.pow(base, exponent) as N;
 
 /// If [number] is a `pow(int, 2)`, then it returns a `int`,
 /// else it returns a `double`.
@@ -373,6 +407,7 @@ num sqrt(num number) {
 
 /// Added in `2.7.0`.
 bool isLow(num number) => (number % 1 < 0.5);
+
 /// Added in `2.7.0`.
 bool isHigh(num number) => !isLow(number);
 
@@ -391,17 +426,18 @@ List<int> primeFactors(int number) {
   }
   int highestDiv = sqrt(number).toInt();
   while (div <= highestDiv) {
-    if (isDivBy(number,div)) {
+    if (isDivBy(number, div)) {
       list.add(div);
       number ~/= div;
       highestDiv = sqrt(number).toInt();
       div = 2;
-    }
-    else {
+    } else {
       div++;
     }
   }
-  if (number != 1) {list.add(number);}
+  if (number != 1) {
+    list.add(number);
+  }
   return list;
 }
 
@@ -413,13 +449,10 @@ List<int> primeFactors(int number) {
     return (a: a, b: b);
   } else if (a == 0) {
     return (a: a, b: 1);
-  } if (b == 0) {
+  }
+  if (b == 0) {
     return (a: 1, b: b);
-  } else if (
-      b == 1
-      || a == 1
-      || a == b-1
-      || a == b+1) {
+  } else if (b == 1 || a == 1 || a == b - 1 || a == b + 1) {
     return (a: a, b: b);
   }
   List<int> aFactors = primeFactors(a);
@@ -448,6 +481,7 @@ List<int> primeFactors(int number) {
 ///
 /// Added in `2.7.0`.
 bool isPrime(int number) => (primeFactors(number).length == 1);
+
 /// if number is constructed of primes
 ///
 /// Added in `2.7.0`.

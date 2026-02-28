@@ -26,32 +26,41 @@ Fraction maxFraction(Iterable<Fraction> fractions, [Fraction? ifNone]) {
 Fraction maxSimpleFraction(Fraction a, Fraction b) => (a > b) ? a : b;
 
 /// Added in `2.7.0`.
-Set<MapEntry<K,Fraction>> maxMapValueFraction<K>(Map<K, Fraction> map, [MapEntry<K,Fraction>? ifNone]) {
+Set<MapEntry<K, Fraction>> maxMapValueFraction<K>(
+  Map<K, Fraction> map, [
+  MapEntry<K, Fraction>? ifNone,
+]) {
   if (map.isEmpty) {
-    if (ifNone == null) {throw StateError("No Optional Parameter Set");}
+    if (ifNone == null) {
+      throw StateError("No Optional Parameter Set");
+    }
     return {ifNone};
   }
-  Iterable<MapEntry<K,Fraction>> entries = map.entries;
-  Set<MapEntry<K,Fraction>> maxSet = {entries.first};
+  Iterable<MapEntry<K, Fraction>> entries = map.entries;
+  Set<MapEntry<K, Fraction>> maxSet = {entries.first};
   Fraction max = entries.first.value;
-  for (MapEntry<K,Fraction> current in entries) {
+  for (MapEntry<K, Fraction> current in entries) {
     if (current.value > max) {
       maxSet = {current};
       max = current.value;
+    } else if (current.value == max) {
+      maxSet.add(current);
     }
-    else if (current.value == max) {maxSet.add(current);}
   }
   return maxSet;
 }
 
 /// Added in `2.7.0`.
-MapEntry<Fraction,V> maxMapKeyFraction<V>(Map<Fraction, V> map, [MapEntry<Fraction,V>? ifNone]) {
+MapEntry<Fraction, V> maxMapKeyFraction<V>(
+  Map<Fraction, V> map, [
+  MapEntry<Fraction, V>? ifNone,
+]) {
   if (map.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
   }
-  Iterable<MapEntry<Fraction,V>> entries = map.entries;
-  MapEntry<Fraction,V> max = entries.first;
-  for (MapEntry<Fraction,V> current in entries) {
+  Iterable<MapEntry<Fraction, V>> entries = map.entries;
+  MapEntry<Fraction, V> max = entries.first;
+  for (MapEntry<Fraction, V> current in entries) {
     if (current.key > max.key) {
       max = current;
     }
@@ -77,33 +86,44 @@ Fraction minFraction(Iterable<Fraction> fractions, [Fraction? ifNone]) {
 Fraction minSimpleFraction(Fraction a, Fraction b) => (a < b) ? a : b;
 
 /// Added in `2.7.0`.
-MapEntry<Fraction,V> minMapKeyFraction<V>(Map<Fraction,V> map, [MapEntry<Fraction,V>? ifNone]) {
+MapEntry<Fraction, V> minMapKeyFraction<V>(
+  Map<Fraction, V> map, [
+  MapEntry<Fraction, V>? ifNone,
+]) {
   if (map.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
   }
-  Iterable<MapEntry<Fraction,V>> entries = map.entries;
-  MapEntry<Fraction,V> min = entries.first;
-  for (MapEntry<Fraction,V> current in entries) {
-    if (current.key < min.key) {min = current;}
+  Iterable<MapEntry<Fraction, V>> entries = map.entries;
+  MapEntry<Fraction, V> min = entries.first;
+  for (MapEntry<Fraction, V> current in entries) {
+    if (current.key < min.key) {
+      min = current;
+    }
   }
   return min;
 }
 
 /// Added in `2.7.0`.
-Set<MapEntry<K,Fraction>> minMapValueFraction<K>(Map<K,Fraction> map, [MapEntry<K,Fraction>? ifNone]) {
+Set<MapEntry<K, Fraction>> minMapValueFraction<K>(
+  Map<K, Fraction> map, [
+  MapEntry<K, Fraction>? ifNone,
+]) {
   if (map.isEmpty) {
-    if (ifNone == null) {throw StateError("No Optional Parameter Set");}
+    if (ifNone == null) {
+      throw StateError("No Optional Parameter Set");
+    }
     return {ifNone};
   }
-  Iterable<MapEntry<K,Fraction>> entries = map.entries;
-  Set<MapEntry<K,Fraction>> minSet = {entries.first};
+  Iterable<MapEntry<K, Fraction>> entries = map.entries;
+  Set<MapEntry<K, Fraction>> minSet = {entries.first};
   Fraction min = entries.first.value;
-  for (MapEntry<K,Fraction> current in entries) {
+  for (MapEntry<K, Fraction> current in entries) {
     if (current.value < min) {
       minSet = {current};
       min = current.value;
+    } else if (current.value == min) {
+      minSet.add(current);
     }
-    else if (current.value == min) {minSet.add(current);}
   }
   return minSet;
 }
@@ -111,7 +131,7 @@ Set<MapEntry<K,Fraction>> minMapValueFraction<K>(Map<K,Fraction> map, [MapEntry<
 /// Added in `2.7.0`.
 Fraction sumFraction(Iterable<Fraction> fractions, [Fraction? starting]) {
   Fraction sum;
-  sum = (starting == null) ? Fraction.compressed(0,0) : starting;
+  sum = (starting == null) ? Fraction.compressed(0, 0) : starting;
   for (Fraction current in fractions) {
     sum += current;
   }
@@ -129,87 +149,86 @@ class Fraction with Compare<Fraction> {
   final int _div; // divisor
   final bool _isCompressed;
 
-  int get integer => _oper~/_div;
-  double get float => _oper/_div;
+  int get integer => _oper ~/ _div;
+  double get float => _oper / _div;
   Fraction get fraction => this;
 
+  static const Fraction one = Fraction._compressed(1, 1);
+  static const Fraction half = Fraction._compressed(1, 2);
+  static const Fraction third = Fraction._compressed(1, 3);
+  static const Fraction quarter = Fraction._compressed(1, 4);
+  static const Fraction fifth = Fraction._compressed(1, 5);
+  static const Fraction sixth = Fraction._compressed(1, 6);
+  static const Fraction seventh = Fraction._compressed(1, 7);
+  static const Fraction eighth = Fraction._compressed(1, 8);
+  static const Fraction ninth = Fraction._compressed(1, 9);
+  static const Fraction tenth = Fraction._compressed(1, 10);
 
-  static const Fraction one = Fraction._compressed(1,1);
-  static const Fraction half = Fraction._compressed(1,2);
-  static const Fraction third = Fraction._compressed(1,3);
-  static const Fraction quarter = Fraction._compressed(1,4);
-  static const Fraction fifth = Fraction._compressed(1,5);
-  static const Fraction sixth = Fraction._compressed(1,6);
-  static const Fraction seventh = Fraction._compressed(1,7);
-  static const Fraction eighth = Fraction._compressed(1,8);
-  static const Fraction ninth = Fraction._compressed(1,9);
-  static const Fraction tenth = Fraction._compressed(1,10);
-
-  static const Fraction twoThirds = Fraction._compressed(2,3);
+  static const Fraction twoThirds = Fraction._compressed(2, 3);
 
   static const Fraction twoQuarters = half;
-  static const Fraction threeQuarters = Fraction._compressed(3,4);
+  static const Fraction threeQuarters = Fraction._compressed(3, 4);
 
-  static const Fraction twoFifths = Fraction._compressed(2,5);
-  static const Fraction threeFifths = Fraction._compressed(3,5);
-  static const Fraction fourFifths = Fraction._compressed(4,5);
+  static const Fraction twoFifths = Fraction._compressed(2, 5);
+  static const Fraction threeFifths = Fraction._compressed(3, 5);
+  static const Fraction fourFifths = Fraction._compressed(4, 5);
 
   static const Fraction twoSixths = third;
   static const Fraction threeSixths = half;
   static const Fraction fourSixths = twoThirds;
-  static const Fraction fiveSixths = Fraction._compressed(5,6);
+  static const Fraction fiveSixths = Fraction._compressed(5, 6);
 
-  static const Fraction twoSevenths = Fraction._compressed(2,7);
-  static const Fraction threeSevenths = Fraction._compressed(3,7);
-  static const Fraction fourSevenths = Fraction._compressed(4,7);
-  static const Fraction fiveSevenths = Fraction._compressed(5,7);
-  static const Fraction sixSevenths = Fraction._compressed(6,7);
+  static const Fraction twoSevenths = Fraction._compressed(2, 7);
+  static const Fraction threeSevenths = Fraction._compressed(3, 7);
+  static const Fraction fourSevenths = Fraction._compressed(4, 7);
+  static const Fraction fiveSevenths = Fraction._compressed(5, 7);
+  static const Fraction sixSevenths = Fraction._compressed(6, 7);
 
   static const Fraction twoEighths = quarter;
-  static const Fraction threeEighths = Fraction._compressed(3,8);
+  static const Fraction threeEighths = Fraction._compressed(3, 8);
   static const Fraction fourEighths = half;
-  static const Fraction fiveEighths = Fraction._compressed(5,8);
+  static const Fraction fiveEighths = Fraction._compressed(5, 8);
   static const Fraction sixEighths = threeQuarters;
-  static const Fraction sevenEights = Fraction._compressed(7,8);
+  static const Fraction sevenEights = Fraction._compressed(7, 8);
 
-  static const Fraction twoNinths = Fraction._compressed(2,9);
+  static const Fraction twoNinths = Fraction._compressed(2, 9);
   static const Fraction threeNinths = third;
-  static const Fraction fourNinths = Fraction._compressed(4,9);
-  static const Fraction fiveNinths = Fraction._compressed(5,9);
+  static const Fraction fourNinths = Fraction._compressed(4, 9);
+  static const Fraction fiveNinths = Fraction._compressed(5, 9);
   static const Fraction sixNinths = twoThirds;
-  static const Fraction sevenNinths = Fraction._compressed(7,9);
-  static const Fraction eightNinths = Fraction._compressed(8,9);
+  static const Fraction sevenNinths = Fraction._compressed(7, 9);
+  static const Fraction eightNinths = Fraction._compressed(8, 9);
 
   static const Fraction twoTenths = fifth;
-  static const Fraction threeTenths = Fraction._compressed(3,10);
+  static const Fraction threeTenths = Fraction._compressed(3, 10);
   static const Fraction fourTenths = twoFifths;
   static const Fraction fiveTenths = half;
   static const Fraction sixTenths = threeFifths;
-  static const Fraction sevenTenths = Fraction._compressed(7,10);
+  static const Fraction sevenTenths = Fraction._compressed(7, 10);
   static const Fraction eightTenths = fourFifths;
-  static const Fraction nineTenths = Fraction._compressed(9,10);
-
+  static const Fraction nineTenths = Fraction._compressed(9, 10);
 
   bool get isWhole => !isNaN && (_oper % _div == 0 || _oper == 0);
   Fraction roundToFraction() {
     Fraction fraction = toCompressed();
     int oper = fraction._oper;
     int index = 1;
-    while (!isDivBy(oper,fraction._div)) {
+    while (!isDivBy(oper, fraction._div)) {
       oper += index;
       index = -++index;
     }
-    return Fraction.compressed(oper,fraction._div);
+    return Fraction.compressed(oper, fraction._div);
   }
+
   int round() => roundToFraction().integer;
   double roundToDouble() => roundToFraction().float;
 
   String get visualRepresentation {
     if (isWhole) {
       return "= $integer";
-    } else if (isMadeUpOf(_div,[2,5])) {
+    } else if (isMadeUpOf(_div, [2, 5])) {
       return "= $float";
-    } else if (isMadeUpOf(_div,[3])) {
+    } else if (isMadeUpOf(_div, [3])) {
       return (_oper % 3 == 1) ? "= $integer.33..." : "= $integer.66...7";
     } else {
       return "≈ $float";
@@ -226,9 +245,11 @@ class Fraction with Compare<Fraction> {
 
   /// Added in `2.7.0`.
   factory Fraction.fromDouble(double number) =>
-    Fraction.compressed(number.truncate(), pow(10,number.decimalLength));
+      Fraction.compressed(number.truncate(), pow(10, number.decimalLength));
+
   /// Added in `2.7.0`.
-  const Fraction.fromInt(int oper):this._compressed(oper, 1);
+  const Fraction.fromInt(int oper) : this._compressed(oper, 1);
+
   /// Added in `2.7.0`.
   factory Fraction.fromNum(num number) {
     if (number is double) {
@@ -243,16 +264,17 @@ class Fraction with Compare<Fraction> {
   /// For any [const] material. All others should use [Fraction.compressed]
   ///
   /// Added in `2.7.3`.
-  const Fraction.constant(this._oper, this._div):_isCompressed = false;
+  const Fraction.constant(this._oper, this._div) : _isCompressed = false;
 
   /// Added in `2.7.3`.
-  const Fraction._compressed(this._oper, this._div):_isCompressed = true;
+  const Fraction._compressed(this._oper, this._div) : _isCompressed = true;
 
   /// Added in `2.7.0`.
   factory Fraction.compressed(int operand, int divisor) {
-    var (a:oper, b:div) = gcd(operand, divisor);
+    var (a: oper, b: div) = gcd(operand, divisor);
     return Fraction._compressed(oper, div);
   }
+
   /// Added in `2.7.3`.
   factory Fraction.compressor(Fraction fraction) => fraction.toCompressed();
 
@@ -277,8 +299,8 @@ class Fraction with Compare<Fraction> {
     } else if (other is! Fraction) {
       return false;
     } else {
-      Fraction thisF = (_isCompressed) ? this : toCompressed();
-      Fraction otherF = (other._isCompressed) ? other : other.toCompressed();
+      Fraction thisF = toCompressed();
+      Fraction otherF = other.toCompressed();
       return thisF._div == otherF._div && thisF._oper == otherF._oper;
     }
   }
@@ -303,31 +325,32 @@ class Fraction with Compare<Fraction> {
     }
   }
 
+  /// Added in `2.7.0`.
+  Fraction operator +(Fraction other) => Fraction.compressed(
+    _oper * other._div + _div * other._oper,
+    _div * other._div,
+  );
+  // a*d + b*c, b*d
 
   /// Added in `2.7.0`.
-  Fraction operator +(Fraction other) =>
-    Fraction.compressed(_oper*other._div + _div*other._oper, _div*other._div);
-    // a*d + b*c, b*d
-
-  /// Added in `2.7.0`.
-  Fraction operator -(Fraction other) =>
-    Fraction.compressed(_oper*other._div - _div*other._oper, _div*other._div);
-    // a*d - b*c, b*d
-
+  Fraction operator -(Fraction other) => Fraction.compressed(
+    _oper * other._div - _div * other._oper,
+    _div * other._div,
+  );
+  // a*d - b*c, b*d
 
   /// Added in `2.7.0`.
   Fraction operator -() {
     if (_isCompressed) {
-      return Fraction._compressed(-_oper,_div);
+      return Fraction._compressed(-_oper, _div);
     } else {
       return Fraction.compressed(-_oper, -_div);
     }
   }
 
-
   /// Added in `2.7.0`.
   Fraction operator *(Fraction other) =>
-    Fraction.compressed(_oper * other._oper, _div * other._div);
+      Fraction.compressed(_oper * other._oper, _div * other._div);
 
   /// Added in `2.7.0`.
   Fraction operator /(Fraction other) => this * ~other;
@@ -350,25 +373,29 @@ class Fraction with Compare<Fraction> {
   /// Raises [_oper] & [_div] to [exponent].
   ///
   /// Added in `2.7.0`.
-  Fraction operator ^(int exponent) => Fraction.compressed(
-    pow(_oper,exponent),
-    pow(_div,exponent));
+  Fraction operator ^(int exponent) =>
+      Fraction.compressed(pow(_oper, exponent), pow(_div, exponent));
 
   /// Flips [_div] & [_oper].
   ///
   /// Added in `2.7.0`.
-  Fraction operator ~() => Fraction.compressed(_div,_oper);
+  Fraction operator ~() => Fraction.compressed(_div, _oper);
 
   /// Added in `2.7.0`.
   bool get isNaN => _div == 0;
+
   /// Added in `2.7.0`.
   bool get isInfinite => _div == 0;
+
   /// Added in `2.7.0`.
   bool get isFinite => _div != 0;
+
   /// Added in `2.7.0`.
   bool get isNegative => _div.isNegative ^ _oper.isNegative;
+
   /// Added in `2.7.0`.
   bool get isPositive => !isNegative;
+
   /// Added in `2.7.0`.
   Fraction floorToFraction() {
     Fraction fraction = toCompressed();
@@ -376,12 +403,15 @@ class Fraction with Compare<Fraction> {
       return fraction;
     } else {
       return Fraction.compressed(
-        getPreviousFactor(fraction._oper, fraction._div), 1
+        getPreviousFactor(fraction._oper, fraction._div),
+        1,
       );
     }
   }
+
   /// Added in `2.7.3`.
   int floor() => floorToFraction().integer;
+
   /// Added in `2.7.3`.
   double floorToDouble() => floorToFraction().float;
 
@@ -392,18 +422,22 @@ class Fraction with Compare<Fraction> {
       return fraction;
     } else {
       return Fraction.compressed(
-        getNextFactor(fraction._oper, fraction._div), 1
+        getNextFactor(fraction._oper, fraction._div),
+        1,
       );
     }
   }
+
   /// Added in `2.7.3`.
   int ceil() => ceilToFraction().integer;
+
   /// Added in `2.7.3`.
   double ceilToDouble() => ceilToFraction().float;
 }
 
 /// Added in `2.7.0`.
 int getPreviousFactor(int number, int divisor) => (number ~/ divisor) * divisor;
+
 /// Added in `2.7.0`.
 int getNextFactor(int number, int divisor) => (number ~/ divisor + 1) * divisor;
 
@@ -427,4 +461,3 @@ extension FractionExtensionNum on num {
 Fraction percentage<N extends num>(N number) =>
   Fraction.compressed(number.truncate(),pow(10,number.decimalLength));
 */
-

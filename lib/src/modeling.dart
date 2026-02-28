@@ -1,4 +1,3 @@
-
 class VertexError {
   final Object? message;
 
@@ -21,22 +20,22 @@ class Point {
   @Deprecated("2.8, use Point(x: x, y: y, z: z)")
   const Point.xyz({required this.x, required this.y, required this.z});
 
-  const Point.xy(this.x,this.y) : z = 0;
+  const Point.xy(this.x, this.y) : z = 0;
 
   const Point.xz(this.x, this.z) : y = 0;
 
   const Point.whd({required int width, required int height, required int depth})
-      : x = width,
-        y = height,
-        z = depth;
+    : x = width,
+      y = height,
+      z = depth;
   const Point.wh({required int width, required int height})
-      : x = width,
-        y = height,
-        z = 0;
+    : x = width,
+      y = height,
+      z = 0;
   const Point.wd({required int width, required int depth})
-      : x = width,
-        y = 0,
-        z = depth;
+    : x = width,
+      y = 0,
+      z = depth;
 
   @override
   int get hashCode => Object.hash(x, y, z);
@@ -44,11 +43,11 @@ class Point {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Point &&
-              x == other.x &&
-              y == other.y &&
-              z == other.z &&
-              hashCode == other.hashCode;
+      other is Point &&
+          x == other.x &&
+          y == other.y &&
+          z == other.z &&
+          hashCode == other.hashCode;
 
   @override
   toString() => "\$x:$x, \$y:$y, \$z:$z";
@@ -58,16 +57,16 @@ sealed class VertexProvider {
   final Point a;
   final Point b;
 
-  const VertexProvider(this.a,this.b);
+  const VertexProvider(this.a, this.b);
 
   @override
-  int get hashCode => Object.hashAllUnordered([a,b]);
+  int get hashCode => Object.hashAllUnordered([a, b]);
   @override
   bool operator ==(Object other) =>
-      identical(this,other)
-          || other is VertexProvider && runtimeType == runtimeType
-          && ((a == other.a && b == other.b) || (a == other.b && b == other.a));
-
+      identical(this, other) ||
+      other is VertexProvider &&
+          runtimeType == runtimeType &&
+          ((a == other.a && b == other.b) || (a == other.b && b == other.a));
 
   @override
   String toString();
@@ -88,9 +87,9 @@ class Vertex extends VertexProvider {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Vertex &&
-              runtimeType == other.runtimeType &&
-              hashCode == other.hashCode;
+      other is Vertex &&
+          runtimeType == other.runtimeType &&
+          hashCode == other.hashCode;
 
   @override
   int get hashCode => Object.hashAllUnordered([a, b, c]);
@@ -114,7 +113,6 @@ class Triangle extends Vertex {
 
 @Deprecated("2.8, use Square.sameY(a, b)")
 class SquareFlat extends VertexProvider {
-
   const SquareFlat(super.a, super.b);
 
   Point get c => Point(x: a.x, y: a.y, z: b.z);
@@ -126,9 +124,9 @@ class SquareFlat extends VertexProvider {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is SquareFlat &&
-              runtimeType == other.runtimeType &&
-              hashCode == other.hashCode;
+      other is SquareFlat &&
+          runtimeType == other.runtimeType &&
+          hashCode == other.hashCode;
 
   @override
   int get hashCode => Object.hashAllUnordered([a, b]);
@@ -142,12 +140,15 @@ class SquareFlat extends VertexProvider {
   @override
   String get denotation => "squareF";
 }
+
 enum _SquareState {
+  //
   sameWidth,
   sameHeight,
   sameDepth,
   userDefined,
 }
+
 class Square extends VertexProvider {
   final Point topLeft;
 
@@ -159,36 +160,35 @@ class Square extends VertexProvider {
 
   final _SquareState _state;
 
-
   const Square.sameY(this.topLeft, this.bottomRight)
-      : _state = _SquareState.sameHeight,
-        _topRight = null,
-        _bottomLeft = null,
-        super(topLeft,bottomRight);
+    : _state = _SquareState.sameHeight,
+      _topRight = null,
+      _bottomLeft = null,
+      super(topLeft, bottomRight);
 
   const Square.sameX(this.topLeft, this.bottomRight)
-      : _state = _SquareState.sameWidth,
-        _topRight = null,
-        _bottomLeft = null,
-        super(topLeft,bottomRight);
+    : _state = _SquareState.sameWidth,
+      _topRight = null,
+      _bottomLeft = null,
+      super(topLeft, bottomRight);
 
   const Square.sameZ(this.topLeft, this.bottomRight)
-      : _state = _SquareState.sameDepth,
-        _topRight = null,
-        _bottomLeft = null,
-        super(topLeft,bottomRight);
+    : _state = _SquareState.sameDepth,
+      _topRight = null,
+      _bottomLeft = null,
+      super(topLeft, bottomRight);
 
   const Square({
     required this.topLeft,
     required Point topRight,
     required this.bottomRight,
     required Point bottomLeft,
-  }): _topRight = topRight,
-        _bottomLeft = bottomLeft,
-        _state = _SquareState.userDefined,
-        super(topLeft,bottomRight);
+  }) : _topRight = topRight,
+       _bottomLeft = bottomLeft,
+       _state = _SquareState.userDefined,
+       super(topLeft, bottomRight);
 
-  Point get topRight => switch(_state) {
+  Point get topRight => switch (_state) {
     _SquareState.sameWidth => Point.whd(
       width: topLeft.width,
       height: topLeft.height,
@@ -206,7 +206,7 @@ class Square extends VertexProvider {
     ),
     _SquareState.userDefined => _topRight!,
   };
-  Point get bottomLeft => switch(_state) {
+  Point get bottomLeft => switch (_state) {
     _SquareState.sameWidth => Point.whd(
       width: bottomRight.width,
       height: bottomRight.height,
@@ -234,17 +234,13 @@ class Square extends VertexProvider {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is SquareFlat &&
-              runtimeType == other.runtimeType &&
-              hashCode == other.hashCode;
+      other is SquareFlat &&
+          runtimeType == other.runtimeType &&
+          hashCode == other.hashCode;
 
   @override
-  int get hashCode => Object.hashAllUnordered([
-    topLeft,
-    topRight,
-    bottomLeft,
-    bottomRight,
-  ]);
+  int get hashCode =>
+      Object.hashAllUnordered([topLeft, topRight, bottomLeft, bottomRight]);
 
   @override
   toString() => "\$from:{$a}, \$to:{$b}";
@@ -254,9 +250,7 @@ class Square extends VertexProvider {
 
   @override
   String get denotation =>
-      (_state == _SquareState.userDefined)
-          ? "squareX"
-          : "square";
+      (_state == _SquareState.userDefined) ? "squareX" : "square";
 }
 
 /*class Cube extends VertexProvider {
@@ -323,9 +317,9 @@ class Model {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Model &&
-              runtimeType == other.runtimeType &&
-              vertices == other.vertices;
+      other is Model &&
+          runtimeType == other.runtimeType &&
+          vertices == other.vertices;
 
   Set<Vertex> get vertexes {
     Set<Vertex> mule = {};
@@ -356,7 +350,11 @@ class Model {
     return mule;
   }
 
-  String join({String seperator = ";\n\t", String start = "\n\t", String end = ";\n"}) {
+  String join({
+    String seperator = ";\n\t",
+    String start = "\n\t",
+    String end = ";\n",
+  }) {
     String mule = "\$model:($start";
     for (int index = 0; index < vertices.length; index++) {
       VertexProvider vertex = vertices.elementAt(index);

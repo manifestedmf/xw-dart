@@ -206,7 +206,7 @@ extension ListExtension<E> on List<E> {
     if (!contains(E)) {
       return false;
     } else {
-      do {} while (remove(value)); // removes value while it still exists.
+      while (remove(value)); // removes value while it still exists.
       return true;
     }
   }
@@ -414,8 +414,9 @@ extension StringExtension on String {
       } else {
         builder += char;
       }
-      mule.removeAll("");
     }
+    mule.add(builder);
+    mule.removeAll("");
     return mule;
   }
 }

@@ -1,4 +1,3 @@
-
 /// Added in `2.7.0`.
 @Deprecated("3.0, use listEqualsShallow or listEqualsDeep")
 bool listEquals<T>(List<T> a, List<T> b, [bool isShallow = true]) =>
@@ -38,18 +37,18 @@ bool listEqualsDeep<T>(List<T> a, List<T> b) {
 
 /// Added in `2.7.0`.
 @Deprecated("3.0, use mapEqualsShallow or mapEqualsDeep")
-bool mapEquals<K,V>(Map<K,V> a, Map<K,V> b, [bool isShallow = true]) =>
+bool mapEquals<K, V>(Map<K, V> a, Map<K, V> b, [bool isShallow = true]) =>
   (isShallow) ? mapEqualsShallow(a, b) : mapEqualsDeep(a, b);
 
 /// Added in `2.7.4`.
-bool mapEqualsShallow<K,V>(Map<K,V> a, Map<K,V> b) {
+bool mapEqualsShallow<K, V>(Map<K, V> a, Map<K, V> b) {
   if (a == b) {
     return true;
   } else if (a.length != b.length) {
     return false;
   } else {
-    Iterable<MapEntry<K,V>> aEntries = a.entries;
-    Iterable<MapEntry<K,V>> bEntries = b.entries;
+    Iterable<MapEntry<K, V>> aEntries = a.entries;
+    Iterable<MapEntry<K, V>> bEntries = b.entries;
     for (int index = 0; index < a.length; ++index) {
       if (aEntries.elementAt(index) != bEntries.elementAt(index)) {
         return false;
@@ -60,14 +59,14 @@ bool mapEqualsShallow<K,V>(Map<K,V> a, Map<K,V> b) {
 }
 
 /// Added in `2.7.4`.
-bool mapEqualsDeep<K,V>(Map<K,V> a, Map<K,V> b) {
+bool mapEqualsDeep<K, V>(Map<K, V> a, Map<K, V> b) {
   if (a == b) {
     return true;
   } else if (a.length != b.length) {
     return false;
   } else {
-    Iterable<MapEntry<K,V>> aEntries = a.entries;
-    Iterable<MapEntry<K,V>> bEntries = b.entries;
+    Iterable<MapEntry<K, V>> aEntries = a.entries;
+    Iterable<MapEntry<K, V>> bEntries = b.entries;
     for (int index = 0; index < a.length; ++index) {
       if (!deepEquals(aEntries.elementAt(index), bEntries.elementAt(index))) {
         return false;

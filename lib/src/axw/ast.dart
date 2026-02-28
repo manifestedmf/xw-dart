@@ -18,12 +18,11 @@ class Manager {
   final Header header;
   final List<Declaration> declarations; // declarations
 
-  Manager(this.header,this.declarations);
+  Manager(this.header, this.declarations);
 
   @override
   toString() => "$header `,` ${declarations.join(" ")}";
 }
-
 
 /// grammar:
 ///
@@ -60,7 +59,7 @@ class ExpressionDeclaration extends Declaration {
   final Identifier id;
   final Expression exp;
 
-  ExpressionDeclaration(this.id,this.exp);
+  ExpressionDeclaration(this.id, this.exp);
 
   @override
   toString() => "$id = $exp;";
@@ -70,9 +69,11 @@ class ExpressionDeclaration extends Declaration {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is ExpressionDeclaration && runtimeType == other.runtimeType &&
-              id == other.id && exp == other.exp;
+    identical(this, other) ||
+    other is ExpressionDeclaration &&
+      runtimeType == other.runtimeType &&
+      id == other.id &&
+      exp == other.exp;
 
   @override
   int get hashCode => id.hashCode ^ exp.hashCode;
@@ -94,7 +95,7 @@ class StructDeclaration extends Declaration {
   final Identifier id;
   final List<StructFieldDeclaration> fields;
 
-  StructDeclaration(this.id,this.fields);
+  StructDeclaration(this.id, this.fields);
 
   @override
   toString() => "Struct $id { ${fields.join(" ")} };";
@@ -104,9 +105,11 @@ class StructDeclaration extends Declaration {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is StructDeclaration && runtimeType == other.runtimeType &&
-              id == other.id && listEqualsDeep(fields,other.fields);
+    identical(this, other) ||
+    other is StructDeclaration &&
+      runtimeType == other.runtimeType &&
+      id == other.id &&
+      listEqualsDeep(fields, other.fields);
 
   @override
   int get hashCode => id.hashCode ^ fields.hashCode;
@@ -123,19 +126,24 @@ class StructFieldDeclaration {
   final Identifier id;
   final Expression? exp;
 
-  StructFieldDeclaration(this.id,[this.exp]);
+  StructFieldDeclaration(this.id, [this.exp]);
 
   @override
   toString() {
-    if (exp == null) {return "$id;";}
-    else {return "$id = $exp;";}
+    if (exp == null) {
+      return "$id;";
+    } else {
+      return "$id = $exp;";
+    }
   }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is StructFieldDeclaration && runtimeType == other.runtimeType &&
-              id == other.id && exp == other.exp;
+      other is StructFieldDeclaration &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          exp == other.exp;
 
   @override
   int get hashCode => id.hashCode ^ exp.hashCode;
@@ -159,7 +167,7 @@ class EnumDeclaration extends Declaration {
   final Identifier id;
   final List<EnumFieldDeclaration> fields;
 
-  EnumDeclaration(this.id,this.fields);
+  EnumDeclaration(this.id, this.fields);
 
   @override
   toString() => "enum $id {${fields.join(", ")}};";
@@ -187,17 +195,22 @@ class EnumFieldDeclaration {
 /// the Expression a.k.a. Value
 sealed class Expression {
   StringExp toStringExp() => StringExp(toString());
+
   /// standard is 0
   IntegerExp toIntExp() => IntegerExp(toInt());
+
   /// standard is 0
   int toInt() => 0;
+
   /// the name for this expression
   String get name => "expression";
+
   /// naming for the assigning of this type
   String get typeName => name;
 
   const Expression();
 }
+
 /// input: ( `0` | `1` | `2` | `3` | `4` | `5` | `6` | `7` | `8` | `9` )+
 ///
 /// output: [integer]
@@ -225,8 +238,9 @@ class IntegerExp extends Expression with Compare<IntegerExp> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is IntegerExp && runtimeType == other.runtimeType &&
-              integer == other.integer;
+      other is IntegerExp &&
+          runtimeType == other.runtimeType &&
+          integer == other.integer;
 
   @override
   int get hashCode => integer.hashCode;
@@ -243,13 +257,13 @@ class IntegerExp extends Expression with Compare<IntegerExp> {
 class HexadecimalExp extends Expression with Compare<HexadecimalExp> {
   final String hex;
 
-  HexadecimalExp(String hex):hex = hex.toUpperCase();
+  HexadecimalExp(String hex) : hex = hex.toUpperCase();
 
   @override
   toString() => "0x$hex";
   @override
   /// hex conversion
-  toInt() => strToBase(hex,16);
+  toInt() => strToBase(hex, 16);
   @override
   get name => "hexadecimal";
   @override
@@ -257,9 +271,10 @@ class HexadecimalExp extends Expression with Compare<HexadecimalExp> {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-      other is HexadecimalExp && runtimeType == other.runtimeType &&
-        hex == other.hex;
+      identical(this, other) ||
+      other is HexadecimalExp &&
+          runtimeType == other.runtimeType &&
+          hex == other.hex;
 
   @override
   int get hashCode => hex.hashCode;
@@ -281,7 +296,7 @@ class BinaryExp extends Expression with Compare<BinaryExp> {
   toString() => "0n$bin";
   @override
   /// binary conversion
-  toInt() => strToBase(bin,2);
+  toInt() => strToBase(bin, 2);
   @override
   get name => "binary";
   @override
@@ -314,9 +329,10 @@ class FloatExp extends Expression with Compare<FloatExp> {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-      other is FloatExp && runtimeType == other.runtimeType &&
-        fraction == other.fraction;
+      identical(this, other) ||
+      other is FloatExp &&
+          runtimeType == other.runtimeType &&
+          fraction == other.fraction;
 
   @override
   int get hashCode => fraction.hashCode;
@@ -341,9 +357,10 @@ class StringExp extends Expression {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-      other is StringExp && runtimeType == other.runtimeType &&
-        string == other.string;
+      identical(this, other) ||
+      other is StringExp &&
+          runtimeType == other.runtimeType &&
+          string == other.string;
 
   @override
   int get hashCode => string.hashCode;
@@ -360,141 +377,141 @@ class CharExp extends Expression with Compare<CharExp> {
   final int character;
 
   const CharExp.dir(this.character);
-  CharExp(String char):this.dir(valuesStrToInt[char]!);
+  CharExp(String char) : this.dir(valuesStrToInt[char]!);
 
   /// gotten from Code Page 437
   // currently only to 7F
-  static const Map<String,int> valuesStrToInt = {
-    "":0x00,
-    "\u236A":0x01,
-    "\u236B":0x02,
-    "\u2665":0x03,
-    "\u2666":0x04,
-    "\u2663":0x05,
-    "\u2660":0x06,
-    "\u2022":0x07,
-    "\u25D8":0x08,
-    "\u25CB":0x09,
-    "\u25D9":0x0A,
-    "\u2642":0x0B,
-    "\u2640":0x0C,
-    "\u266A":0x0D,
-    "\u266B":0x0E,
-    "\u263C":0x0F,
-    "\u25BA":0x10,
-    "\u25C4":0x11,
-    "\u2195":0x12,
-    "\u203C":0x13,
-    "\u00B6":0x14,
-    "\u00A7":0x15,
-    "\u25AC":0x16,
-    "\u21A8":0x17,
-    "\u2191":0x18,
-    "\u2193":0x19,
-    "\u2192":0x1A,
-    "\u2190":0x1B,
-    "\u221F":0x1C,
-    "\u2194":0x1D,
-    "\u25B2":0x1E,
-    "\u25Bc":0x1F,
-    " ":0x20,
-    "!":0x21,
-    "\"":0x22,
-    "#":0x23,
-    "\$":0x24,
-    "%":0x25,
-    "&":0x26,
-    "'":0x27,
-    "(":0x28,
-    ")":0x29,
-    "*":0x2A,
-    "+":0x2B,
-    ",":0x2C,
-    "-":0x2D,
-    ".":0x2E,
-    "/":0x2F,
-    "0":0x30,
-    "1":0x31,
-    "2":0x32,
-    "3":0x33,
-    "4":0x34,
-    "5":0x35,
-    "6":0x36,
-    "7":0x37,
-    "8":0x38,
-    "9":0x39,
-    ":":0x3A,
-    ";":0x3B,
-    "<":0x3C,
-    "=":0x3D,
-    ">":0x3E,
-    "?":0x3F,
-    "@":0x40,
-    "A":0x41,
-    "B":0x42,
-    "C":0x43,
-    "D":0x44,
-    "E":0x45,
-    "F":0x46,
-    "G":0x47,
-    "H":0x48,
-    "I":0x49,
-    "J":0x4A,
-    "K":0x4B,
-    "L":0x4C,
-    "M":0x4D,
-    "N":0x4E,
-    "O":0x4F,
-    "P":0x50,
-    "Q":0x51,
-    "R":0x52,
-    "S":0x53,
-    "T":0x54,
-    "U":0x55,
-    "V":0x56,
-    "W":0x57,
-    "X":0x58,
-    "Y":0x59,
-    "Z":0x5A,
-    "[":0x5B,
-    "\\":0x5C,
-    "]":0x5D,
-    "^":0x5E,
-    "_":0x5F,
-    "`":0x60,
-    "a":0x61,
-    "b":0x62,
-    "c":0x63,
-    "d":0x64,
-    "e":0x65,
-    "f":0x66,
-    "g":0x67,
-    "h":0x68,
-    "i":0x69,
-    "j":0x6A,
-    "k":0x6B,
-    "l":0x6C,
-    "m":0x6D,
-    "n":0x6E,
-    "o":0x6F,
-    "p":0x70,
-    "q":0x71,
-    "r":0x72,
-    "s":0x73,
-    "t":0x74,
-    "u":0x75,
-    "v":0x76,
-    "w":0x77,
-    "x":0x78,
-    "y":0x79,
-    "z":0x7A,
-    "{":0x7B,
-    "|":0x7C,
-    "}":0x7D,
-    "~":0x7E,
-    "\u2302":0x7F
+  static const Map<String, int> valuesStrToInt = {
+    "": 0x00,
+    "\u236A": 0x01,
+    "\u236B": 0x02,
+    "\u2665": 0x03,
+    "\u2666": 0x04,
+    "\u2663": 0x05,
+    "\u2660": 0x06,
+    "\u2022": 0x07,
+    "\u25D8": 0x08,
+    "\u25CB": 0x09,
+    "\u25D9": 0x0A,
+    "\u2642": 0x0B,
+    "\u2640": 0x0C,
+    "\u266A": 0x0D,
+    "\u266B": 0x0E,
+    "\u263C": 0x0F,
+    "\u25BA": 0x10,
+    "\u25C4": 0x11,
+    "\u2195": 0x12,
+    "\u203C": 0x13,
+    "\u00B6": 0x14,
+    "\u00A7": 0x15,
+    "\u25AC": 0x16,
+    "\u21A8": 0x17,
+    "\u2191": 0x18,
+    "\u2193": 0x19,
+    "\u2192": 0x1A,
+    "\u2190": 0x1B,
+    "\u221F": 0x1C,
+    "\u2194": 0x1D,
+    "\u25B2": 0x1E,
+    "\u25Bc": 0x1F,
+    " ": 0x20,
+    "!": 0x21,
+    "\"": 0x22,
+    "#": 0x23,
+    "\$": 0x24,
+    "%": 0x25,
+    "&": 0x26,
+    "'": 0x27,
+    "(": 0x28,
+    ")": 0x29,
+    "*": 0x2A,
+    "+": 0x2B,
+    ",": 0x2C,
+    "-": 0x2D,
+    ".": 0x2E,
+    "/": 0x2F,
+    "0": 0x30,
+    "1": 0x31,
+    "2": 0x32,
+    "3": 0x33,
+    "4": 0x34,
+    "5": 0x35,
+    "6": 0x36,
+    "7": 0x37,
+    "8": 0x38,
+    "9": 0x39,
+    ":": 0x3A,
+    ";": 0x3B,
+    "<": 0x3C,
+    "=": 0x3D,
+    ">": 0x3E,
+    "?": 0x3F,
+    "@": 0x40,
+    "A": 0x41,
+    "B": 0x42,
+    "C": 0x43,
+    "D": 0x44,
+    "E": 0x45,
+    "F": 0x46,
+    "G": 0x47,
+    "H": 0x48,
+    "I": 0x49,
+    "J": 0x4A,
+    "K": 0x4B,
+    "L": 0x4C,
+    "M": 0x4D,
+    "N": 0x4E,
+    "O": 0x4F,
+    "P": 0x50,
+    "Q": 0x51,
+    "R": 0x52,
+    "S": 0x53,
+    "T": 0x54,
+    "U": 0x55,
+    "V": 0x56,
+    "W": 0x57,
+    "X": 0x58,
+    "Y": 0x59,
+    "Z": 0x5A,
+    "[": 0x5B,
+    "\\": 0x5C,
+    "]": 0x5D,
+    "^": 0x5E,
+    "_": 0x5F,
+    "`": 0x60,
+    "a": 0x61,
+    "b": 0x62,
+    "c": 0x63,
+    "d": 0x64,
+    "e": 0x65,
+    "f": 0x66,
+    "g": 0x67,
+    "h": 0x68,
+    "i": 0x69,
+    "j": 0x6A,
+    "k": 0x6B,
+    "l": 0x6C,
+    "m": 0x6D,
+    "n": 0x6E,
+    "o": 0x6F,
+    "p": 0x70,
+    "q": 0x71,
+    "r": 0x72,
+    "s": 0x73,
+    "t": 0x74,
+    "u": 0x75,
+    "v": 0x76,
+    "w": 0x77,
+    "x": 0x78,
+    "y": 0x79,
+    "z": 0x7A,
+    "{": 0x7B,
+    "|": 0x7C,
+    "}": 0x7D,
+    "~": 0x7E,
+    "\u2302": 0x7F,
   };
-  static final Map<int,String> valuesIntToStr = valuesStrToInt.toReversed();
+  static final Map<int, String> valuesIntToStr = valuesStrToInt.toReversed();
 
   @override
   toString() => "'${valuesIntToStr[character]}'";
@@ -528,9 +545,10 @@ class ListExp extends Expression {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-      other is ListExp && runtimeType == other.runtimeType &&
-        listEqualsDeep(list,other.list);
+      identical(this, other) ||
+      other is ListExp &&
+          runtimeType == other.runtimeType &&
+          listEqualsDeep(list, other.list);
 
   @override
   int get hashCode => list.hashCode;
@@ -544,7 +562,7 @@ class ListExp extends Expression {
 ///
 /// added in Version: `AXW1.4` `;`
 class DictExp extends Expression {
-  final Map<Identifier,Expression> dict;
+  final Map<Identifier, Expression> dict;
 
   const DictExp(this.dict);
 
@@ -565,7 +583,7 @@ class DictExp extends Expression {
 class VarExp extends Expression {
   final Identifier id;
 
-  VarExp(String identification):id = Identifier(identification);
+  VarExp(String identification) : id = Identifier(identification);
 
   @override
   toString() => id.toString();
@@ -576,9 +594,8 @@ class VarExp extends Expression {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-      other is VarExp && runtimeType == other.runtimeType &&
-        id == other.id;
+      identical(this, other) ||
+      other is VarExp && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -603,7 +620,7 @@ class VoidExp extends Expression {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
+      identical(this, other) ||
       other is VoidExp && runtimeType == other.runtimeType;
 
   @override
@@ -631,9 +648,13 @@ class BoolExp extends Expression with Compare<BoolExp> {
   ///
   /// 1 is true
   toInt() {
-    if (boolean) {return 1;}
-    else {return 0;}
+    if (boolean) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
+
   bool toBool() => boolean;
 
   @override
@@ -641,9 +662,10 @@ class BoolExp extends Expression with Compare<BoolExp> {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-      other is BoolExp && runtimeType == other.runtimeType &&
-        boolean == other.boolean;
+      identical(this, other) ||
+      other is BoolExp &&
+          runtimeType == other.runtimeType &&
+          boolean == other.boolean;
 
   @override
   int get hashCode => boolean.hashCode;
@@ -676,9 +698,10 @@ class Identifier {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is Identifier && runtimeType == other.runtimeType &&
-              name == other.name;
+    identical(this, other) ||
+    other is Identifier &&
+      runtimeType == other.runtimeType &&
+      name == other.name;
 
   @override
   int get hashCode => name.hashCode;
