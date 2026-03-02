@@ -5,45 +5,44 @@ import 'math/core.dart';
 /// `false` = [b],
 /// `null` = [c]
 V ternaryO<V>(bool? question, V a, V b, V c) {
-  if (question == true) {return a;}
-  else if (question == false) {return b;}
-  else {return c;}
+  if (question == true) {
+    return a;
+  } else if (question == false) {
+    return b;
+  } else {
+    return c;
+  }
 }
+
 /// `true` = [a],
 /// `false` = [b],
 /// `null` = [c]
 Object? ternaryI(bool? question, Function() a, [Function()? b, Function()? c]) {
-  if (question == true) {return a();}
-  else if (question == false) {
+  if (question == true) {
+    return a();
+  } else if (question == false) {
     return (b != null) ? b() : b;
-  }
-  else {
+  } else {
     return (c != null) ? c() : c;
   }
 }
 
 Iterable<int> boolValues(Iterable<bool> bools) => [
-  for (bool current in bools)
-    current.toInt()
+  for (bool current in bools) current.toInt(),
 ];
 
-bool and(Iterable<bool> bools) =>
-  sum(boolValues(bools))
-      == bools.length;
+bool and(Iterable<bool> bools) => sum(boolValues(bools)) == bools.length;
 
 bool or(Iterable<bool> bools) => bools.contains(true);
 bool xor(Iterable<bool> bools) => sum(boolValues(bools)).isOdd;
 Iterable<bool> not(Iterable<bool> bools) => [
-  for (bool current in bools)
-    !current
+  for (bool current in bools) !current,
 ];
 
 bool nand(Iterable<bool> bools) => !and(bools);
 bool nor(Iterable<bool> bools) => !or(bools);
 bool xnor(Iterable<bool> bools) => !xor(bools);
-bool xand(Iterable<bool> bools) =>
-  sum(boolValues(bools))
-      == 0;
+bool xand(Iterable<bool> bools) => sum(boolValues(bools)) == 0;
 
 bool xnand(Iterable<bool> bools) => !xand(bools);
 
@@ -57,13 +56,13 @@ bool xnand(Iterable<bool> bools) => !xand(bools);
 /// function (mainfestedmf on github) or on their repository
 /// (manifestedmf/xw-dart on github)
 int wrapper({required int lowest, required int highest, required int value}) {
-  int size = highest+1-lowest;
+  int size = highest + 1 - lowest;
   if (lowest > highest) {
     throw "lowest: $lowest, can't be after highest: $highest";
   } else if (lowest == highest) {
     return lowest;
   } else if (lowest == 0) {
-    return value % (highest+1);
+    return value % (highest + 1);
   } else {
     if (value >= lowest && value <= highest) {
     } else if (value < lowest) {
@@ -85,4 +84,7 @@ int wrapper({required int lowest, required int highest, required int value}) {
 ///
 /// [value] is the inputted number, guaranteed to be inbetween [min] & [max].
 int trim({required int min, required int max, required int value}) =>
-  maxSimple(min, minSimple(max, value));
+    maxSimple(min, minSimple(max, value));
+
+N inverse<N extends num>({required N min, required N max, required N val}) =>
+    max - val + min as N;

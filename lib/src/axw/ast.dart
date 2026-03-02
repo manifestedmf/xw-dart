@@ -69,11 +69,11 @@ class ExpressionDeclaration extends Declaration {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is ExpressionDeclaration &&
-      runtimeType == other.runtimeType &&
-      id == other.id &&
-      exp == other.exp;
+      identical(this, other) ||
+      other is ExpressionDeclaration &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          exp == other.exp;
 
   @override
   int get hashCode => id.hashCode ^ exp.hashCode;
@@ -105,11 +105,11 @@ class StructDeclaration extends Declaration {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is StructDeclaration &&
-      runtimeType == other.runtimeType &&
-      id == other.id &&
-      listEqualsDeep(fields, other.fields);
+      identical(this, other) ||
+      other is StructDeclaration &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          listEqualsDeep(fields, other.fields);
 
   @override
   int get hashCode => id.hashCode ^ fields.hashCode;
@@ -698,10 +698,10 @@ class Identifier {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is Identifier &&
-      runtimeType == other.runtimeType &&
-      name == other.name;
+      identical(this, other) ||
+      other is Identifier &&
+          runtimeType == other.runtimeType &&
+          name == other.name;
 
   @override
   int get hashCode => name.hashCode;

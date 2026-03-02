@@ -271,6 +271,14 @@ class Fraction with Compare<Fraction> {
 
   /// Added in `2.7.0`.
   factory Fraction.compressed(int operand, int divisor) {
+    if (operand == 0 && divisor == 0) {
+      return Fraction._compressed(operand, divisor);
+    } else if (operand == 0) {
+      return Fraction._compressed(operand, 1);
+    }
+    if (divisor == 0) {
+      return Fraction._compressed(1, divisor);
+    }
     var (a: oper, b: div) = gcd(operand, divisor);
     return Fraction._compressed(oper, div);
   }

@@ -20,7 +20,8 @@ void printf(String input, [Iterable<Object?> items = const []]) {
   _State state = _State.unknown; // which state we were in
   _Char currentChar; // the current character state
   int pointer = 0; // the pointer to which index we are for the input
-  int starter = 0; // the start of the text or item that we are currently holding
+  int starter = 0;
+  // the start of the text or item that we are currently holding
   int offset = 0; // the offset between nullable and object characters
   String char; // the current char
   Object? heldValue; // the value that we are trying to inspect
@@ -180,6 +181,7 @@ void printf(String input, [Iterable<Object?> items = const []]) {
 }
 
 enum _State {
+  //
   percentage,
   object,
   nullable,
@@ -188,6 +190,7 @@ enum _State {
 }
 
 enum _Char {
+  //
   percent,
   o,
   n,

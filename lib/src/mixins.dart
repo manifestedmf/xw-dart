@@ -16,3 +16,15 @@ mixin Number {
   int ceil();
   double ceilToDouble() => ceil().toDouble();
 }
+
+/*
+/// Added in `2.7.4`.
+mixin Modulo<T> {
+  bool operator <(T other);
+  bool operator >(T other);
+  T operator +(T other);
+  T operator -(T other);
+  T operator %(T other) {
+    T mule = this;
+  }
+}*/

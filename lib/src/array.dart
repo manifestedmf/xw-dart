@@ -1,4 +1,5 @@
 import 'equals.dart';
+import 'standard.dart';
 
 class ArrayException {
   String? message;
@@ -13,13 +14,14 @@ class ArrayException {
 }
 
 class Array<T> extends Iterable<T> {
-  late final List<T?> _array;
+  late final List<dynamic> _array;
   late final int _length;
 
   @override
   int get length => _length;
 
-  Array(int amount, {T? fill, Array<T?>? withArray}) {
+  /*Array(int amount, {T? fill, Array<T?>? withArray}) {
+    Object? aFill = fill ?? _ArrayEmpty();
     if (amount != 0) {
       withArray ??= Array(0);
       int index = 0;
@@ -29,8 +31,12 @@ class Array<T> extends Iterable<T> {
         ++index;
       }
     }
-    _array = List.filled(amount,fill);
+    _array = List.filled(amount, fill);
     _length = amount;
+  }*/
+  Array(int amount) {
+    _length = amount;
+    _array = List.filled(amount, _ArrayEmpty());
   }
 
   factory Array.generate(int amount, T Function(int) complex) {
@@ -81,7 +87,6 @@ class Array<T> extends Iterable<T> {
   static ArrayCreator<double> get stdDouble => ArrayCreator<double>._();
   static ArrayCreator<T> stdCreate<T>() => ArrayCreator<T>._();
 
-  List<T?> get arrayInternal => _array;
   String get _positions {
     if (_length == 0) {return "NO VALID POSITIONS";}
     else if (_length == 1) {return "0";}
@@ -91,45 +96,46 @@ class Array<T> extends Iterable<T> {
   }
 
   T operator [](int index) {
-    if (index < 0 && index >= -_length) {index %= _length;}
-    if (index >= _length || index < -_length) {
-      throw ArrayException("$index out of range, valid positions are $_positions");}
-    else {return _array[index] ?? (throw ArrayException("$index is empty"));}
+    index = wrapper(lowest: -length, highest: length - 1, value: index);
+    return (_array[index] == _ArrayEmpty())
+      ? throw ArrayException("$index is empty")
+      : _array[index];
   }
   void operator []=(int index, T value) {
-    if (index < 0 && index >= -_length) {index %= _length;}
-    if (index >= _length || index < -_length) {
-      throw ArrayException("$index out of range, valid positions are $_positions");}
-    else {_array[index] = value;}
+    index = wrapper(lowest: -length, highest: length - 1, value: index);
+    _array[index] = value;
   }
 
   @override
-  T get first => _array[0] ?? (throw ArrayException("0 is empty"));
+  T get first =>
+    (_array[0] == _ArrayEmpty()) ? throw ArrayException("0 is empty") : _array[0];
 
   @override
-  T elementAt(int index) => elementAtAdmin(index) ?? (throw ArrayException("$index is empty"));
+  T elementAt(int index) => (_array[index] == _ArrayEmpty())
+    ? throw ArrayException("$index is empty")
+    : _array[index];
 
-  T? elementAtAdmin(int index) => _array[index];
+  dynamic elementAtAdmin(int index) => _array[index];
 
   @override
   String toString() => "$_array";
 
 
   /// sub [Array]
-  Array<T?> subar([int start = 0, int? end]) {
+  Array<T> subarray(int start, [int? end]) {
     end ??= length;
-    return Array(1);
+    return Array(end-start);
   }
 
   @override
-  Iterator<T> get iterator => _ArrayIterator<T>(this);
+  Iterator<T> get iterator => _ArrayIterator(this);
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is Array &&
-              runtimeType == other.runtimeType &&
-              listEqualsDeep(_array, other._array);
+    identical(this, other) ||
+    other is Array &&
+      runtimeType == other.runtimeType &&
+        listEqualsDeep(_array, other._array);
 
   /*Array<T?> subar({int start = 0, int? end}) {
     if (start == 0 && end == null) {return this;}
@@ -150,9 +156,10 @@ class Array<T> extends Iterable<T> {
 
   static get _noItems => ArrayException("There is no items in the array, "
       "Array: []");
-  static _emptyPlace(int index) => ArrayException("$index has no item, "
-      "don't use ${null} as a empty space");
+  static _emptyPlace(int index) => ArrayException("$index has no item");
 }
+
+class _ArrayEmpty {}
 
 class _ArrayIterator<T> implements Iterator<T> {
   final Array<T> _array;
@@ -161,7 +168,7 @@ class _ArrayIterator<T> implements Iterator<T> {
   _ArrayIterator(this._array);
 
   @override
-  T get current => _array[_index];
+  T get current => _array._array[_index];
 
   @override
   bool moveNext() {
@@ -172,7 +179,7 @@ class _ArrayIterator<T> implements Iterator<T> {
   }
 
   @override
-  int get hashCode => Object.hash(_index,current);
+  int get hashCode => Object.hash(_index, current, _array);
 }
 
 extension IterableExtension<E> on Iterable<E> {

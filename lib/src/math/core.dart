@@ -350,7 +350,7 @@ Set<MapEntry<K, V>> minMapValue<K, V extends num>(
 /// Added in `2.7.0`.
 N sum<N extends num>(Iterable<N> numbers, [N? starting]) {
   N sum;
-  sum = (starting == null) ? 0 as N : starting;
+  sum = (starting == null) ? ((N == int) ? 0 : 0.0) as N : starting;
   for (N current in numbers) {
     sum = sum + current as N;
   }
@@ -395,6 +395,12 @@ double powDouble(double base, double exponent) =>
 
 /// Added in `2.7.0`.
 N pow<N extends num>(N base, N exponent) => math.pow(base, exponent) as N;
+
+/// Added in `2.7.4`.
+N square<N extends num>(N base) => pow(base, (base is int) ? 2 as N : 2.0 as N);
+
+/// Added in `2.7.4`.
+N round<N extends num>(N number) => (number is double) ? number.roundToDouble() as N : number;
 
 /// If [number] is a `pow(int, 2)`, then it returns a `int`,
 /// else it returns a `double`.
@@ -445,14 +451,7 @@ List<int> primeFactors(int number) {
 ///
 /// Added in `2.7.3`.
 ({int a, int b}) gcd(int a, int b) {
-  if (a == 0 && b == 0) {
-    return (a: a, b: b);
-  } else if (a == 0) {
-    return (a: a, b: 1);
-  }
-  if (b == 0) {
-    return (a: 1, b: b);
-  } else if (b == 1 || a == 1 || a == b - 1 || a == b + 1) {
+  if (b == 1 || a == 1 || a == b - 1 || a == b + 1) {
     return (a: a, b: b);
   }
   List<int> aFactors = primeFactors(a);
@@ -516,3 +515,39 @@ bool isMadeUpOf(int number, List<int> primes) {
   }
   return true;
 }
+
+/// Added in `2.7.4`.
+class MathError {
+  final String? message;
+
+  const MathError([this.message]);
+}
+
+/// Gives the factorial of an unsigned int being, [number].
+///
+/// Added in `2.7.4`.
+int factorial(int number) {
+  if (number.isSigned) {
+    throw MathError("$number can't be signed in $factorial().");
+  } else {
+    int mule = 1;
+    for (int i = 2; i < number; i++) {
+      mule *= i;
+    }
+    return mule;
+  }
+}
+
+/// Gives the termial (addition from 0 to [number]).
+///
+/// Added in `2.7.4`.
+N termial<N extends num>(N number) {
+  double mule = (number * number + number) / 2;
+  return (number is int) ? mule.toInt() as N : mule as N;
+}
+
+/*
+/// Gives the corresponding number of the unknown number input.
+///
+/// Added in `2.7.4`.
+*/

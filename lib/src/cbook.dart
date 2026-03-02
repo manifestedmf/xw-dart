@@ -29,6 +29,7 @@ List<({int fahr, C cels})> fahrToCelsTable<C extends num>({
 double fahrToCels(num fahr) => 5 * (fahr - 32) / 9;
 
 enum _State {
+  //
   inside,
   outside,
 }
