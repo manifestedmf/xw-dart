@@ -400,7 +400,10 @@ N pow<N extends num>(N base, N exponent) => math.pow(base, exponent) as N;
 N square<N extends num>(N base) => pow(base, (base is int) ? 2 as N : 2.0 as N);
 
 /// Added in `2.7.4`.
-N round<N extends num>(N number) => (number is double) ? number.roundToDouble() as N : number;
+N round<N extends num>(N number) =>
+    (N == double)
+        ? number.roundToDouble() as N
+        : number;
 
 /// If [number] is a `pow(int, 2)`, then it returns a `int`,
 /// else it returns a `double`.
@@ -481,7 +484,7 @@ List<int> primeFactors(int number) {
 /// Added in `2.7.0`.
 bool isPrime(int number) => (primeFactors(number).length == 1);
 
-/// if number is constructed of primes
+/// If number is constructed of primes
 ///
 /// Added in `2.7.0`.
 bool isComprime(List<int> factors) {

@@ -1,0 +1,111 @@
+For current version: AXW2.0;
+[<?Text?> RP+] is a Structure Definition.
+[-] is a Structure Closer. needs an example on that line for if it isn't a plural structure.
+[<!Text!>] is a Caller.
+[{Caller} λ] is a needed Caller.
+[{Caller} Ω] is an unneeded Caller.
+[{Caller}π] is a multi Caller.
+[{Caller}Σ] is a single Caller.
+[{Caller}π({Symbol})] is a multi Caller where symbol has to placed between every single other,
+    so between each-other.
+[/Symbol\] is a Reference to a single symbol.
+[~/Symbols\~] is a Plural symbols.
+[{Symbol}β] is a non-case specific symbol(s).
+[{Symbol}α] is a case specific symbol(s).
+[:{Item};] is a list of items (Caller or Symbol) which can be chosen from.
+[|] is a or.
+[&] is a and.
+[σ  {Item}  ε] means it has to be connected (no whitespaces).
+
+
+<?Manager?> RP+
+  <!Header!>Σ λ
+  <!Declaration!>π Ω
+-
+
+<?Header?> RP+
+  ~/AXW\~α
+    :
+      σ  <!SD!>Σ λ /.\ <!SD!>Σ λ  ε
+      σ  <!SD!>Σ λ  ε
+    ;Σ
+  /;\
+-AXW 2.0 ; | AXW 2 ;
+
+<?Declaration?> RP+
+  :
+    <!ExpressionDeclaration!>
+    <!StructDeclaration!>
+  ;Σ
+-
+
+<?StructDeclaration?> RP+
+  ~/Struct\~α <!Identifier!>Σ λ /{\
+    <!StructField!>Ω π
+  /}\ /;\
+-Struct T { ... } ;
+
+<?StructField?> RP+
+  :
+    <!ExpressionDeclaration!>
+    <!Identifier!> /;\
+  ;Σ
+-T2 ; | T2 = ... ;
+
+<?ExpressionDeclaration?> RP+
+  <!Identifier!> /=\ <!Expression!> /;\
+-T2 = ...;
+
+<?Expression?> RP+
+  :
+    <!StringExpression!> λ
+    <!IntExpression!> λ
+    <!ListExpression!> λ
+    <!FloatExpression!> λ
+    <!VarExpression!> λ
+    <!DictExpression!> λ
+    <!HexadecimalExpression!> λ
+    <!BinaryExpression!> λ
+    <!CharExpression!> λ
+    <!VoidExpression!> Ω
+    <!BoolExpression!> λ
+    <!StructExpression!> λ
+  ;Σ
+-
+
+<?BinaryExpression?> RP+
+  σ ~/0n\~α
+      :
+        /0\
+        /1\
+      ;π λ
+  ε
+-0n0101
+
+<?IntExpression?> RP+
+  σ  <!SD!>π λ  ε
+-1056
+
+
+
+
+
+
+
+
+
+
+<?SD?> RP+
+  :
+    /0\
+    /1\
+    /2\
+    /3\
+    /4\
+    /5\
+    /6\
+    /7\
+    /8\
+    /9\
+  ;Σ
+-

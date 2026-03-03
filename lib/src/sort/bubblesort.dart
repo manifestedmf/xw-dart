@@ -1,65 +1,60 @@
+import '../math/fraction.dart';
+import '../math/core.dart';
+
+/// Added in `2.7.4`.
 class BubbleSort {
-  static List<int> listSortInt(List<int> list) {
-    int index = 0;
-    int rotation = 1;
+  /// Gives back the amount of [swaps] for [list].
+  ///
+  /// Added in `2.7.4`.
+  static int listSort<N extends num>(List<N> list) {
+    int index, nextIndex, rotation, swaps;
+    index = swaps = 0;
+    nextIndex = rotation = 1;
+    N current, next;
     while (rotation <= list.length) {
-      if (index + 1 + rotation >= list.length) {
+      if (nextIndex + rotation - 1 >= list.length) {
         index = 0;
+        nextIndex = 1;
         ++rotation;
       }
-      int current = list[index];
-      int next = list[index + 1];
-      (current > next)
-          ? {
-        list[index] = next,
-        list[index + 1] = current
+      current = list[index];
+      next = list[nextIndex];
+      if (current > next) {
+        list[index] = next;
+        list[nextIndex] = current;
+        ++swaps;
       }
-          : {};
       index++;
+      nextIndex++;
     }
-    return list;
+    return swaps;
   }
-  static List<double> listSortFloat(List<double> list) {
-    int index = 0;
-    int rotation = 1;
+  /// Added in `2.7.4`.
+  static int listSortFraction(List<Fraction> list) {
+    int index, nextIndex, rotation, swaps;
+    index = swaps = 0;
+    nextIndex = rotation = 1;
+    Fraction current, next;
     while (rotation <= list.length) {
-      if (index + 1 + rotation >= list.length) {
+      if (nextIndex + rotation - 1 >= list.length) {
         index = 0;
+        nextIndex = 1;
         ++rotation;
       }
-      double current = list[index];
-      double next = list[index + 1];
-      (current > next)
-          ? {
-        list[index] = next,
-        list[index + 1] = current
+      current = list[index];
+      next = list[nextIndex];
+      if (current > next) {
+        list[index] = next;
+        list[nextIndex] = current;
+        ++swaps;
       }
-          : {};
-      index++;
+      ++index;
+      ++nextIndex;
     }
-    return list;
+    return swaps;
   }
-  static List<num> listSortNum(List<num> list) {
-    int index = 0;
-    int rotation = 1;
-    while (rotation <= list.length) {
-      if (index + 1 + rotation >= list.length) {
-        index = 0;
-        ++rotation;
-      }
-      num current = list[index];
-      num next = list[index + 1];
-      (current > next)
-          ? {
-        list[index] = next,
-        list[index + 1] = current
-      }
-          : {};
-      index++;
-    }
-    return list;
-  }
-/*static Map<int,V> mapKeySortInt<V>(Map<int,V> map) {
+
+  /*static Map<int,V> mapKeySortInt<V>(Map<int,V> map) {
     int index = 0;
     int rotation = 1;
     while (rotation <= map.length) {
