@@ -36,42 +36,30 @@ class MergeSort {
     int checks = 0;
     int leftLength = half - start + 1;
     int rightLength = end - half;
-    List<N?> left = List.filled(leftLength + 1, null, growable: false);
-    List<N?> right = List.filled(rightLength + 1, null, growable: false);
+    List<N> left, right;
+    left = [];
+    right = [];
     for (int index = 0; index < leftLength; index++) {
-      left[index] = array[start + index];
+      left.add(array[start + index]);
     }
     for (int index = 0; index < rightLength; index++) {
-      right[index] = array[half + index + 1];
+      right.add(array[half + index + 1]);
     }
-    left[leftLength] = null;
-    right[rightLength] = null;
-    int lIndex = 0;
-    int rIndex = 0;
+    int lIndex, rIndex;
+    lIndex = rIndex = 0;
     for (int pIndex = start; pIndex <= end; pIndex++) {
       checks++;
-      if (_lessThanEqual(left[lIndex], right[rIndex])) {
-        array[pIndex] = left[lIndex]!;
-        lIndex++;
+      if (lIndex >= leftLength) {
+        array[pIndex] = right[rIndex++];
+      } else if (rIndex >= rightLength) {
+        array[pIndex] = left[lIndex++];
+      } else if (left[lIndex] > right[rIndex]) {
+        array[pIndex] = right[rIndex++];
       } else {
-        array[pIndex] = right[rIndex]!;
-        rIndex++;
+        array[pIndex] = left[lIndex++];
       }
     }
     return checks;
-  }
-
-  /// Added in `2.8`.
-  static bool _lessThanEqual<N extends num>(N? a, N? b) {
-    if (a != null && b != null) {
-      return a <= b;
-    } else if (a != null) {
-      return true;
-    } else if (b != null) {
-      return false;
-    } else {
-      return true;
-    }
   }
 
   /// Added in `2.8`.
@@ -114,35 +102,34 @@ class MergeSort {
     int checks = 0;
     int leftLength = half - start + 1;
     int rightLength = end - half;
-    List<dynamic> left = List.filled(
-      leftLength + 1,
-      _Infinite(),
-      growable: false,
-    );
-    List<dynamic> right = List.filled(
-      rightLength + 1,
-      _Infinite(),
-      growable: false,
-    );
+    List<dynamic> left, right;
+    left = []; right = [];
     for (int index = 0; index < leftLength; index++) {
-      left[index] = array[start + index];
+      left.add(array[start + index]);
     }
     for (int index = 0; index < rightLength; index++) {
-      right[index] = array[half + index + 1];
+      right.add(array[half + index + 1]);
     }
-    left[leftLength] = _Infinite();
-    right[rightLength] = _Infinite();
-    int lIndex = 0;
-    int rIndex = 0;
+    int lIndex, rIndex;
+    lIndex = rIndex = 0;
     for (int pIndex = start; pIndex <= end; pIndex++) {
       checks++;
-      if (_lessThanEqualAny(left[lIndex], right[rIndex], mt)) {
+      if (lIndex >= leftLength) {
+        array[pIndex] = right[rIndex++];
+      } else if (rIndex >= rightLength) {
+        array[pIndex] = left[lIndex++];
+      } else if (mt(left[lIndex], right[rIndex])) {
+        array[pIndex] = right[rIndex++];
+      } else {
+        array[pIndex] = left[lIndex++];
+      }
+      /*if (_lessThanEqualAny(left[lIndex], right[rIndex], mt)) {
         array[pIndex] = left[lIndex]!;
         lIndex++;
       } else {
         array[pIndex] = right[rIndex]!;
         rIndex++;
-      }
+      }*/
     }
     return checks;
   }
