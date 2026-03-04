@@ -1,22 +1,20 @@
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 class MergeSort {
-  /// Added in `2.7.4`.
-  static void listSort<N extends num>(
-    List<N> list,
-  ) {
+  /// Added in `2.8`.
+  static void listSort<N extends num>(List<N> list) {
     _mergeSort(list, 0, list.length - 1);
   }
 
   /// Gives back a concatenated sort, assuming that [a] & [b] is sorted.
   ///
-  /// Added in`2.7.4`.
+  /// Added in `2.8`.
   static List<N> listMerge<N extends num>(List<N> a, List<N> b) {
     List<N> array = a + b;
     _merge(array, 0, a.length, array.length);
     return array;
   }
 
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   static void _mergeSort<N extends num>(List<N> array, int start, int end) {
     if (start < end) {
       int half = (start + end) ~/ 2;
@@ -26,7 +24,12 @@ class MergeSort {
     }
   }
 
-  static void _merge<N extends num>(List<N> array, int start, int half, int end) {
+  static void _merge<N extends num>(
+    List<N> array,
+    int start,
+    int half,
+    int end,
+  ) {
     int leftLength = half - start + 1;
     int rightLength = end - half;
     List<N?> left = List.filled(leftLength + 1, null, growable: false);
@@ -52,7 +55,7 @@ class MergeSort {
     }
   }
 
-  static bool _lessThanEqual<N extends num>(N? a, N? b){
+  static bool _lessThanEqual<N extends num>(N? a, N? b) {
     if (a != null && b != null) {
       return a <= b;
     } else if (a != null) {

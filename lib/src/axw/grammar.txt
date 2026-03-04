@@ -2,8 +2,8 @@ For current version: AXW2.0;
 [<?Text?> RP+] is a Structure Definition.
 [-] is a Structure Closer. needs an example on that line for if it isn't a plural structure.
 [<!Text!>] is a Caller.
-[{Caller} λ] is a needed Caller.
-[{Caller} Ω] is an unneeded Caller.
+[{Caller} λ] is a required Caller.
+[{Caller} Ω] is an optional Caller.
 [{Caller}π] is a multi Caller.
 [{Caller}Σ] is a single Caller.
 [{Caller}π({Symbol})] is a multi Caller where symbol has to placed between every single other,
@@ -16,6 +16,7 @@ For current version: AXW2.0;
 [|] is a or.
 [&] is a and.
 [σ  {Item}  ε] means it has to be connected (no whitespaces).
+[({Item})] is a collection of items, that have some attribute connected to them.
 
 
 <?Manager?> RP+
@@ -24,12 +25,7 @@ For current version: AXW2.0;
 -
 
 <?Header?> RP+
-  ~/AXW\~α
-    :
-      σ  <!SD!>Σ λ /.\ <!SD!>Σ λ  ε
-      σ  <!SD!>Σ λ  ε
-    ;Σ
-  /;\
+  ~/AXW\~α σ  <!SD!>Σ λ ( /.\ <!SD!> )Σ Ω  ε /;\
 -AXW 2.0 ; | AXW 2 ;
 
 <?Declaration?> RP+
@@ -74,26 +70,140 @@ For current version: AXW2.0;
 -
 
 <?BinaryExpression?> RP+
-  σ ~/0n\~α
+  σ  ~/0n\~β
       :
         /0\
         /1\
       ;π λ
   ε
--0n0101
+-0N0101
 
 <?IntExpression?> RP+
   σ  <!SD!>π λ  ε
 -1056
 
+<?HexadecimalExpression?> RP+
+  σ  ~/0x\~β
+      :
+        <!SD!>
+        /a\β
+        /b\β
+        /c\β
+        /d\β
+        /e\β
+        /f\β
+      ;π λ
+  ε
+-0xAfB2
 
+<?FloatExpression?> RP+
+  σ  <!IntExpression!> /.\ <!IntExpression!>  ε
+-56.23
 
+<?ListExpression?> RP+
+  /[\
+    <!Expression!>π( /,\ ) Ω
+  /]\
+-[ [ 5 , 32, 32.5 ], "AB" ]
 
+<?VoidExpression?> RP+
+  :
+    ~/null\~α
+    ~/void\~α
+  ;Σ
+-
 
+<?BoolExpression?> RP+
+  :
+    ~/true\~α
+    ~/false\~α
+  ;Σ
+-
 
+<?DictExpression?> RP+
+  /{\
+    ( <!Identifier!>λ /:\ <!Expression!>λ )π( /,\ ) Ω
+  /}\
+-{ a : "5" }
 
+<?VarExpression?> RP+
+  <!Identifier!>
+-
 
+-?StringExpression?> RP+
+  σ  /"\
+    :
+      <!Char!>
+      / \
+    ;π Ω
+  /"\  ε
+-"twenty2"
 
+<?CharExpression?> RP+
+  σ  /'\
+    :
+      <!Char!>
+      / \
+    ;Σ Ω
+  /'\  ε
+-'B'
+
+<?Char?> RP+
+  :
+    <!CharTextInclusive!>
+    <!SD!>
+  ;
+-b
+
+<?CharTextInclusive?> RP+
+  :
+    <!CharTextExclusive!>
+    σ  <!Backslash!> <!CharTextExclusive!>  ε
+  ;
+-
+
+<?Identifier?> RP+
+  <!CharTextExclusive!>Σ λ
+  :
+    <!CharTextExclusive!>
+    <!SD!>
+  ;π Ω
+-
+
+<?CharTextExclusive?> RP+
+  :
+    /a\β
+    /b\β
+    /c\β
+    /d\β
+    /e\β
+    /f\β
+    /g\β
+    /h\β
+    /i\β
+    /j\β
+    /k\β
+    /l\β
+    /m\β
+    /n\β
+    /o\β
+    /p\β
+    /q\β
+    /r\β
+    /s\β
+    /t\β
+    /u\β
+    /v\β
+    /w\β
+    /x\β
+    /y\β
+    /z\β
+  ;Σ
+-B
+
+<?Backslash?> RP+
+  /\\
+-\
 
 <?SD?> RP+
   :
@@ -108,4 +218,8 @@ For current version: AXW2.0;
     /8\
     /9\
   ;Σ
+-0
+
+<?StructExpression?> RP+
+  pseudo
 -

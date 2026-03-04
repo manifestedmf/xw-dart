@@ -840,7 +840,7 @@ class Date with Compare<Date> {
 /// (manifestedmf on github) or on their repository
 /// (manifestedmf/xw-dart on github).
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 String hAdder(int number, int amount) {
   String mule = "$number";
   if (number.length < amount) {

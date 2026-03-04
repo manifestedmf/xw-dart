@@ -187,22 +187,22 @@ extension DoubleExtension on double {
 }
 
 extension ListE<E> on List<E> {
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   @Deprecated("2.8, use equalsShallow or equalsDeep")
   bool equals(List<E> other, [bool isShallow = true]) =>
       listEquals(this, other, isShallow);
 
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   bool equalsShallow(List<E> other) => listEqualsShallow(this, other);
 
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   bool equalsDeep(List<E> other) => listEqualsDeep(this, other);
 
   /// Removes all occurrences of [value].
   ///
   /// Returns [false] if there is no occurrence of [value].
   ///
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   bool removeAll(E value) {
     if (!contains(E)) {
       return false;
@@ -214,7 +214,7 @@ extension ListE<E> on List<E> {
 
   /// Reverses [this] [List].
   ///
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   void reverse() {
     int i, j;
     i = 0;
@@ -231,32 +231,41 @@ extension ListE<E> on List<E> {
   /// Inputs current element to [inv] and selects current element to
   /// be the output of [inv].
   ///
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   void inverse(E Function(E) inv) => changeEach(inv);
 
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   void changeEach(E Function(E) changer) {
     for (int index = 0; index < length; index++) {
       this[index] = changer(this[index]);
     }
   }
+
+  /// Swaps elements at [a] & [b].
+  ///
+  /// Added in `2.8`.
+  void swap(int a, int b) {
+    E element = this[a];
+    this[a] = this[b];
+    this[b] = element;
+  }
 }
 
 extension ListBool on List<bool> {
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   void inverseThis() => inverse((b) => !b);
 }
 
 extension ListInt on List<int> {
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   void inverseThis() => inverse((n) => ~n);
 }
 
 
 extension ListN<N extends num> on List<N> {
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   void powEach(N number) => changeEach((n) => pow(n, number));
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   void squareEach() => changeEach(square);
 }
 
@@ -265,15 +274,15 @@ extension ListNum on List<num> {
 }
 
 extension MapKV<K, V> on Map<K, V> {
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   @Deprecated("2.8, use equalsShallow or equalsDeep")
   bool equals(Map<K, V> other, [bool isShallow = true]) =>
       mapEquals(this, other, isShallow);
 
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   bool equalsShallow(Map<K, V> other) => mapEqualsShallow(this, other);
 
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   bool equalsDeep(Map<K, V> other) => mapEqualsDeep(this, other);
 
   /// This might lose some entries.
@@ -283,28 +292,28 @@ extension MapKV<K, V> on Map<K, V> {
 }
 
 extension SetE<E> on Set<E> {
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   @Deprecated("2.8, use equalsShallow or equalsDeep")
   bool equals(Set<E> other, [bool isShallow = true]) =>
       setEquals(this, other, isShallow);
 
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   bool equalsShallow(Set<E> other) => setEqualsShallow(this, other);
 
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   bool equalsDeep(Set<E> other) => setEqualsDeep(this, other);
 }
 
 extension IterableE<E> on Iterable<E> {
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   @Deprecated("2.8, use equalsShallow or equalsDeep")
   bool equals(Iterable<E> other, [bool isShallow = true]) =>
       iterableEquals(this, other, true);
 
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   bool equalsShallow(Iterable<E> other) => iterableEqualsShallow(this, other);
 
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   bool equalsDeep(Iterable<E> other) => iterableEqualsDeep(this, other);
 }
 
@@ -435,9 +444,9 @@ extension StringExtension on String {
 
   bool get isUpperCase => toUpperCase() == this && length == 1;
   bool get isLowerCase => toLowerCase() == this && length == 1;
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   bool get isUpperCased => toUpperCase() == this;
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   bool get isLowerCased => toLowerCase() == this;
 
   /// Gets the reverse of [this] [String].
@@ -460,7 +469,7 @@ extension StringExtension on String {
 
   /// Puts each word into a [List].
   ///
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   Iterable<String> toWords() {
     List<String> mule = [];
     String char, builder;

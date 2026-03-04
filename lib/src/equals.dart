@@ -1,9 +1,9 @@
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 @Deprecated("3.0, use listEqualsShallow or listEqualsDeep")
 bool listEquals<T>(List<T> a, List<T> b, [bool isShallow = true]) =>
   (isShallow) ? listEqualsShallow(a, b) : listEqualsDeep(a, b);
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 bool listEqualsShallow<T>(List<T> a, List<T> b) {
   if (a == b) {
     return true;
@@ -19,7 +19,7 @@ bool listEqualsShallow<T>(List<T> a, List<T> b) {
   }
 }
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 bool listEqualsDeep<T>(List<T> a, List<T> b) {
   if (a == b) {
     return true;
@@ -35,12 +35,12 @@ bool listEqualsDeep<T>(List<T> a, List<T> b) {
   }
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 @Deprecated("3.0, use mapEqualsShallow or mapEqualsDeep")
 bool mapEquals<K, V>(Map<K, V> a, Map<K, V> b, [bool isShallow = true]) =>
   (isShallow) ? mapEqualsShallow(a, b) : mapEqualsDeep(a, b);
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 bool mapEqualsShallow<K, V>(Map<K, V> a, Map<K, V> b) {
   if (a == b) {
     return true;
@@ -58,7 +58,7 @@ bool mapEqualsShallow<K, V>(Map<K, V> a, Map<K, V> b) {
   }
 }
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 bool mapEqualsDeep<K, V>(Map<K, V> a, Map<K, V> b) {
   if (a == b) {
     return true;
@@ -76,12 +76,12 @@ bool mapEqualsDeep<K, V>(Map<K, V> a, Map<K, V> b) {
   }
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 @Deprecated("3.0, use setEqualsShallow or setEqualsDeep")
 bool setEquals<T>(Set<T> a, Set<T> b, [bool isShallow = true]) =>
   (isShallow) ? setEqualsShallow(a, b) : setEqualsDeep(a, b);
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 bool setEqualsShallow<T>(Set<T> a, Set<T> b) {
   if (a == b) {
     return true;
@@ -97,7 +97,7 @@ bool setEqualsShallow<T>(Set<T> a, Set<T> b) {
   }
 }
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 bool setEqualsDeep<T>(Set<T> a, Set<T> b) {
   if (a == b) {
     return true;
@@ -113,12 +113,12 @@ bool setEqualsDeep<T>(Set<T> a, Set<T> b) {
   }
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 @Deprecated("3.0, use iterableEqualsShallow or iterableEqualsDeep")
 bool iterableEquals<T>(Iterable<T> a, Iterable<T> b, [bool isShallow = true]) =>
   (isShallow) ? iterableEqualsShallow(a, b) : iterableEqualsDeep(a, b);
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 bool iterableEqualsShallow<T>(Iterable<T> a, Iterable<T> b) {
   if (a == b) {
     return true;
@@ -134,7 +134,7 @@ bool iterableEqualsShallow<T>(Iterable<T> a, Iterable<T> b) {
   }
 }
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 bool iterableEqualsDeep<T>(Iterable<T> a, Iterable<T> b) {
   if (a == b) {
     return true;
@@ -150,7 +150,7 @@ bool iterableEqualsDeep<T>(Iterable<T> a, Iterable<T> b) {
   }
 }
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 bool deepEquals<T>(T a, T b) {
   if (a is Map && b is Map) {
     return mapEqualsDeep(a, b);

@@ -9,7 +9,7 @@ import '../extension.dart';
 /// print(abs(17262)); // 17262
 /// ```
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 int abs(int signed) => (signed < 0) ? -signed : signed;
 
 /// The Representation for each digit, so for example `'0'` is `0` and
@@ -207,7 +207,7 @@ String baseToBase({
 /// print(max<num>([5, 6.2, 9, pi])); // 9
 /// ```
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   if (numbers.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -234,7 +234,7 @@ N maxSimple<N extends num>(N a, N b) => (a > b) ? a : b;
 
 /// Gives the [MapEntry] with the highest key([K]) value.
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 MapEntry<K, V> maxMapKey<K extends num, V>(
   Map<K, V> map, [
   MapEntry<K, V>? ifNone,
@@ -254,7 +254,7 @@ MapEntry<K, V> maxMapKey<K extends num, V>(
 
 /// Gives the [MapEntry]s with the highest value([V]) value.
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 Set<MapEntry<K, V>> maxMapValue<K, V extends num>(
   Map<K, V> map, [
   MapEntry<K, V>? ifNone,
@@ -283,7 +283,7 @@ Set<MapEntry<K, V>> maxMapValue<K, V extends num>(
 ///
 /// If there are no values in [numbers], then it returns [ifNone].
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 N min<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   if (numbers.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -302,7 +302,7 @@ N min<N extends num>(Iterable<N> numbers, [N? ifNone]) {
 /// Added in `2.7.3`.
 N minSimple<N extends num>(N a, N b) => (a < b) ? a : b;
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 MapEntry<K, V> minMapKey<K extends num, V>(
   Map<K, V> map, [
   MapEntry<K, V>? ifNone,
@@ -320,7 +320,7 @@ MapEntry<K, V> minMapKey<K extends num, V>(
   return min;
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 Set<MapEntry<K, V>> minMapValue<K, V extends num>(
   Map<K, V> map, [
   MapEntry<K, V>? ifNone,
@@ -347,7 +347,7 @@ Set<MapEntry<K, V>> minMapValue<K, V extends num>(
 
 /// Gets the sum of [numbers], The starting value is [starting].
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 N sum<N extends num>(Iterable<N> numbers, [N? starting]) {
   N sum;
   sum = (starting == null) ? ((N == int) ? 0 : 0.0) as N : starting;
@@ -357,7 +357,7 @@ N sum<N extends num>(Iterable<N> numbers, [N? starting]) {
   return sum;
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 K sumMapKey<K extends num, V>(Map<K, V> map, [K? starting]) {
   K sum;
   sum = (starting == null) ? 0 as K : starting;
@@ -368,7 +368,7 @@ K sumMapKey<K extends num, V>(Map<K, V> map, [K? starting]) {
   return sum;
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 V sumMapValue<K, V extends num>(Map<K, V> map, [V? starting]) {
   V sum;
   sum = (starting == null) ? 0 as V : starting;
@@ -393,13 +393,13 @@ num powNum(num base, num exponent) => math.pow(base, exponent);
 double powDouble(double base, double exponent) =>
     math.pow(base, exponent).toDouble();
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 N pow<N extends num>(N base, N exponent) => math.pow(base, exponent) as N;
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 N square<N extends num>(N base) => pow(base, (base is int) ? 2 as N : 2.0 as N);
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 N round<N extends num>(N number) =>
     (N == double)
         ? number.roundToDouble() as N
@@ -408,24 +408,24 @@ N round<N extends num>(N number) =>
 /// If [number] is a `pow(int, 2)`, then it returns a `int`,
 /// else it returns a `double`.
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 num sqrt(num number) {
   double value = math.sqrt(number);
   return (value.isWhole) ? value.toInt() : value;
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 bool isLow(num number) => (number % 1 < 0.5);
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 bool isHigh(num number) => !isLow(number);
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 bool isDivBy(int oper, int number) => oper % number == 0;
 
 /// Explicit that the first is 1.
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 List<int> primeFactors(int number) {
   List<int> list = [];
   int div = 2;
@@ -481,12 +481,12 @@ List<int> primeFactors(int number) {
 
 /// If [number] is prime.
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 bool isPrime(int number) => (primeFactors(number).length == 1);
 
 /// If number is constructed of primes
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 bool isComprime(List<int> factors) {
   if (factors.length <= 1) {
     return false;
@@ -501,10 +501,10 @@ bool isComprime(List<int> factors) {
 ///
 /// 63, 3 // false
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 bool isExponentOf(int number, int base) => isMadeUpOf(number, [base]);
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 bool isMadeUpOf(int number, List<int> primes) {
   List<int> list = primeFactors(number);
   int index = 0;
@@ -519,7 +519,7 @@ bool isMadeUpOf(int number, List<int> primes) {
   return true;
 }
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 class MathError {
   final String? message;
 
@@ -528,7 +528,7 @@ class MathError {
 
 /// Gives the factorial of an unsigned int being, [number].
 ///
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 int factorial(int number) {
   if (number.isSigned) {
     throw MathError("$number can't be signed in $factorial().");
@@ -543,7 +543,7 @@ int factorial(int number) {
 
 /// Gives the termial (addition from 0 to [number]).
 ///
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 N termial<N extends num>(N number) {
   double mule = (number * number + number) / 2;
   return (number is int) ? mule.toInt() as N : mule as N;
@@ -552,5 +552,5 @@ N termial<N extends num>(N number) {
 /*
 /// Gives the corresponding number of the unknown number input.
 ///
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 */

@@ -8,7 +8,7 @@ import 'core.dart';
 /// Added in `2.7.3`.
 Fraction absFraction(Fraction number) => (number.isNegative) ? -number : number;
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 Fraction maxFraction(Iterable<Fraction> fractions, [Fraction? ifNone]) {
   if (fractions.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -25,7 +25,7 @@ Fraction maxFraction(Iterable<Fraction> fractions, [Fraction? ifNone]) {
 /// Added in `2.7.3`.
 Fraction maxSimpleFraction(Fraction a, Fraction b) => (a > b) ? a : b;
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 Set<MapEntry<K, Fraction>> maxMapValueFraction<K>(
   Map<K, Fraction> map, [
   MapEntry<K, Fraction>? ifNone,
@@ -50,7 +50,7 @@ Set<MapEntry<K, Fraction>> maxMapValueFraction<K>(
   return maxSet;
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 MapEntry<Fraction, V> maxMapKeyFraction<V>(
   Map<Fraction, V> map, [
   MapEntry<Fraction, V>? ifNone,
@@ -68,7 +68,7 @@ MapEntry<Fraction, V> maxMapKeyFraction<V>(
   return max;
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 Fraction minFraction(Iterable<Fraction> fractions, [Fraction? ifNone]) {
   if (fractions.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
@@ -85,7 +85,7 @@ Fraction minFraction(Iterable<Fraction> fractions, [Fraction? ifNone]) {
 /// Added in `2.7.3`.
 Fraction minSimpleFraction(Fraction a, Fraction b) => (a < b) ? a : b;
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 MapEntry<Fraction, V> minMapKeyFraction<V>(
   Map<Fraction, V> map, [
   MapEntry<Fraction, V>? ifNone,
@@ -103,7 +103,7 @@ MapEntry<Fraction, V> minMapKeyFraction<V>(
   return min;
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 Set<MapEntry<K, Fraction>> minMapValueFraction<K>(
   Map<K, Fraction> map, [
   MapEntry<K, Fraction>? ifNone,
@@ -128,7 +128,7 @@ Set<MapEntry<K, Fraction>> minMapValueFraction<K>(
   return minSet;
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 Fraction sumFraction(Iterable<Fraction> fractions, [Fraction? starting]) {
   Fraction sum;
   sum = (starting == null) ? Fraction.compressed(0, 0) : starting;
@@ -138,12 +138,12 @@ Fraction sumFraction(Iterable<Fraction> fractions, [Fraction? starting]) {
   return sum;
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 Fraction powFraction(Fraction base, int exponent) => base ^ exponent;
 
 /// Adds very specific [Fraction] class.
 ///
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 class Fraction with Compare<Fraction> {
   final int _oper; // operand
   final int _div; // divisor
@@ -243,14 +243,14 @@ class Fraction with Compare<Fraction> {
 
   String get string => "$_oper/$_div";
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   factory Fraction.fromDouble(double number) =>
       Fraction.compressed(number.truncate(), pow(10, number.decimalLength));
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   const Fraction.fromInt(int oper) : this._compressed(oper, 1);
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   factory Fraction.fromNum(num number) {
     if (number is double) {
       return Fraction.fromDouble(number);
@@ -269,7 +269,7 @@ class Fraction with Compare<Fraction> {
   /// Added in `2.7.3`.
   const Fraction._compressed(this._oper, this._div) : _isCompressed = true;
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   factory Fraction.compressed(int operand, int divisor) {
     if (operand == 0 && divisor == 0) {
       return Fraction._compressed(operand, divisor);
@@ -300,7 +300,7 @@ class Fraction with Compare<Fraction> {
   factory Fraction(int oper, int div) => Fraction.compressed(oper, div);
 
   @override
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   bool operator ==(Object other) {
     if (identical(this, other)) {
       return true;
@@ -314,7 +314,7 @@ class Fraction with Compare<Fraction> {
   }
 
   @override
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   int get hashCode {
     if (_isCompressed) {
       return Object.hash(_oper, _div);
@@ -324,7 +324,7 @@ class Fraction with Compare<Fraction> {
   }
 
   @override
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   bool operator <(Fraction other) {
     if (isNegative ^ other.isNegative) {
       return isNegative;
@@ -333,21 +333,21 @@ class Fraction with Compare<Fraction> {
     }
   }
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   Fraction operator +(Fraction other) => Fraction.compressed(
     _oper * other._div + _div * other._oper,
     _div * other._div,
   );
   // a*d + b*c, b*d
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   Fraction operator -(Fraction other) => Fraction.compressed(
     _oper * other._div - _div * other._oper,
     _div * other._div,
   );
   // a*d - b*c, b*d
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   Fraction operator -() {
     if (_isCompressed) {
       return Fraction._compressed(-_oper, _div);
@@ -356,17 +356,17 @@ class Fraction with Compare<Fraction> {
     }
   }
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   Fraction operator *(Fraction other) =>
       Fraction.compressed(_oper * other._oper, _div * other._div);
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   Fraction operator /(Fraction other) => this * ~other;
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   Fraction operator ~/(Fraction other) => this / other;
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   Fraction operator %(Fraction other) {
     Fraction mule = this;
     while (mule < other) {
@@ -380,31 +380,31 @@ class Fraction with Compare<Fraction> {
 
   /// Raises [_oper] & [_div] to [exponent].
   ///
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   Fraction operator ^(int exponent) =>
       Fraction.compressed(pow(_oper, exponent), pow(_div, exponent));
 
   /// Flips [_div] & [_oper].
   ///
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   Fraction operator ~() => Fraction.compressed(_div, _oper);
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   bool get isNaN => _div == 0;
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   bool get isInfinite => _div == 0;
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   bool get isFinite => _div != 0;
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   bool get isNegative => _div.isNegative ^ _oper.isNegative;
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   bool get isPositive => !isNegative;
 
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   Fraction floorToFraction() {
     Fraction fraction = toCompressed();
     if (fraction._div == 1) {
@@ -443,19 +443,19 @@ class Fraction with Compare<Fraction> {
   double ceilToDouble() => ceilToFraction().float;
 }
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 int getPreviousFactor(int number, int divisor) => (number ~/ divisor) * divisor;
 
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 int getNextFactor(int number, int divisor) => (number ~/ divisor + 1) * divisor;
 
 extension FractionExtensionInt on int {
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   Fraction toFraction() => Fraction.fromInt(this);
 }
 
 extension FractionExtensionDouble on double {
-  /// Added in `2.7.0`.
+  /// Added in `2.7`.
   Fraction toFraction() => Fraction.fromDouble(this);
 }
 
@@ -465,7 +465,7 @@ extension FractionExtensionNum on num {
 }
 
 /*
-/// Added in `2.7.0`.
+/// Added in `2.7`.
 Fraction percentage<N extends num>(N number) =>
   Fraction.compressed(number.truncate(),pow(10,number.decimalLength));
 */

@@ -132,7 +132,7 @@ class Scanner {
   static const one = "1";
   static const hexadecimal = {
     zero,
-    "1",
+    one,
     "2",
     "3",
     "4",

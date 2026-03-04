@@ -1,11 +1,10 @@
 import '../math/fraction.dart';
-import '../math/core.dart';
 
-/// Added in `2.7.4`.
+/// Added in `2.8`.
 class BubbleSort {
   /// Gives back the amount of [swaps] for [list].
   ///
-  /// Added in `2.7.4`.
+  /// Added in `2.8`.
   static int listSort<N extends num>(List<N> list) {
     int index, nextIndex, rotation, swaps;
     index = swaps = 0;
@@ -29,7 +28,8 @@ class BubbleSort {
     }
     return swaps;
   }
-  /// Added in `2.7.4`.
+
+  /// Added in `2.8`.
   static int listSortFraction(List<Fraction> list) {
     int index, nextIndex, rotation, swaps;
     index = swaps = 0;
@@ -53,6 +53,36 @@ class BubbleSort {
     }
     return swaps;
   }
+
+  /// Asks if [current] is more than [next] if it is, then it swaps.
+  ///
+  /// Added in `2.8`.
+  static int listSortAny<E>(List<E> list, bool Function(E, E) mt) {
+    int index, nextIndex, rotation, swaps;
+    index = swaps = 0;
+    nextIndex = rotation = 1;
+    E current, next;
+    while (rotation <= list.length) {
+      if (nextIndex + rotation - 1 >= list.length) {
+        index = 0;
+        nextIndex = 1;
+        ++rotation;
+      }
+      current = list[index];
+      next = list[nextIndex];
+      if (mt(current, next)) {
+        list[index] = next;
+        list[nextIndex] = current;
+        ++swaps;
+      }
+      ++index;
+      ++nextIndex;
+    }
+    return swaps;
+  }
+
+  static int listSortStringLength(List<String> list) =>
+      listSortAny(list, (c, n) => c.length > n.length);
 
   /*static Map<int,V> mapKeySortInt<V>(Map<int,V> map) {
     int index = 0;
