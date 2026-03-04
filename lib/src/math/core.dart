@@ -379,20 +379,6 @@ V sumMapValue<K, V extends num>(Map<K, V> map, [V? starting]) {
   return sum;
 }
 
-@Deprecated("2.8, use pow<int>(base, exponent)")
-int powInt(int base, int exponent) {
-  for (int i = 0; i < exponent; i++) {
-    base *= exponent;
-  }
-  return base;
-}
-
-@Deprecated("2.8, use pow<num>(base, exponent)")
-num powNum(num base, num exponent) => math.pow(base, exponent);
-@Deprecated("2.8, use pow<double>(base, exponent)")
-double powDouble(double base, double exponent) =>
-    math.pow(base, exponent).toDouble();
-
 /// Added in `2.7`.
 N pow<N extends num>(N base, N exponent) => math.pow(base, exponent) as N;
 
@@ -401,9 +387,7 @@ N square<N extends num>(N base) => pow(base, (base is int) ? 2 as N : 2.0 as N);
 
 /// Added in `2.8`.
 N round<N extends num>(N number) =>
-    (N == double)
-        ? number.roundToDouble() as N
-        : number;
+    (N == double) ? number.roundToDouble() as N : number;
 
 /// If [number] is a `pow(int, 2)`, then it returns a `int`,
 /// else it returns a `double`.
@@ -554,3 +538,23 @@ N termial<N extends num>(N number) {
 ///
 /// Added in `2.8`.
 */
+/// The Σ used in math.
+///
+/// Added in `2.8`.
+N sigmaf<N extends num>(Iterable<N> nums) => sum(nums);
+
+/// The Π used in math.
+///
+/// Added in `2.8`.
+N pif<N extends num>(Iterable<N> nums, [N? starting]) {
+  N product;
+  if (starting == null) {
+    product = (N == int) ? 1 as N : 1.0 as N;
+  } else {
+    product = starting;
+  }
+  for (N value in nums) {
+    product = product * value as N;
+  }
+  return product;
+}

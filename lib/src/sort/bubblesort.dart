@@ -2,12 +2,14 @@ import '../math/fraction.dart';
 
 /// Added in `2.8`.
 class BubbleSort {
-  /// Gives back the amount of [swaps] for [list].
+  /// [swaps]: gives back the amount of [swaps] for [list].
+  ///
+  /// [checks]: gives back the amount of times `>` was asked.
   ///
   /// Added in `2.8`.
-  static int listSort<N extends num>(List<N> list) {
-    int index, nextIndex, rotation, swaps;
-    index = swaps = 0;
+  static ({int swaps, int checks}) listSort<N extends num>(List<N> list) {
+    int index, nextIndex, rotation, swaps, checks;
+    index = swaps = checks = 0;
     nextIndex = rotation = 1;
     N current, next;
     while (rotation <= list.length) {
@@ -23,16 +25,17 @@ class BubbleSort {
         list[nextIndex] = current;
         ++swaps;
       }
+      ++checks;
       index++;
       nextIndex++;
     }
-    return swaps;
+    return (swaps: swaps, checks: checks);
   }
 
   /// Added in `2.8`.
-  static int listSortFraction(List<Fraction> list) {
-    int index, nextIndex, rotation, swaps;
-    index = swaps = 0;
+  static ({int swaps, int checks}) listSortFraction(List<Fraction> list) {
+    int index, nextIndex, rotation, swaps, checks;
+    index = swaps = checks = 0;
     nextIndex = rotation = 1;
     Fraction current, next;
     while (rotation <= list.length) {
@@ -48,18 +51,22 @@ class BubbleSort {
         list[nextIndex] = current;
         ++swaps;
       }
+      ++checks;
       ++index;
       ++nextIndex;
     }
-    return swaps;
+    return (swaps: swaps, checks: checks);
   }
 
   /// Asks if [current] is more than [next] if it is, then it swaps.
   ///
   /// Added in `2.8`.
-  static int listSortAny<E>(List<E> list, bool Function(E, E) mt) {
-    int index, nextIndex, rotation, swaps;
-    index = swaps = 0;
+  static ({int swaps, int checks}) listSortAny<E>(
+    List<E> list,
+    bool Function(E, E) mt,
+  ) {
+    int index, nextIndex, rotation, swaps, checks;
+    index = swaps = checks = 0;
     nextIndex = rotation = 1;
     E current, next;
     while (rotation <= list.length) {
@@ -75,13 +82,14 @@ class BubbleSort {
         list[nextIndex] = current;
         ++swaps;
       }
+      ++checks;
       ++index;
       ++nextIndex;
     }
-    return swaps;
+    return (swaps: swaps, checks: checks);
   }
 
-  static int listSortStringLength(List<String> list) =>
+  static ({int swaps, int checks}) listSortStringLength(List<String> list) =>
       listSortAny(list, (c, n) => c.length > n.length);
 
   /*static Map<int,V> mapKeySortInt<V>(Map<int,V> map) {

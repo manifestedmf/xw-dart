@@ -296,9 +296,6 @@ class Fraction with Compare<Fraction> {
   /// Added in `2.7.3`.
   Fraction _compress() => Fraction.compressed(_oper, _div);
 
-  @Deprecated("2.8, use Fraction.compressed(), or Fraction.constant()")
-  factory Fraction(int oper, int div) => Fraction.compressed(oper, div);
-
   @override
   /// Added in `2.7`.
   bool operator ==(Object other) {

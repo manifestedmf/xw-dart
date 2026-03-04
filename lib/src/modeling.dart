@@ -17,8 +17,6 @@ class Point {
 
   const Point({required this.x, required this.y, required this.z});
 
-  @Deprecated("2.8, use Point(x: x, y: y, z: z)")
-  const Point.xyz({required this.x, required this.y, required this.z});
 
   const Point.xy(this.x, this.y) : z = 0;
 
@@ -111,35 +109,6 @@ class Triangle extends Vertex {
   const Triangle(super.a, super.b, super.c);
 }
 
-@Deprecated("2.8, use Square.sameY(a, b)")
-class SquareFlat extends VertexProvider {
-  const SquareFlat(super.a, super.b);
-
-  Point get c => Point(x: a.x, y: a.y, z: b.z);
-  Point get d => Point(x: b.x, y: b.y, z: a.z);
-
-  @override
-  Set<Vertex> toVertices() => {Vertex(a, b, c), Vertex(a, b, d)};
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is SquareFlat &&
-          runtimeType == other.runtimeType &&
-          hashCode == other.hashCode;
-
-  @override
-  int get hashCode => Object.hashAllUnordered([a, b]);
-
-  @override
-  toString() => "\$from:{$a}, \$to:{$b}";
-
-  @override
-  join([String seperator = " "]) => "$a$seperator$b$seperator";
-
-  @override
-  String get denotation => "squareF";
-}
 
 enum _SquareState {
   //
@@ -234,7 +203,7 @@ class Square extends VertexProvider {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SquareFlat &&
+      other is Square &&
           runtimeType == other.runtimeType &&
           hashCode == other.hashCode;
 
@@ -305,10 +274,6 @@ class Square extends VertexProvider {
   String get denotation => "cube";
 }*/
 
-@Deprecated("2.8, use Point(x: x, y: y, z: z)")
-class PointXYZ extends Point {
-  const PointXYZ({required super.x, required super.y, required super.z});
-}
 
 class Model {
   final Set<VertexProvider> vertices;
@@ -366,9 +331,4 @@ class Model {
     mule += "$end)";
     return mule;
   }
-}
-
-@Deprecated("2.8, use Point.xy(x, y)")
-class PointShort extends Point {
-  const PointShort(int x, int y) : super.xy(x, y);
 }

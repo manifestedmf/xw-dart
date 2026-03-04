@@ -1,6 +1,7 @@
 import 'equals.dart';
 import 'standard.dart' as std;
 import 'math/core.dart';
+import '../sort.dart' as sort;
 
 // class Char {
 //   final int char;
@@ -187,11 +188,6 @@ extension DoubleExtension on double {
 }
 
 extension ListE<E> on List<E> {
-  /// Added in `2.7`.
-  @Deprecated("2.8, use equalsShallow or equalsDeep")
-  bool equals(List<E> other, [bool isShallow = true]) =>
-      listEquals(this, other, isShallow);
-
   /// Added in `2.8`.
   bool equalsShallow(List<E> other) => listEqualsShallow(this, other);
 
@@ -261,24 +257,38 @@ extension ListInt on List<int> {
   void inverseThis() => inverse((n) => ~n);
 }
 
-
 extension ListN<N extends num> on List<N> {
   /// Added in `2.8`.
   void powEach(N number) => changeEach((n) => pow(n, number));
+
   /// Added in `2.8`.
   void squareEach() => changeEach(square);
+
+  /// you have to have `import 'package:xw/sort.dart';` to do this.
+  ///
+  /// Added in `2.8`.
+  void sortWithThis(sort.SortAlg algorithm) =>
+      sort.inlineSort(this, alg: algorithm);
 }
 
 extension ListNum on List<num> {
+  /// Added in `2.8`.
   void roundEach() => changeEach(round);
 }
 
-extension MapKV<K, V> on Map<K, V> {
-  /// Added in `2.7`.
-  @Deprecated("2.8, use equalsShallow or equalsDeep")
-  bool equals(Map<K, V> other, [bool isShallow = true]) =>
-      mapEquals(this, other, isShallow);
+extension ListString on List<String> {
+  /// Added in `2.8`.
+  Map<String, int> toMapUpperCaseAmount() => {
+    for (var current in this) current: current.upperCaseAmount,
+  };
 
+  /// Added in `2.8`.
+  Map<String, int> toMapLowerCaseAmount() => {
+    for (var current in this) current: current.lowerCaseAmount,
+  };
+}
+
+extension MapKV<K, V> on Map<K, V> {
   /// Added in `2.8`.
   bool equalsShallow(Map<K, V> other) => mapEqualsShallow(this, other);
 
@@ -292,11 +302,6 @@ extension MapKV<K, V> on Map<K, V> {
 }
 
 extension SetE<E> on Set<E> {
-  /// Added in `2.7`.
-  @Deprecated("2.8, use equalsShallow or equalsDeep")
-  bool equals(Set<E> other, [bool isShallow = true]) =>
-      setEquals(this, other, isShallow);
-
   /// Added in `2.8`.
   bool equalsShallow(Set<E> other) => setEqualsShallow(this, other);
 
@@ -305,16 +310,29 @@ extension SetE<E> on Set<E> {
 }
 
 extension IterableE<E> on Iterable<E> {
-  /// Added in `2.7`.
-  @Deprecated("2.8, use equalsShallow or equalsDeep")
-  bool equals(Iterable<E> other, [bool isShallow = true]) =>
-      iterableEquals(this, other, true);
-
   /// Added in `2.8`.
   bool equalsShallow(Iterable<E> other) => iterableEqualsShallow(this, other);
 
   /// Added in `2.8`.
   bool equalsDeep(Iterable<E> other) => iterableEqualsDeep(this, other);
+  /// Non-CaseSensitive search.
+  ///
+  /// Added in `2.8`.
+  bool nonCaseSensitiveContains(Object? element) {
+    if (element is! String) {
+      return contains(element);
+    } else {
+      List<E> array = toList();
+      array.changeEach((s){
+        if (s is String) {
+          return s.toLowerCase() as E;
+        } else {
+          return s;
+        }
+      });
+      return array.contains(element.toLowerCase());
+    }
+  }
 }
 
 extension IterableBool on Iterable<bool> {
@@ -434,7 +452,7 @@ extension StringExtension on String {
     String mule = this;
     int index = 1;
     while (index < mule.length) {
-      if (mule[index].isUpperCase) {
+      if (mule[index].isUpperCaseChar) {
         mule = mule.insert(" ", index++);
       }
       ++index;
@@ -442,10 +460,20 @@ extension StringExtension on String {
     return mule;
   }
 
-  bool get isUpperCase => toUpperCase() == this && length == 1;
-  bool get isLowerCase => toLowerCase() == this && length == 1;
+  @Deprecated("2.9 use isUpperCaseChar")
+  bool get isUpperCase => isUpperCaseChar;
+  @Deprecated("2.9 use isLowerCasedChar")
+  bool get isLowerCase => isLowerCaseChar;
+  /// Added in `2.8`.
+  bool get isUpperCaseChar => length == 1 && isUpperCased;
+  /// Added in `2.8`.
+  bool get isLowerCaseChar => length == 1 && isLowerCased;
+  /// Added in `2.8`.
+  bool get isCaseInsensitiveChar => length == 1 && isUpperCased && isLowerCased;
+
   /// Added in `2.8`.
   bool get isUpperCased => toUpperCase() == this;
+
   /// Added in `2.8`.
   bool get isLowerCased => toLowerCase() == this;
 
@@ -469,6 +497,8 @@ extension StringExtension on String {
 
   /// Puts each word into a [List].
   ///
+  /// This function should not return any string with no contents ( `""` ).
+  ///
   /// Added in `2.8`.
   Iterable<String> toWords() {
     List<String> mule = [];
@@ -489,7 +519,41 @@ extension StringExtension on String {
       }
     }
     mule.add(builder);
-    mule.removeAll("");
     return mule;
   }
+
+  /// Amount of `uppercase` letters in [this] string.
+  ///
+  /// Added in `2.8`.
+  int get upperCaseAmount {
+    int index, mule;
+    index = mule = 0;
+    while (index < length) {
+      if (this[index].isUpperCaseChar) {
+        mule++;
+      }
+    }
+    return mule;
+  }
+
+  /// Amount of `lowercase` letters in [this] string.
+  ///
+  /// Added in `2.8`.
+  int get lowerCaseAmount {
+    int index, mule;
+    index = mule = 0;
+    while (index < length) {
+      if (this[index].isCaseInsensitiveChar) {
+        mule++;
+      }
+    }
+    return mule;
+  }
+}
+
+enum CaseKind {
+  upper,
+  lower,
+  insensitive,
+  ;
 }
