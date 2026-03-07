@@ -78,13 +78,20 @@ int wrapper({required int lowest, required int highest, required int value}) {
   }
 }
 
-/// [min] is the value that is placed if [value] is below [min].
+/// [min] is the value that is placed if [val] is below [min].
 ///
-/// [max] is the value that is placed if [value] is above [max].
+/// [max] is the value that is placed if [val] is above [max].
 ///
-/// [value] is the inputted number, guaranteed to be inbetween [min] & [max].
-int trim({required int min, required int max, required int value}) =>
-    maxSimple(min, minSimple(max, value));
+/// [val] is the inputted number, guaranteed to be inbetween [min] & [max].
+///
+/// Added in `2.7.2`.
+N trim<N extends num>({required N min, required N max, required N val}) =>
+    maxSimple(min, minSimple(max, val));
+/// If [val] is higher than [max], then it cuts [val] to be the same value as [max].
+///
+/// Added in `2.8`.
+N cut<N extends num>({required N max, required N val}) => minSimple(max, val);
 
+/// Added in `2.8`.
 N inverse<N extends num>({required N min, required N max, required N val}) =>
     max - val + min as N;
