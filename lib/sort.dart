@@ -20,11 +20,26 @@ import 'src/sort/quicksort.dart';
 ({int swaps, int checks}) bubbleSortFraction(List<Fraction> list) =>
     BubbleSort.listSortFraction(list);
 
+/// [gt] is short for `>`.
+///
+/// [eq] is short for `==`.
+///
 /// Added in `2.8`.
 ({int swaps, int checks}) bubbleSortAny<E>(
-  List<E> list,
-  bool Function(E, E) mt,
-) => BubbleSort.listSortAny(list, mt);
+  List<E> list, {
+  required bool Function(E, E) gt,
+  bool Function(E, E)? eq,
+}) => BubbleSort.listSortAny(list, gt);
+
+/// Added in `2.8`.
+int _bubbleSort<N extends num>(List<N> list) => bubbleSort(list).checks;
+
+/// Added in `2.8`.
+int _bubbleSortAny<E>(
+  List<E> list, {
+  required bool Function(E, E) gt,
+  bool Function(E, E)? eq,
+}) => bubbleSortAny(list, gt: gt).checks;
 
 /// Added in `2.8`.
 int mergeSort<N extends num>(List<N> list) => MergeSort.listSort(list);
@@ -33,23 +48,39 @@ int mergeSort<N extends num>(List<N> list) => MergeSort.listSort(list);
 List<N> mergeList<N extends num>(List<N> a, List<N> b) =>
     MergeSort.listMerge(a, b);
 
-/// [mt] is a MORE THAN function, it should not do MORE THAN OR EQUAL activity,
-/// or LESS THAN (OR EQUAL) activity.
+/// [gt] is short for `>`.
+///
+/// [eq] is short for `==`.
 ///
 /// Added in `2.8`.
-int mergeSortAny<E>(List<E> list, bool Function(E, E) mt) =>
-    MergeSort.listSortAny(list, mt);
+int mergeSortAny<E>(
+  List<E> list, {
+  required bool Function(E, E) gt,
+  bool Function(E, E)? eq,
+}) => MergeSort.listSortAny(list, gt);
 
+/// [gt] is short for `>`.
+///
 /// Added in `2.8`.
-List<E> mergeListAny<E>(List<E> a, List<E> b, bool Function(E, E) mt) =>
-    MergeSort.listMergeAny(a, b, mt);
+List<E> mergeListAny<E>(
+  List<E> a,
+  List<E> b, {
+  required bool Function(E, E) gt,
+}) => MergeSort.listMergeAny(a, b, gt);
 
 /// Added in `2.8.`
 int quickSort<N extends num>(List<N> list) => QuickSort.listSort(list);
 
+/// [gt] is short for `>`.
+///
+/// [eq] is short for `==`.
+///
 /// Added in `2.8`.
-int quickSortAny<E>(List<E> list, bool Function(E, E) mt) =>
-    QuickSort.listSortAny(list, mt);
+int quickSortAny<E>(
+  List<E> list, {
+  required bool Function(E, E) gt,
+  bool Function(E, E)? eq,
+}) => QuickSort.listSortAny(list, gt);
 
 /// Swaps [E]lement at [a] and [E]lement at [b] in [array].
 ///
@@ -80,10 +111,10 @@ bool isSorted<N extends num>(List<N> array) {
 }
 
 /// Added in `2.8`.
-bool isSortedAny<E>(List<E> array, bool Function(E, E) mt) {
+bool isSortedAny<E>(List<E> array, bool Function(E, E) gt) {
   int i = 0;
   while (i + 1 < array.length - 1) {
-    if (mt(array[i++], array[i])) {
+    if (gt(array[i++], array[i])) {
       return false;
     }
   }
@@ -95,13 +126,13 @@ bool isSortedAny<E>(List<E> array, bool Function(E, E) mt) {
 /// Added in `2.8`.
 enum SortAlg {
   /// Added in `2.8`.
-  bubble(funcStd: bubbleSort, funcAny: bubbleSortAny, isInline: true),
+  bubble(funcStd: _bubbleSort, funcAny: _bubbleSortAny, isInline: true),
 
   /// Added in `2.8`.
   merge(funcStd: mergeSort, funcAny: mergeSortAny, isInline: true),
 
   /// Added in `2.8`.
-  quick(funcStd: quickSort, funcAny: quickSort, isInline: true);
+  quick(funcStd: quickSort, funcAny: quickSortAny, isInline: true);
 
   /// Standard function for a list.
   ///
@@ -109,15 +140,21 @@ enum SortAlg {
   /// `int Function<N extends num>(List<N>)` and any optional arguments;
   ///
   /// Added in `2.8`.
-  final Function funcStd;
+  final int Function<N extends num>(List<N>) funcStd;
 
   /// Any function for a list.
   ///
   /// Call must be
-  /// `int Function<E>(List<E>, bool Function(E, E))` and any optional arguments.
+  /// `int Function<E>(List<E>, {required bool Function(E, E) gt,
+  /// bool Function(E, E)? eq})` and any optional arguments.
   ///
   /// Added in `2.8`.
-  final Function funcAny;
+  final int Function<E>(
+    List<E>, {
+    required bool Function(E, E) gt,
+    bool Function(E, E)? eq,
+  })
+  funcAny;
 
   /// If the algorithm does it in the [list] or creates a `new` one.
   ///
@@ -136,11 +173,12 @@ enum SortAlg {
 int inlineSort<N extends num>(List<N> list, {required SortAlg alg}) =>
     alg.funcStd(list);
 
-/// Uses [alg]`.`[funcAny]`(`[list]`, `[moreThan]`)`.
+/// Uses [alg]`.`[funcAny]`(`[list]`, `[greaterThan]`)`.
 ///
 /// Added in `2.8`
 int inlineSortAny<E>(
   List<E> list, {
   required SortAlg alg,
-  required bool Function(E, E) moreThan,
-}) => alg.funcAny(list, moreThan);
+  required bool Function(E, E) greaterThan,
+  bool Function(E, E)? equalTo,
+}) => alg.funcAny(list, gt: greaterThan, eq: equalTo);

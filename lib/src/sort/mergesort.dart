@@ -63,13 +63,13 @@ class MergeSort {
   }
 
   /// Added in `2.8`.
-  static int listSortAny<E>(List<E> list, bool Function(E, E) mt) =>
-      _mergeSortAny(list, 0, list.length - 1, mt);
+  static int listSortAny<E>(List<E> list, bool Function(E, E) gt) =>
+      _mergeSortAny(list, 0, list.length - 1, gt);
 
   /// Added in `2.8`.
-  static List<E> listMergeAny<E>(List<E> a, List<E> b, bool Function(E, E) mt) {
+  static List<E> listMergeAny<E>(List<E> a, List<E> b, bool Function(E, E) gt) {
     List<E> array = a + b;
-    _mergeAny(array, 0, a.length, array.length, mt);
+    _mergeAny(array, 0, a.length, array.length, gt);
     return array;
   }
 
@@ -78,14 +78,14 @@ class MergeSort {
     List<E> array,
     int start,
     int end,
-    bool Function(E, E) mt,
+    bool Function(E, E) gt,
   ) {
     if (start < end) {
       int checks = 0;
       int half = (start + end) ~/ 2;
-      checks += _mergeSortAny(array, start, half, mt);
-      checks += _mergeSortAny(array, half + 1, end, mt);
-      checks += _mergeAny(array, start, half, end, mt);
+      checks += _mergeSortAny(array, start, half, gt);
+      checks += _mergeSortAny(array, half + 1, end, gt);
+      checks += _mergeAny(array, start, half, end, gt);
       return checks;
     }
     return 0;
@@ -97,7 +97,7 @@ class MergeSort {
     int start,
     int half,
     int end,
-    bool Function(E, E) mt,
+    bool Function(E, E) gt,
   ) {
     int checks = 0;
     int leftLength = half - start + 1;
@@ -118,12 +118,12 @@ class MergeSort {
         array[pIndex] = right[rIndex++];
       } else if (rIndex >= rightLength) {
         array[pIndex] = left[lIndex++];
-      } else if (mt(left[lIndex], right[rIndex])) {
+      } else if (gt(left[lIndex], right[rIndex])) {
         array[pIndex] = right[rIndex++];
       } else {
         array[pIndex] = left[lIndex++];
       }
-      /*if (_lessThanEqualAny(left[lIndex], right[rIndex], mt)) {
+      /*if (_lessThanEqualAny(left[lIndex], right[rIndex], gt)) {
         array[pIndex] = left[lIndex]!;
         lIndex++;
       } else {
@@ -138,10 +138,10 @@ class MergeSort {
   static bool _lessThanEqualAny<E>(
     dynamic a,
     dynamic b,
-    bool Function(E, E) mt,
+    bool Function(E, E) gt,
   ) {
     if (a != _Infinite() && b != _Infinite()) {
-      return !mt(a, b);
+      return !gt(a, b);
     } else if (a != _Infinite()) {
       return true;
     } else if (b != _Infinite()) {

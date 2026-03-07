@@ -220,6 +220,22 @@ N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   }
   return max;
 }
+/*
+/// The [max]es in [elements].
+/// Uses [greaterThan] to know if it needs to swap the current max.
+/// Uses [equalValue] to know if it has the same value (but not fully equal).
+///
+/// Added in `2.8`.
+Set<E> maxAny<E>(
+  Iterable<E> elements, {
+  required bool Function(E, E) greaterThan,
+  bool Function(E, E)? equalValue,
+  E? ifNone,
+}) {
+
+}
+
+ */
 
 /// Gives the max of Two values, being [a] & [b].
 ///
@@ -355,6 +371,15 @@ N sum<N extends num>(Iterable<N> numbers, [N? starting]) {
     sum = sum + current as N;
   }
   return sum;
+}
+
+/// Added in `2.8`.
+E sumAny<E>(Iterable<E> elements, E Function(E, E) plus, E starting) {
+  E mule = starting;
+  for (E current in elements) {
+    mule = plus(mule, current);
+  }
+  return mule;
 }
 
 /// Added in `2.7`.

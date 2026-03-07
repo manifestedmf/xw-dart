@@ -38,19 +38,19 @@ class QuickSort {
   }
 
   /// Added in `2.8`.
-  static int listSortAny<E>(List<E> list, bool Function(E, E) mt) =>
-      _quickSortAny(list, 0, list.length - 1, mt);
+  static int listSortAny<E>(List<E> list, bool Function(E, E) gt) =>
+      _quickSortAny(list, 0, list.length - 1, gt);
   /// Added in `2.8`.
   static int _quickSortAny<E>(
     List<E> array,
     int start,
     int end,
-    bool Function(E, E) mt,
+    bool Function(E, E) gt,
   ) {
     if (start < end) {
-      var (:highestValueIndex, :checks) = _partitionAny(array, start, end, mt);
-      checks += _quickSortAny(array, start, highestValueIndex - 1, mt);
-      checks += _quickSortAny(array, highestValueIndex + 1, end, mt);
+      var (:highestValueIndex, :checks) = _partitionAny(array, start, end, gt);
+      checks += _quickSortAny(array, start, highestValueIndex - 1, gt);
+      checks += _quickSortAny(array, highestValueIndex + 1, end, gt);
       return checks;
     }
     return 0;
@@ -60,14 +60,14 @@ class QuickSort {
     List<E> array,
     int start,
     int end,
-    bool Function(E, E) mt,
+    bool Function(E, E) gt,
   ) {
     E lastElement = array[end];
     int checks = 0;
     int primeIndex = start - 1;
     for (int index = start; index < end; index++) {
       checks++;
-      if (!mt(array[index], lastElement)) {
+      if (!gt(array[index], lastElement)) {
         primeIndex++;
         parent.swapElement(array, primeIndex, index);
       }

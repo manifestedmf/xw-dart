@@ -10,10 +10,42 @@ import 'dart:io';
 /// `%o`, grabs the next [Object], which cannot be a [nullable].
 ///
 /// `%n`, grabs the next item, which can be [nullable].
-void printf(String input, [Iterable<Object?> items = const []]) {
+///
+/// Added in `2.7.3`.
+void printf<E>(String input, [Iterable<E> items = const []]) {
+  printg(scanf(input, items));
+}
+
+enum _State {
+  //
+  percentage,
+  object,
+  nullable,
+  text,
+  unknown,
+}
+
+enum _Char {
+  //
+  percent,
+  o,
+  n,
+  text,
+}
+
+_Char _character(String char) {
+  switch (char) {
+    case "%": return _Char.percent;
+    case "o": return _Char.o;
+    case "n": return _Char.n;
+    case _: return _Char.text;
+  }
+}
+
+/// Added in `2.8`.
+String scanf<E>(String input, [Iterable<E> items = const []]) {
   if (items == []) {
-    printg(input);
-    return;
+    return input;
   }
   String output = "";
   List<Object?> objects = items.toList(); // makes items removable
@@ -177,33 +209,7 @@ void printf(String input, [Iterable<Object?> items = const []]) {
     case _State.text: output += input.substring(starter);
     case _State.unknown: {}
   }
-  stdout.write(output);
-}
-
-enum _State {
-  //
-  percentage,
-  object,
-  nullable,
-  text,
-  unknown,
-}
-
-enum _Char {
-  //
-  percent,
-  o,
-  n,
-  text,
-}
-
-_Char _character(String char) {
-  switch (char) {
-    case "%": return _Char.percent;
-    case "o": return _Char.o;
-    case "n": return _Char.n;
-    case _: return _Char.text;
-  }
+  return output;
 }
 
 /// The sequel to [printf], this takes only input and just does output.
