@@ -17,6 +17,7 @@ For current version: AXW2.0;
 [&] is a and.
 [σ  {Item}  ε] means it has to be connected (no whitespaces).
 [({Item})] is a collection of items, that have some attribute connected to them.
+[ο  {Text}  χ] is a must needs for this definition (mostly for expressions).
 
 
 <?Manager?> RP+
@@ -77,10 +78,19 @@ For current version: AXW2.0;
       ;π λ
   ε
 -0N0101
+ο
+  Is an int mostly.
+  Minimum of 64 bits.
+  This output has to be able to do +, -, * and ~/.
+χ
 
 <?IntExpression?> RP+
   σ  <!SD!>π λ  ε
 -1056
+ο
+  Is the int class.
+  Minimum of 64 bits.
+χ
 
 <?HexadecimalExpression?> RP+
   σ  ~/0x\~β
@@ -95,16 +105,31 @@ For current version: AXW2.0;
       ;π λ
   ε
 -0xAfB2
+ο
+  Is an int mostly.
+  Minimum of 64 bits.
+  This output has to be able to do +, -, * and ~/.
+χ
 
 <?FloatExpression?> RP+
   σ  <!IntExpression!> /.\ <!IntExpression!>  ε
 -56.23
+ο
+  Should be a Fraction class mostly. => (int, int).
+  The other option is a double.
+  Minimum of 64 bits.
+  This output has to be able to do +, -, *, ~/, round, floor and ceil.
+χ
 
 <?ListExpression?> RP+
   /[\
     <!Expression!>π( /,\ ) Ω
   /]\
 -[ [ 5 , 32, 32.5 ], "AB" ]
+ο
+  Is the Language's list item (list|array).
+  This output has to be able to do [].
+χ
 
 <?VoidExpression?> RP+
   :
@@ -112,6 +137,10 @@ For current version: AXW2.0;
     ~/void\~α
   ;Σ
 -
+ο
+  Is the language standard return value.
+  If the language has null value, then it returns it. (like dart)
+χ
 
 <?BoolExpression?> RP+
   :
@@ -119,6 +148,11 @@ For current version: AXW2.0;
     ~/false\~α
   ;Σ
 -
+ο
+  Uses language's conditional properties.
+  C would be true: 1, false: 0.
+  Dart would be true: true, false: false.
+χ
 
 <?DictExpression?> RP+
   /{\
@@ -129,6 +163,10 @@ For current version: AXW2.0;
 <?VarExpression?> RP+
   <!Identifier!>
 -
+ο
+  Uses language's map class.
+  If there is no map class then it delivers two Lists.
+χ
 
 -?StringExpression?> RP+
   σ  /"\
@@ -138,6 +176,10 @@ For current version: AXW2.0;
     ;π Ω
   /"\  ε
 -"twenty2"
+ο
+  The standard way to express a string in the language.
+  Worst case is a list of int.
+χ
 
 <?CharExpression?> RP+
   σ  /'\
@@ -147,6 +189,10 @@ For current version: AXW2.0;
     ;Σ Ω
   /'\  ε
 -'B'
+o
+  The language's char class.
+  Gives back a string with a length of 1|0, if there are no chars.
+χ
 
 <?Char?> RP+
   :

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'extension.dart';
 
+/// Added in `2.7`.
 enum BitCounter {
   positive({"positive", "pos", "+", "1", 1, true}),
   negative({"negative", "neg", "-", "0", 0, false}),
@@ -20,13 +21,12 @@ enum BitCounter {
   }
 }
 
-/// counts amounts of [bits] (excluding|including signed bits)
-int bitcount(int bits, {bool signed = true, Object? counts = BitCounter.all}) {
+/// Counts amounts of [bits] (excluding|including signed bits).
+///
+/// Added in `2.7`.
+int bitcount(int bits, {bool signed = true, BitCounter counts = BitCounter.all}) {
   if (bits == 0) {
     return 0;
-  }
-  if (counts is! BitCounter) {
-    counts = BitCounter.parse(counts);
   }
   int n = 0;
   if (signed) {
@@ -59,35 +59,61 @@ int bitcount(int bits, {bool signed = true, Object? counts = BitCounter.all}) {
   }
 }
 
-/// bit Wraps Right
-int bitWrapR(int bits, int amount, {bool signed = true, int bitAmount = -1}) {
-  if (bitAmount == -1) {
-    int number = 0;
-    int bitShifter = bits;
-    for (; bitShifter != 0; bitShifter >>= 1) {
-      ++number;
-    }
-    bitAmount = number;
+/// Bit wraps to the right.
+///
+/// Added in `2.7`.
+int bitWrapR(int bits, int amount, {bool signed = true, int? bitAmount}) {
+  if (amount < 0) {
+    throw "$amount can't be less than 0";
   }
-  if (amount == 0) {
-    return bits;
-  } else if (amount == 1) {
-    int bit = bits % 2;
-    if (signed) {
-      bits = bits >>> 1;
-    } else {
-      bits >>= 1;
-    }
-    if (bit.toBool() && signed) {
-      bits |= math.pow(2, bitAmount - 1).toInt();
-    } else if (bit.toBool() && !signed) {
-      bits |= math.pow(2, bitAmount).toInt();
-    }
+  bitAmount ??= 64;
+  if (amount == 1) {
+    int bit = bits & 1;
+    bits >>= 1;
+    bits |= bit << (bitAmount - 1);
     return bits;
   } else {
-    for (int i = 0; i < amount; ++i) {
-      bits = bitWrapR(bits, 1, signed: signed, bitAmount: bitAmount);
-    }
-    return bits;
+    bits = bitWrapR(bits, amount - 1, signed: signed, bitAmount: bitAmount);
+    return bitWrapR(bits, 1, signed: signed, bitAmount: bitAmount);
   }
 }
+
+/// Sets a `1` at [pos] in [word].
+///
+/// Positioning goes from the right to left,
+/// meaning that [pos] being one sets the least meaningful bit.
+///
+/// Added in `2.8`.
+int set(int word, int pos) => word | (1 << pos);
+
+/// Sets a `0` at [pos] in [word].
+///
+/// Positioning goes from the right to left,
+/// meaning that [pos] being one sets the least meaningful bit.
+///
+/// Added in `2.8`.
+int clear(int word, int pos) => word & ~(1 << pos);
+
+/// Flips bit at [pos] in [word].
+///
+/// Positioning goes from the right to left,
+/// meaning that [pos] being one sets the least meaningful bit.
+///
+/// Added in `2.8`.
+int toggle(int word, int pos) => word ^ (1 << pos);
+
+/// Reads bit at [pos] in [word].
+///
+/// Positioning goes from the right to left,
+/// meaning that [pos] being one sets the least meaningful bit.
+///
+/// Added in `2.8`.
+int read(int word, int pos) => (word >> pos) & 1;
+
+/// Reads bit at [pos] in [word].
+///
+/// Positioning goes from the right to left,
+/// meaning that [pos] being one sets the least meaningful bit.
+///
+/// Added in `2.8`.
+bool readBit(int word, int pos) => read(word, pos).toBool();

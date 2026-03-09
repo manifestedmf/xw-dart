@@ -1,8 +1,11 @@
 /// The package for the function [printf] & [printg]
+///
+/// Added in `2.7.3`.
 library;
 
-import 'dart:io';
-import 'src/standard.dart';
+import 'dart:io' show stdout;
+import 'src/standard.dart' show cut;
+import 'src/extension.dart' show ListE;
 
 /// Prints out to to the console with [stdout]`.`[write]`()`.
 ///
@@ -111,291 +114,231 @@ String scanf<E>(String input, [Iterable<E> items = const []]) {
   if (items.isEmpty) {
     return input;
   } else if (items is Iterable<Object>) {
-    return _scanfSafe(input, items as Iterable<Object>);
+    return _scanfSafe.init(input, items as Iterable<Object>);
   } else {
     return _scanfUnsafe(input, items);
   }
 }
 
 /// Added in `2.8`.
-String _scanfSafe<E extends Object>(String input, Iterable<E> items) {
+class _scanfSafe<E extends Object> {
+  /// Added in `2.8`.
+  final String input;
+
+  /// Added in `2.8`.
+  List<E> objects;
+
+  /// Added in `2.8`.
   String output = "";
 
-  /// makes items removable
-  List<E> objects = items.toList();
-
   /// which state we were in
+  ///
+  /// Added in `2.8`.
   _State state = _State.unknown;
 
   /// the current character state
-  _Char currentChar;
+  ///
+  /// Added in `2.8`.
+  late _Char currentChar;
 
   /// the pointer to which index we are for the input
-  int pointer;
+  ///
+  /// Added in `2.8`.
+  int pointer = 0;
 
   /// the start of the text or item that we are currently holding
-  int starter;
+  ///
+  /// Added in `2.8`.
+  int starter = 0;
 
   /// the iterable offset
-  int iterableOffset;
-
-  pointer = starter = iterableOffset = 0;
+  ///
+  /// Added in `2.8`.
+  int iterableOffset = 0;
 
   /// the current char
-  String char;
+  ///
+  /// Added in `2.8`.
+  late String char;
 
   /// the value that we are trying to inspect
-  E heldValue;
+  ///
+  /// Added in `2.8`.
+  late E heldValue;
 
   /// The amount of spaces this currently needs.
+  ///
+  /// Added in `2.8`.
   int spaceAmount = 0;
 
   /// Current String
-  String tempStr;
+  ///
+  /// Added in `2.8`.
+  late String tempStr;
 
   /// current length of line
+  ///
+  /// Added in `2.8`.
   int lineLength = 0;
-  while (pointer < input.length) {
-    char = input[pointer];
-    currentChar = _character(char);
-    switch (currentChar) {
-      case _Char.percent:
-        switch (state) {
-          case _State.percentage:
-            state = _State.text;
-          case _State.object:
-          case _State.nullable:
-            heldValue = objects.first;
-            tempStr = heldValue.toString();
-            objects.removeAt(0);
-            iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
-            state = _State.percentage;
-            starter = pointer;
-            output += tempStr;
-            lineLength += tempStr.length;
-          case _State.iterable:
-            while (true) {
-              heldValue = objects[iterableOffset];
-              if (heldValue is Iterable) {
-                tempStr = heldValue.toString();
-                output += tempStr;
-                lineLength += tempStr.length;
-                objects.removeAt(iterableOffset);
-                break;
-              } else {
-                iterableOffset++;
-              }
-            }
-            state = _State.percentage;
-            starter = pointer;
-          case _State.text:
-            tempStr = input.substring(starter, pointer);
-            output += tempStr;
-            lineLength += tempStr.length;
-            state = _State.percentage;
-            starter = pointer;
-          case _State.unknown:
-            state = _State.percentage;
-            starter = pointer;
-        }
-      case _Char.o:
-        switch (state) {
-          case _State.percentage:
-            spaceAmount = 0;
-            state = _State.object;
-          case _State.object:
-          case _State.nullable:
-            heldValue = objects.first;
-            tempStr = heldValue.toString();
-            output += tempStr;
-            lineLength += tempStr.length;
-            objects.removeAt(0);
-            iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
-            state = _State.text;
-            starter = pointer;
-          case _State.iterable:
-            while (true) {
-              heldValue = objects[iterableOffset];
-              if (heldValue is Iterable) {
-                tempStr = heldValue.toString();
-                output += tempStr;
-                lineLength += tempStr.length;
-                objects.removeAt(iterableOffset);
-                break;
-              } else {
-                iterableOffset++;
-              }
-            }
-            state = _State.text;
-            starter = pointer;
-          case _State.text:
-            break;
-          case _State.unknown:
-            state = _State.text;
-        }
-      case _Char.n:
-        switch (state) {
-          case _State.percentage:
-            spaceAmount = 0;
-            state = _State.nullable;
-          case _State.object:
-          case _State.nullable:
-            heldValue = objects.first;
-            output += heldValue.toString();
-            objects.removeAt(0);
-            iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
-            state = _State.text;
-            starter = pointer;
-          case _State.iterable:
-            while (true) {
-              heldValue = objects[iterableOffset];
-              if (heldValue is Iterable) {
-                output += heldValue.toString();
-                objects.removeAt(iterableOffset);
-                break;
-              } else {
-                iterableOffset++;
-              }
-            }
-            state = _State.text;
-            starter = pointer;
-          case _State.text:
-            break;
-          case _State.unknown:
-            state = _State.text;
-        }
-      case _Char.a:
-        switch (state) {
-          case _State.percentage:
-            spaceAmount = 0;
-            state = _State.iterable;
-          case _State.object:
-          case _State.nullable:
-            heldValue = objects.first;
-            output += heldValue.toString();
-            objects.removeAt(0);
-            iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
-            state = _State.text;
-            starter = pointer;
-          case _State.iterable:
-            while (true) {
-              heldValue = objects[iterableOffset];
-              if (heldValue is Iterable) {
-                output += heldValue.toString();
-                objects.removeAt(iterableOffset);
-                break;
-              } else {
-                iterableOffset++;
-              }
-            }
-            state = _State.text;
-            starter = pointer;
-          case _State.text:
-            break;
-          case _State.unknown:
-            state = _State.text;
-        }
-      case _Char.text:
-        switch (state) {
-          case _State.percentage:
-            break;
-          case _State.object:
-          case _State.nullable:
-            heldValue = objects.first;
-            output += heldValue.toString();
-            objects.removeAt(0);
-            iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
-            state = _State.text;
-            starter = pointer;
-          case _State.iterable:
-            while (true) {
-              heldValue = objects[iterableOffset];
-              if (heldValue is Iterable) {
-                output += heldValue.toString();
-                objects.removeAt(iterableOffset);
-                break;
-              } else {
-                iterableOffset++;
-              }
-            }
-            state = _State.text;
-            starter = pointer;
-          case _State.text:
-            break;
-          case _State.unknown:
-            state = _State.text;
-        }
-      case _Char.digit:
-        switch (state) {
-          case _State.percentage:
-            state = _State.text;
-          case _State.object:
-          case _State.nullable:
-          case _State.iterable:
-            spaceAmount = spaceAmount * 10 + int.parse(char);
-          case _State.text:
-            state = _State.text;
-          case _State.unknown:
-            state = _State.text;
-        }
-      case _Char.newline:
-        switch (state) {
-          case _State.percentage:
-            break;
-          case _State.object:
-          case _State.nullable:
-            heldValue = objects.first;
-            output += heldValue.toString();
-            objects.removeAt(0);
-            iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
-            state = _State.text;
-            starter = pointer;
-          case _State.iterable:
-            while (true) {
-              heldValue = objects[iterableOffset];
-              if (heldValue is Iterable) {
-                tempStr = heldValue.toString();
-                output += tempStr;
-                objects.removeAt(iterableOffset);
-                break;
-              } else {
-                iterableOffset++;
-              }
-            }
-            state = _State.text;
-            starter = pointer;
-          case _State.text:
-            break;
-          case _State.unknown:
-            state = _State.text;
-        }
-        lineLength = 0;
-    }
-    pointer++; // increments
-  }
-  switch (state) {
-    case _State.percentage:
-      output += input.substring(starter);
-    case _State.object:
-    case _State.nullable:
-      heldValue = objects.first;
-      output += heldValue.toString();
-    case _State.iterable:
-      while (true) {
-        heldValue = objects[iterableOffset];
-        if (heldValue is Iterable) {
-          output += heldValue.toString();
-          break;
-        } else {
-          iterableOffset++;
-        }
+
+  _scanfSafe(this.input, this.objects);
+
+  static String init<E extends Object>(String input, Iterable<E> items) =>
+      _scanfSafe(input, items.toList()).scan();
+
+  /// Added in `2.8`.
+  String scan() {
+    while (pointer < input.length) {
+      char = input[pointer];
+      currentChar = _character(char);
+      switch (currentChar) {
+        case _Char.percent:
+          switch (state) {
+            case _State.percentage:
+              state = _State.text;
+            case _State.object:
+            case _State.nullable:
+            case _State.iterable:
+            case _State.text:
+            case _State.unknown:
+              flush();
+              state = _State.percentage;
+          }
+        case _Char.o:
+          switch (state) {
+            case _State.percentage:
+              state = _State.object;
+            case _State.object:
+            case _State.nullable:
+            case _State.iterable:
+              flush();
+              state = _State.text;
+            case _State.text:
+              break;
+            case _State.unknown:
+              state = _State.text;
+          }
+        case _Char.n:
+          switch (state) {
+            case _State.percentage:
+              state = _State.nullable;
+            case _State.object:
+            case _State.nullable:
+            case _State.iterable:
+              flush();
+              state = _State.text;
+            case _State.text:
+              break;
+            case _State.unknown:
+              state = _State.text;
+          }
+        case _Char.a:
+          switch (state) {
+            case _State.percentage:
+              state = _State.iterable;
+            case _State.object:
+            case _State.nullable:
+            case _State.iterable:
+              flush();
+              state = _State.text;
+            case _State.text:
+              break;
+            case _State.unknown:
+              state = _State.text;
+          }
+        case _Char.text:
+          switch (state) {
+            case _State.percentage:
+              state = _State.text;
+            case _State.object:
+            case _State.nullable:
+            case _State.iterable:
+              flush();
+              state = _State.text;
+            case _State.text:
+              break;
+            case _State.unknown:
+              state = _State.text;
+          }
+        case _Char.digit:
+          switch (state) {
+            case _State.percentage:
+              state = _State.text;
+            case _State.object:
+            case _State.nullable:
+            case _State.iterable:
+              spaceAmount = spaceAmount * 10 + int.parse(char);
+            case _State.text:
+              break;
+            case _State.unknown:
+              state = _State.text;
+          }
+        case _Char.newline:
+          switch (state) {
+            case _State.percentage:
+              flush();
+            case _State.object:
+            case _State.nullable:
+            case _State.iterable:
+              flush();
+              state = _State.text;
+            case _State.text:
+              flush();
+            case _State.unknown:
+              state = _State.text;
+          }
+          lineLength = 0;
       }
-    case _State.text:
-      output += input.substring(starter);
-    case _State.unknown:
-      break;
+      pointer++; // increments
+    }
+    flush();
+    return output;
   }
-  return output;
+
+  /// Gets info that the current state is done.
+  ///
+  /// [heldValue] & [tempStr] is gonna be set here.
+  ///
+  /// Added in `2.8`.
+  void flush() {
+    switch (state) {
+      case _State.percentage:
+        tempStr = input.substring(starter, pointer);
+      case _State.object:
+      case _State.nullable:
+        heldValue = objects.removeFirst();
+        tempStr = heldValue.toString();
+        iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
+        addSpaces();
+      case _State.iterable:
+        while (true) {
+          heldValue = objects[iterableOffset];
+          if (heldValue is Iterable) {
+            break;
+          } else {
+            iterableOffset++;
+          }
+        }
+        tempStr = heldValue.toString();
+        addSpaces();
+        objects.removeAt(iterableOffset);
+      case _State.text:
+        tempStr = input.substring(starter, pointer);
+      case _State.unknown:
+        return;
+    }
+    output += tempStr;
+    lineLength += tempStr.length;
+    starter = pointer;
+    spaceAmount = 0;
+  }
+
+  /// Added in `2.8`.
+  void addSpaces() {
+    while (tempStr.length < spaceAmount - lineLength) {
+      tempStr = " " + tempStr;
+    }
+  }
 }
 
 /// Added in `2.8`.
@@ -656,6 +599,12 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
           case _State.unknown:
             state = _State.text;
         }
+      case _Char.digit:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case _Char.newline:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
     pointer++; // increments
   }

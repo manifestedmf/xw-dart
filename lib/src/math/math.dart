@@ -204,7 +204,7 @@ String baseToBase({
 /// print(max([], -5)); // -5
 /// print(max([])); // CRASH
 /// print(max([3.2, 5.22, 69.03], -5.3)); // 69.03
-/// print(max<num>([5, 6.2, 9, pi])); // 9
+/// print(max<num>([5, 6.2, 9, double.pi])); // 9
 /// ```
 ///
 /// Added in `2.7`.
@@ -220,7 +220,7 @@ N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   }
   return max;
 }
-/*
+
 /// The [max]es in [elements].
 /// Uses [greaterThan] to know if it needs to swap the current max.
 /// Uses [equalValue] to know if it has the same value (but not fully equal).
@@ -230,12 +230,12 @@ Set<E> maxAny<E>(
   Iterable<E> elements, {
   required bool Function(E, E) greaterThan,
   bool Function(E, E)? equalValue,
-  E? ifNone,
+  Set<E>? ifNone,
 }) {
-
+  if (elements.isEmpty) {
+    return ifNone ?? (throw StateError("No Optional Parameter Set"));
+  }
 }
-
- */
 
 /// Gives the max of Two values, being [a] & [b].
 ///
@@ -246,7 +246,7 @@ Set<E> maxAny<E>(
 /// ```
 ///
 /// Added in `2.7.3`.
-N maxSimple<N extends num>(N a, N b) => (a > b) ? a : b;
+N maxSimple<N extends num>(N a, N b) => math.max(a, b);
 
 /// Gives the [MapEntry] with the highest key([K]) value.
 ///
@@ -273,13 +273,10 @@ MapEntry<K, V> maxMapKey<K extends num, V>(
 /// Added in `2.7`.
 Set<MapEntry<K, V>> maxMapValue<K, V extends num>(
   Map<K, V> map, [
-  MapEntry<K, V>? ifNone,
+  Set<MapEntry<K, V>>? ifNone,
 ]) {
   if (map.isEmpty) {
-    if (ifNone == null) {
-      throw StateError("No Optional Parameter Set");
-    }
-    return {ifNone};
+    return ifNone ?? (throw StateError("No Optional Parameter Set"));
   }
   Iterable<MapEntry<K, V>> entries = map.entries;
   Set<MapEntry<K, V>> maxSet = {entries.first};
@@ -316,7 +313,7 @@ N min<N extends num>(Iterable<N> numbers, [N? ifNone]) {
 /// Gets the min of Two values, [a] & [b].
 ///
 /// Added in `2.7.3`.
-N minSimple<N extends num>(N a, N b) => (a < b) ? a : b;
+N minSimple<N extends num>(N a, N b) => math.min(a, b);
 
 /// Added in `2.7`.
 MapEntry<K, V> minMapKey<K extends num, V>(
@@ -339,13 +336,10 @@ MapEntry<K, V> minMapKey<K extends num, V>(
 /// Added in `2.7`.
 Set<MapEntry<K, V>> minMapValue<K, V extends num>(
   Map<K, V> map, [
-  MapEntry<K, V>? ifNone,
+  Set<MapEntry<K, V>>? ifNone,
 ]) {
   if (map.isEmpty) {
-    if (ifNone == null) {
-      throw StateError("No Optional Parameter Set");
-    }
-    return {ifNone};
+    return ifNone ?? (throw StateError("No Optional Parameter Set"));
   }
   Iterable<MapEntry<K, V>> entries = map.entries;
   Set<MapEntry<K, V>> minSet = {entries.first};
@@ -414,14 +408,19 @@ N square<N extends num>(N base) => pow(base, (base is int) ? 2 as N : 2.0 as N);
 N round<N extends num>(N number) =>
     (N == double) ? number.roundToDouble() as N : number;
 
-/// If [number] is a `pow(int, 2)`, then it returns a `int`,
-/// else it returns a `double`.
+/// If [number] is a [pow]`(int, 2)`, then it returns a [int],
+/// else it returns a [double].
 ///
 /// Added in `2.7`.
 num sqrt(num number) {
   double value = math.sqrt(number);
   return (value.isWhole) ? value.toInt() : value;
 }
+
+/// Gives back [pow]`(`[base]`, 1/`[root]`)`.
+///
+/// Added in `2.8`.
+num root<N extends num>(N base, N root) => pow(base, 1 / root);
 
 /// Added in `2.7`.
 bool isLow(num number) => (number % 1 < 0.5);
@@ -582,4 +581,47 @@ N pif<N extends num>(Iterable<N> nums, [N? starting]) {
     product = product * value as N;
   }
   return product;
+}
+
+/// Added in `2.8`.
+extension DoubleMathExt on double {
+  /// Closest [double] representation of [pi].
+  ///
+  /// Added in `2.8`.
+  static const pi = math.pi;
+
+  /// Closest [double] representation of [e].
+  ///
+  /// Added in `2.8`.
+  static const e = math.e;
+
+  /// Closest [double] representation of `natural logarithm of `[10].
+  ///
+  /// Added in `2.8`.
+  static const ln10 = math.ln10;
+
+  /// Closest [double] representation of `natural logarithm of `[2].
+  ///
+  /// Added in `2.8`.
+  static const ln2 = math.ln2;
+
+  /// Closest [double] representation of `base 2 logarithm of `[e].
+  ///
+  /// Added in `2.8`.
+  static const log2e = math.log2e;
+
+  /// Closest [double] representation of `base 10 logarithm of `[e].
+  ///
+  /// Added in `2.8`.
+  static const log10e = math.log10e;
+
+  /// Closest [double] representation of `sqrt of 1/2`.
+  ///
+  /// Added in `2.8`.
+  static const sqrtHalf = math.sqrt1_2;
+
+  /// Closest [double] representation of `sqrt of 2`.
+  ///
+  /// Added in `2.8`.
+  static const sqrt2 = math.sqrt2;
 }

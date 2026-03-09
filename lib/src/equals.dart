@@ -1,7 +1,7 @@
 /// Added in `2.7`.
 @Deprecated("3.0, use listEqualsShallow or listEqualsDeep")
 bool listEquals<T>(List<T> a, List<T> b, [bool isShallow = true]) =>
-  (isShallow) ? listEqualsShallow(a, b) : listEqualsDeep(a, b);
+    (isShallow) ? listEqualsShallow(a, b) : listEqualsDeep(a, b);
 
 /// Added in `2.8`.
 bool listEqualsShallow<T>(List<T> a, List<T> b) {
@@ -38,7 +38,7 @@ bool listEqualsDeep<T>(List<T> a, List<T> b) {
 /// Added in `2.7`.
 @Deprecated("3.0, use mapEqualsShallow or mapEqualsDeep")
 bool mapEquals<K, V>(Map<K, V> a, Map<K, V> b, [bool isShallow = true]) =>
-  (isShallow) ? mapEqualsShallow(a, b) : mapEqualsDeep(a, b);
+    (isShallow) ? mapEqualsShallow(a, b) : mapEqualsDeep(a, b);
 
 /// Added in `2.8`.
 bool mapEqualsShallow<K, V>(Map<K, V> a, Map<K, V> b) {
@@ -47,10 +47,12 @@ bool mapEqualsShallow<K, V>(Map<K, V> a, Map<K, V> b) {
   } else if (a.length != b.length) {
     return false;
   } else {
-    Iterable<MapEntry<K, V>> aEntries = a.entries;
-    Iterable<MapEntry<K, V>> bEntries = b.entries;
-    for (int index = 0; index < a.length; ++index) {
-      if (aEntries.elementAt(index) != bEntries.elementAt(index)) {
+    for (MapEntry<K, V> entry in a.entries) {
+      if (b.containsKey(entry.key)) {
+        if (entry.value != b[entry.key]) {
+          return false;
+        }
+      } else {
         return false;
       }
     }
@@ -65,10 +67,13 @@ bool mapEqualsDeep<K, V>(Map<K, V> a, Map<K, V> b) {
   } else if (a.length != b.length) {
     return false;
   } else {
-    Iterable<MapEntry<K, V>> aEntries = a.entries;
-    Iterable<MapEntry<K, V>> bEntries = b.entries;
-    for (int index = 0; index < a.length; ++index) {
-      if (!deepEquals(aEntries.elementAt(index), bEntries.elementAt(index))) {
+    Iterable<K> bKeys = b.keys;
+    for (MapEntry<K, V> entry in a.entries) {
+      if (deepContains(bKeys, entry.key)) {
+        if (entry.value != b[entry.key]) {
+          return false;
+        }
+      } else {
         return false;
       }
     }
@@ -79,7 +84,7 @@ bool mapEqualsDeep<K, V>(Map<K, V> a, Map<K, V> b) {
 /// Added in `2.7`.
 @Deprecated("3.0, use setEqualsShallow or setEqualsDeep")
 bool setEquals<T>(Set<T> a, Set<T> b, [bool isShallow = true]) =>
-  (isShallow) ? setEqualsShallow(a, b) : setEqualsDeep(a, b);
+    (isShallow) ? setEqualsShallow(a, b) : setEqualsDeep(a, b);
 
 /// Added in `2.8`.
 bool setEqualsShallow<T>(Set<T> a, Set<T> b) {
@@ -89,7 +94,7 @@ bool setEqualsShallow<T>(Set<T> a, Set<T> b) {
     return false;
   } else {
     for (int index = 0; index < a.length; ++index) {
-      if (a.elementAt(index) != b.elementAt(index)) {
+      if (!b.contains(a.elementAt(index))) {
         return false;
       }
     }
@@ -116,7 +121,7 @@ bool setEqualsDeep<T>(Set<T> a, Set<T> b) {
 /// Added in `2.7`.
 @Deprecated("3.0, use iterableEqualsShallow or iterableEqualsDeep")
 bool iterableEquals<T>(Iterable<T> a, Iterable<T> b, [bool isShallow = true]) =>
-  (isShallow) ? iterableEqualsShallow(a, b) : iterableEqualsDeep(a, b);
+    (isShallow) ? iterableEqualsShallow(a, b) : iterableEqualsDeep(a, b);
 
 /// Added in `2.8`.
 bool iterableEqualsShallow<T>(Iterable<T> a, Iterable<T> b) {
@@ -162,5 +167,20 @@ bool deepEquals<T>(T a, T b) {
     return iterableEqualsDeep(a, b);
   } else {
     return a == b;
+  }
+}
+
+/// Added in `2.8`.
+bool deepContains<T>(Iterable<T> iter, T cont) {
+  if (cont is Map || cont is Iterable) {
+    bool f = false;
+    for (T cur in iter) {
+      if (!f) {
+        f = deepEquals<T>(cont, cur);
+      }
+    }
+    return f;
+  } else {
+    return iter.contains(cont);
   }
 }

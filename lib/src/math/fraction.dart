@@ -1,6 +1,6 @@
 import '../mixins.dart';
 import '../extension.dart';
-import 'core.dart';
+import 'math.dart';
 
 /// The |absolute| value of [number].
 /// (The positive of [number]).

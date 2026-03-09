@@ -1,6 +1,6 @@
 import 'equals.dart';
 import 'standard.dart' as std;
-import 'math/core.dart';
+import 'math/math.dart';
 import '../sort.dart' as sort;
 
 // class Char {
@@ -111,6 +111,14 @@ extension NumExtension on num {
   bool get isPositive => this >= 0;
 
   static num get signNum => -1;
+
+  /// Returns the rounded value of this in that type.
+  ///
+  /// Added in `2.8`.
+  num roundToThis() => switch (this) {
+    double() => roundToDouble(),
+    int() => this,
+  };
 }
 
 extension IntExtension on int {
@@ -163,6 +171,9 @@ extension IntExtension on int {
   int addAtEnd(int newDigit) => int.parse("$this$newDigit");
 
   bool get isWhole => true;
+
+  /// Added in `2.8`.
+  int roundToThis() => this;
 }
 
 extension DoubleExtension on double {
@@ -185,8 +196,12 @@ extension DoubleExtension on double {
   }
 
   bool get isWhole => this == roundToDouble();
+
+  /// Added in `2.8`.
+  double roundToThis() => roundToDouble();
 }
 
+/// Added in `2.8`.
 extension ListE<E> on List<E> {
   /// Added in `2.8`.
   bool equalsShallow(List<E> other) => listEqualsShallow(this, other);
@@ -196,15 +211,34 @@ extension ListE<E> on List<E> {
 
   /// Removes all occurrences of [value].
   ///
-  /// Returns [false] if there is no occurrence of [value].
+  /// Returns `false` if there is no occurrence of [value].
   ///
   /// Added in `2.8`.
   bool removeAll(E value) {
-    if (!contains(E)) {
-      return false;
+    int index = 0;
+    bool found = false;
+    while (index < length) {
+      if (value == this[index]) {
+        found = true;
+        removeAt(index);
+      } else {
+        index++;
+      }
+    }
+    return found;
+  }
+  /// Removes the first item in the list.
+  ///
+  ///
+  /// Added in `2.8`.
+  E removeFirst() => removeAtOrNull(0) ?? (throw "No item in $this");
+
+  /// Added in `2.8`.
+  E? removeAtOrNull(int index) {
+    if (index < 0 || index >= length) {
+      return null;
     } else {
-      while (remove(value)) ; // removes value while it still exists.
-      return true;
+      return removeAt(index);
     }
   }
 
@@ -516,6 +550,26 @@ extension StringExtension on String {
       } else {
         builder += char;
         prevWS = false;
+      }
+    }
+    mule.add(builder);
+    return mule;
+  }
+
+  /// Puts each line into a [List].
+  ///
+  /// Added in `2.8`.
+  Iterable<String> toLines() {
+    List<String> mule = [];
+    String char, builder;
+    builder = "";
+    for (int index = 0; index < length; index++) {
+      char = this[index];
+      if (char == "\n") {
+        mule.add(builder);
+        builder = "";
+      } else {
+        builder += char;
       }
     }
     mule.add(builder);
