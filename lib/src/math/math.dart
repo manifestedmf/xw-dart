@@ -235,9 +235,21 @@ Set<E> maxAny<E>(
   if (elements.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
   }
+  equalValue ??= (a, b) => a == b;
+  Set<E> max = {};
+  E maxVal = elements.first;
+  for (E current in elements) {
+    if (greaterThan(current, maxVal)) {
+      max = {current};
+      maxVal = current;
+    } else if (equalValue(current, maxVal)) {
+      max.add(current);
+    }
+  }
+  return max;
 }
 
-/// Gives the max of Two values, being [a] & [b].
+/// Gives the maximum of Two values, being [a] & [b].
 ///
 /// ```
 /// print(maxSimple(5, 9)); // 9
@@ -310,7 +322,35 @@ N min<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   return min;
 }
 
-/// Gets the min of Two values, [a] & [b].
+/// The [min]s in [elements].
+/// Uses [lessThan] to know if it needs to swap the current min.
+/// Uses [equalValue] to know if it has the same value (but not fully equal).
+///
+/// Added in `2.8`.
+Set<E> minAny<E>(
+  Iterable<E> elements, {
+  required bool Function(E, E) lessThan,
+  bool Function(E, E)? equalValue,
+  Set<E>? ifNone,
+}) {
+  if (elements.isEmpty) {
+    return ifNone ?? (throw StateError("No Optional Parameter Set"));
+  }
+  equalValue ??= (a, b) => a == b;
+  Set<E> min = {};
+  E minVal = elements.first;
+  for (E current in elements) {
+    if (lessThan(current, minVal)) {
+      min = {current};
+      minVal = current;
+    } else if (equalValue(current, minVal)) {
+      min.add(current);
+    }
+  }
+  return min;
+}
+
+/// Gets the minimum of Two values, [a] & [b].
 ///
 /// Added in `2.7.3`.
 N minSimple<N extends num>(N a, N b) => math.min(a, b);
@@ -398,6 +438,94 @@ V sumMapValue<K, V extends num>(Map<K, V> map, [V? starting]) {
   return sum;
 }
 
+/// The [max], [min] and [sum] of a [Iterable].
+///
+/// Added in `2.8`.
+({N max, N min, N sum}) properties<N extends num>(
+  Iterable<N> numbers, {
+  N? starting,
+  N? ifNoneMax,
+  N? ifNoneMin,
+}) {
+  starting ??= (numbers is Iterable<double>) ? 0.0 as N : 0 as N;
+  if (numbers.isEmpty) {
+    if (ifNoneMax == null || ifNoneMin == null) {
+      throw throw StateError("No Optional Parameter Set");
+    } else {
+      return (max: ifNoneMax, min: ifNoneMin, sum: starting);
+    }
+  }
+  N sum = starting;
+  N max = numbers.first;
+  N min = numbers.first;
+  for (N current in numbers) {
+    sum = sum + current as N;
+    if (current > max) {
+      max = current;
+    } else if (current < min) {
+      min = current;
+    }
+  }
+  return (max: max, min: min, sum: sum);
+}
+
+/// The [max], [min] and [sum] of a [Iterable].
+///
+/// [equality] should give out:
+/// [false] if a < b,
+/// [null] if a == b and
+/// [true] if a > b.
+///
+/// [plus] is used with `plus(sum, current)`.
+/// This should mean if there is a positional difference between
+/// `sum + current` and `current + sum`, then it should be handled
+/// by the user.
+///
+/// Added in `2.8`.
+({Set<E> max, Set<E> min, E sum}) propertiesAny<E>(
+  Iterable<E> elements, {
+  required E starting,
+  Set<E>? ifNoneMax,
+  Set<E>? ifNoneMin,
+  required bool? Function(E, E) equality,
+  required E Function(E, E) plus,
+}) {
+  if (elements.isEmpty) {
+    if (ifNoneMax == null || ifNoneMin == null) {
+      throw throw StateError("No Optional Parameter Set");
+    } else {
+      return (max: ifNoneMax, min: ifNoneMin, sum: starting);
+    }
+  }
+  E sum = starting;
+  Set<E> max = {};
+  E maxVal = elements.first;
+  Set<E> min = {};
+  E minVal = elements.first;
+  for (E current in elements) {
+    sum = plus(sum, current);
+    switch (equality(maxVal, current)) {
+      case null:
+        max.add(current);
+      case true:
+        max = {current};
+        maxVal = current;
+      case false:
+        break;
+    }
+    switch (equality(minVal, current)) {
+      case null:
+        min.add(current);
+      case true:
+        break;
+      case false:
+        min = {current};
+        minVal = current;
+    }
+  }
+  return (max: max, min: min, sum: sum);
+}
+
 /// Added in `2.7`.
 N pow<N extends num>(N base, N exponent) => math.pow(base, exponent) as N;
 
@@ -421,6 +549,51 @@ num sqrt(num number) {
 ///
 /// Added in `2.8`.
 num root<N extends num>(N base, N root) => pow(base, 1 / root);
+
+/// Returns [pow]`(`[base]`, `[double.e]`)`.
+///
+/// Added in `2.8`.
+double exp(num base) => math.exp(base);
+
+/// Gives back the natural logarithm of [x].
+///
+/// Added in `2.8`.
+double ln(num x) => math.log(x);
+
+/// The [sin]e function.
+///
+/// Added in `2.8`.
+double sin(num radians) => math.sin(radians);
+
+/// The [cos]`in`e function.
+///
+/// Added in `2.8`.
+double cos(num radians) => math.cos(radians);
+
+/// The [tan]gent function.
+///
+/// Added in `2.8`.
+double tan(num radians) => math.tan(radians);
+
+/// The arc [sin]e function.
+///
+/// Added in `2.8`.
+double asin(num x) => math.asin(x);
+
+/// The arc [cos]`in`e function.
+///
+/// Added in `2.8`.
+double acos(num x) => math.acos(x);
+
+/// The arc [tan]gent function.
+///
+/// Added in `2.8`.
+double atan(num x) => math.atan(x);
+
+/// View `dart:math` library to see more about this function.
+///
+/// Added in `2.8`.
+double atan2(num a, num b) => math.atan2(a, b);
 
 /// Added in `2.7`.
 bool isLow(num number) => (number % 1 < 0.5);
@@ -565,7 +738,7 @@ N termial<N extends num>(N number) {
 /// The Σ used in math.
 ///
 /// Added in `2.8`.
-N sigmaf<N extends num>(Iterable<N> nums) => sum(nums);
+N sigmaf<N extends num>(Iterable<N> nums, [N? starting]) => sum(nums, starting);
 
 /// The Π used in math.
 ///

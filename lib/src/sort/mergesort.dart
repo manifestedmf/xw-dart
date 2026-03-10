@@ -133,28 +133,4 @@ class MergeSort {
     }
     return checks;
   }
-
-  /// Added in `2.8`.
-  static bool _lessThanEqualAny<E>(
-    dynamic a,
-    dynamic b,
-    bool Function(E, E) gt,
-  ) {
-    if (a != _Infinite() && b != _Infinite()) {
-      return !gt(a, b);
-    } else if (a != _Infinite()) {
-      return true;
-    } else if (b != _Infinite()) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-}
-
-/// Added in `2.8`.
-final class _Infinite {
-  @override
-  /// Added in `2.8`.
-  bool operator ==(Object other) => runtimeType == other.runtimeType;
 }

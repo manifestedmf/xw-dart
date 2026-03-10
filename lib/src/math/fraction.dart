@@ -153,61 +153,123 @@ class Fraction with Compare<Fraction> {
   double get float => _oper / _div;
   Fraction get fraction => this;
 
+  /// Added in `2.8`.
+  static const Fraction minusOne = Fraction._compressed(-1, 1);
+
+  /// Added in `2.8`.
+  static const Fraction zero = Fraction._compressed(0, 1);
+
+  /// Added in `2.7`.
   static const Fraction one = Fraction._compressed(1, 1);
+
+  /// Added in `2.7`.
   static const Fraction half = Fraction._compressed(1, 2);
+
+  /// Added in `2.7`.
   static const Fraction third = Fraction._compressed(1, 3);
+
+  /// Added in `2.7`.
   static const Fraction quarter = Fraction._compressed(1, 4);
+
+  /// Added in `2.7`.
   static const Fraction fifth = Fraction._compressed(1, 5);
+
+  /// Added in `2.7`.
   static const Fraction sixth = Fraction._compressed(1, 6);
+
+  /// Added in `2.7`.
   static const Fraction seventh = Fraction._compressed(1, 7);
+
+  /// Added in `2.7`.
   static const Fraction eighth = Fraction._compressed(1, 8);
+
+  /// Added in `2.7`.
   static const Fraction ninth = Fraction._compressed(1, 9);
+
+  /// Added in `2.7`.
   static const Fraction tenth = Fraction._compressed(1, 10);
 
+  /// Added in `2.7`.
   static const Fraction twoThirds = Fraction._compressed(2, 3);
 
+  /// Added in `2.7.3`.
   static const Fraction twoQuarters = half;
+  /// Added in `2.7`.
   static const Fraction threeQuarters = Fraction._compressed(3, 4);
 
+  /// Added in `2.7`.
   static const Fraction twoFifths = Fraction._compressed(2, 5);
+  /// Added in `2.7`.
   static const Fraction threeFifths = Fraction._compressed(3, 5);
+  /// Added in `2.7`.
   static const Fraction fourFifths = Fraction._compressed(4, 5);
 
+  /// Added in `2.7.3`.
   static const Fraction twoSixths = third;
+  /// Added in `2.7.3`.
   static const Fraction threeSixths = half;
+  /// Added in `2.7.3`.
   static const Fraction fourSixths = twoThirds;
+  /// Added in `2.7`.
   static const Fraction fiveSixths = Fraction._compressed(5, 6);
 
+  /// Added in `2.7`.
   static const Fraction twoSevenths = Fraction._compressed(2, 7);
+  /// Added in `2.7`.
   static const Fraction threeSevenths = Fraction._compressed(3, 7);
+  /// Added in `2.7`.
   static const Fraction fourSevenths = Fraction._compressed(4, 7);
+  /// Added in `2.7`.
   static const Fraction fiveSevenths = Fraction._compressed(5, 7);
+  /// Added in `2.7`.
   static const Fraction sixSevenths = Fraction._compressed(6, 7);
 
+  /// Added in `2.7.3`.
   static const Fraction twoEighths = quarter;
+  /// Added in `2.7`.
   static const Fraction threeEighths = Fraction._compressed(3, 8);
+  /// Added in `2.7.3`.
   static const Fraction fourEighths = half;
+  /// Added in `2.7`.
   static const Fraction fiveEighths = Fraction._compressed(5, 8);
+  /// Added in `2.7.3`.
   static const Fraction sixEighths = threeQuarters;
+  /// Added in `2.7`.
   static const Fraction sevenEights = Fraction._compressed(7, 8);
 
+  /// Added in `2.7`.
   static const Fraction twoNinths = Fraction._compressed(2, 9);
+  /// Added in `2.7.3`.
   static const Fraction threeNinths = third;
+  /// Added in `2.7`.
   static const Fraction fourNinths = Fraction._compressed(4, 9);
+  /// Added in `2.7`.
   static const Fraction fiveNinths = Fraction._compressed(5, 9);
+  /// Added in `2.7.3`.
   static const Fraction sixNinths = twoThirds;
+  /// Added in `2.7`.
   static const Fraction sevenNinths = Fraction._compressed(7, 9);
+  /// Added in `2.7`.
   static const Fraction eightNinths = Fraction._compressed(8, 9);
 
+  /// Added in `2.7.3`.
   static const Fraction twoTenths = fifth;
+  /// Added in `2.7`.
   static const Fraction threeTenths = Fraction._compressed(3, 10);
+  /// Added in `2.7.3`.
   static const Fraction fourTenths = twoFifths;
+  /// Added in `2.7.3`.
   static const Fraction fiveTenths = half;
+  /// Added in `2.7.3`.
   static const Fraction sixTenths = threeFifths;
+  /// Added in `2.7`.
   static const Fraction sevenTenths = Fraction._compressed(7, 10);
+  /// Added in `2.7.3`.
   static const Fraction eightTenths = fourFifths;
+  /// Added in `2.7`.
   static const Fraction nineTenths = Fraction._compressed(9, 10);
 
+  /// Added in `2.7`.
   bool get isWhole => !isNaN && (_oper % _div == 0 || _oper == 0);
   Fraction roundToFraction() {
     Fraction fraction = toCompressed();
@@ -323,9 +385,11 @@ class Fraction with Compare<Fraction> {
   @override
   /// Added in `2.7`.
   bool operator <(Fraction other) {
-    if (isNegative ^ other.isNegative) {
-      return isNegative;
+    if (integer != other.integer) {
+      return integer < other.integer;
     } else {
+      Fraction thisMut = this;
+      thisMut %= one;
       return float < other.float;
     }
   }
@@ -365,14 +429,18 @@ class Fraction with Compare<Fraction> {
 
   /// Added in `2.7`.
   Fraction operator %(Fraction other) {
-    Fraction mule = this;
-    while (mule < other) {
-      mule += other;
+    if (other == one) {
+      return Fraction.compressed(_div % _oper, _oper);
+    } else {
+      Fraction mule = this;
+      while (mule < other) {
+        mule += other;
+      }
+      while (mule > other) {
+        mule -= other;
+      }
+      return mule;
     }
-    while (mule > other) {
-      mule -= other;
-    }
-    return mule;
   }
 
   /// Raises [_oper] & [_div] to [exponent].
