@@ -92,6 +92,11 @@ N trim<N extends num>({required N min, required N max, required N val}) =>
 /// Added in `2.8`.
 N cut<N extends num>({required N max, required N val}) => minSimple(max, val);
 
+/// If [val] is lower than [min], then it grows [val] to be the same value as [min].
+///
+/// Added in `2.8`.
+N grow<N extends num>({required N min, required N val}) => maxSimple(min, val);
+
 /// Added in `2.8`.
 N inverse<N extends num>({required N min, required N max, required N val}) =>
     max - val + min as N;

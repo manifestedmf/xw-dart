@@ -1,5 +1,5 @@
 import 'dart:math' as math;
-import '../extension.dart';
+import '../extension.dart' show MapKV, NumExt, StringExt, IntExt;
 
 /// The |absolute| value of [signed].
 ///

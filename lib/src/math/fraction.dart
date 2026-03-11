@@ -1,6 +1,6 @@
-import '../mixins.dart';
-import '../extension.dart';
-import 'math.dart';
+import '../mixins.dart' show Compare;
+import '../extension.dart' show NumExt;
+import 'math.dart' show isDivBy, isMadeUpOf, pow, gcd;
 
 /// The |absolute| value of [number].
 /// (The positive of [number]).
@@ -389,8 +389,8 @@ class Fraction with Compare<Fraction> {
       return integer < other.integer;
     } else {
       Fraction thisMut = this;
-      thisMut %= one;
-      return float < other.float;
+      thisMut %= one; other %= one;
+      return thisMut.float < other.float;
     }
   }
 

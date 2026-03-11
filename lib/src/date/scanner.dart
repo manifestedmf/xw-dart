@@ -1,4 +1,4 @@
-import '../../extension.dart';
+import '../../extension.dart' show IntExt;
 
 enum State {
   space,

@@ -1,4 +1,4 @@
-import 'extension.dart';
+import 'extension.dart' show StringExt;
 
 // abstract class Formatter {
 //   List<FormatToken> parse(String value);

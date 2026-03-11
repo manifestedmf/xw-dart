@@ -1,9 +1,9 @@
-import '../extension.dart';
-import '../math/math.dart';
-import '../math/fraction.dart';
-import '../mixins.dart';
-import '../equals.dart';
-import 'parser.dart';
+import '../extension.dart' show MapKV;
+import '../math/math.dart' show strToBase;
+import '../math/fraction.dart' show Fraction;
+import '../mixins.dart' show Compare;
+import '../equals.dart' show listEqualsDeep;
+import 'parser.dart' show Version;
 
 /// grammar:
 ///

@@ -1,5 +1,4 @@
-import 'dart:math' as math;
-import 'extension.dart';
+import 'extension.dart' show IntExt;
 
 /// Added in `2.7`.
 enum BitCounter {

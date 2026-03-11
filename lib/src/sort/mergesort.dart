@@ -37,14 +37,8 @@ class MergeSort {
     int leftLength = half - start + 1;
     int rightLength = end - half;
     List<N> left, right;
-    left = [];
-    right = [];
-    for (int index = 0; index < leftLength; index++) {
-      left.add(array[start + index]);
-    }
-    for (int index = 0; index < rightLength; index++) {
-      right.add(array[half + index + 1]);
-    }
+    left = array.sublist(start, half + 1);
+    right = array.sublist(half + 1, end + 1);
     int lIndex, rIndex;
     lIndex = rIndex = 0;
     for (int pIndex = start; pIndex <= end; pIndex++) {
@@ -63,13 +57,17 @@ class MergeSort {
   }
 
   /// Added in `2.8`.
-  static int listSortAny<E>(List<E> list, bool Function(E, E) gt) =>
-      _mergeSortAny(list, 0, list.length - 1, gt);
+  static int listSortAny<E>(List<E> list, bool? Function(E, E) equality) =>
+      _mergeSortAny(list, 0, list.length - 1, equality);
 
   /// Added in `2.8`.
-  static List<E> listMergeAny<E>(List<E> a, List<E> b, bool Function(E, E) gt) {
+  static List<E> listMergeAny<E>(
+    List<E> a,
+    List<E> b,
+    bool? Function(E, E) equality,
+  ) {
     List<E> array = a + b;
-    _mergeAny(array, 0, a.length, array.length, gt);
+    _mergeAny(array, 0, a.length, array.length, equality);
     return array;
   }
 
@@ -78,14 +76,14 @@ class MergeSort {
     List<E> array,
     int start,
     int end,
-    bool Function(E, E) gt,
+    bool? Function(E, E) equality,
   ) {
     if (start < end) {
       int checks = 0;
       int half = (start + end) ~/ 2;
-      checks += _mergeSortAny(array, start, half, gt);
-      checks += _mergeSortAny(array, half + 1, end, gt);
-      checks += _mergeAny(array, start, half, end, gt);
+      checks += _mergeSortAny(array, start, half, equality);
+      checks += _mergeSortAny(array, half + 1, end, equality);
+      checks += _mergeAny(array, start, half, end, equality);
       return checks;
     }
     return 0;
@@ -97,19 +95,14 @@ class MergeSort {
     int start,
     int half,
     int end,
-    bool Function(E, E) gt,
+    bool? Function(E, E) equality,
   ) {
     int checks = 0;
     int leftLength = half - start + 1;
     int rightLength = end - half;
-    List<dynamic> left, right;
-    left = []; right = [];
-    for (int index = 0; index < leftLength; index++) {
-      left.add(array[start + index]);
-    }
-    for (int index = 0; index < rightLength; index++) {
-      right.add(array[half + index + 1]);
-    }
+    List<E> left, right;
+    left = array.sublist(start, half + 1);
+    right = array.sublist(half + 1, end + 1);
     int lIndex, rIndex;
     lIndex = rIndex = 0;
     for (int pIndex = start; pIndex <= end; pIndex++) {
@@ -118,10 +111,14 @@ class MergeSort {
         array[pIndex] = right[rIndex++];
       } else if (rIndex >= rightLength) {
         array[pIndex] = left[lIndex++];
-      } else if (gt(left[lIndex], right[rIndex])) {
-        array[pIndex] = right[rIndex++];
       } else {
-        array[pIndex] = left[lIndex++];
+        switch (equality(left[lIndex], right[rIndex])) {
+          case true:
+            array[pIndex] = right[rIndex++];
+          case null:
+          case false:
+            array[pIndex] = left[lIndex++];
+        }
       }
       /*if (_lessThanEqualAny(left[lIndex], right[rIndex], gt)) {
         array[pIndex] = left[lIndex]!;

@@ -1,10 +1,10 @@
 /// Added in `2.8`.
 library;
 
-import 'src/math/fraction.dart';
-import 'src/sort/bubblesort.dart';
-import 'src/sort/mergesort.dart';
-import 'src/sort/quicksort.dart';
+import 'src/math/fraction.dart' show Fraction;
+import 'src/sort/bubblesort.dart' show BubbleSort;
+import 'src/sort/mergesort.dart' show MergeSort;
+import 'src/sort/quicksort.dart' show QuickSort;
 
 /// Sorts using the [BubbleSort] method.
 ///
@@ -20,26 +20,25 @@ import 'src/sort/quicksort.dart';
 ({int swaps, int checks}) bubbleSortFraction(List<Fraction> list) =>
     BubbleSort.listSortFraction(list);
 
-/// [gt] is short for `>`.
+/// [equality] should give out:
+/// [true] for `current > next`,
+/// [null] for `current == next` and
+/// [false] for `current < next`.
 ///
-/// [eq] is short for `==`.
+/// [equality] only swaps if `current` is more than `next`.
 ///
 /// Added in `2.8`.
 ({int swaps, int checks}) bubbleSortAny<E>(
   List<E> list, {
-  required bool Function(E, E) gt,
-  bool Function(E, E)? eq,
-}) => BubbleSort.listSortAny(list, gt);
+  required bool? Function(E, E) equality,
+}) => BubbleSort.listSortAny(list, equality);
 
 /// Added in `2.8`.
 int _bubbleSort<N extends num>(List<N> list) => bubbleSort(list).checks;
 
 /// Added in `2.8`.
-int _bubbleSortAny<E>(
-  List<E> list, {
-  required bool Function(E, E) gt,
-  bool Function(E, E)? eq,
-}) => bubbleSortAny(list, gt: gt).checks;
+int _bubbleSortAny<E>(List<E> list, {required bool? Function(E, E) equality}) =>
+    bubbleSortAny(list, equality: equality).checks;
 
 /// Added in `2.8`.
 int mergeSort<N extends num>(List<N> list) => MergeSort.listSort(list);
@@ -48,16 +47,16 @@ int mergeSort<N extends num>(List<N> list) => MergeSort.listSort(list);
 List<N> mergeList<N extends num>(List<N> a, List<N> b) =>
     MergeSort.listMerge(a, b);
 
-/// [gt] is short for `>`.
+/// [equality] should give out:
+/// [true] for `left[a] > right[b]`,
+/// [null] for `left[a] == right[b]` and
+/// [false] for `left[a] < right[b]`.
 ///
-/// [eq] is short for `==`.
+/// [equality] only picks `left[a]` if `left[a]` is more than `right[b]`.
 ///
 /// Added in `2.8`.
-int mergeSortAny<E>(
-  List<E> list, {
-  required bool Function(E, E) gt,
-  bool Function(E, E)? eq,
-}) => MergeSort.listSortAny(list, gt);
+int mergeSortAny<E>(List<E> list, {required bool? Function(E, E) equality}) =>
+    MergeSort.listSortAny(list, equality);
 
 /// [gt] is short for `>`.
 ///
@@ -71,16 +70,19 @@ List<E> mergeListAny<E>(
 /// Added in `2.8.`
 int quickSort<N extends num>(List<N> list) => QuickSort.listSort(list);
 
-/// [gt] is short for `>`.
+/// [equality] should give out:
+/// [true] for `array[a] > array[b]`,
+/// [null] for `array[a] == array[b]` and
+/// [false] for `array[a] < array[b]`.
 ///
-/// [eq] is short for `==`.
+/// [equality] only swaps `array[a]` & `array[b]` if
+/// `array[a] <= lastElement`.
 ///
 /// Added in `2.8`.
 int quickSortAny<E>(
   List<E> list, {
-  required bool Function(E, E) gt,
-  bool Function(E, E)? eq,
-}) => QuickSort.listSortAny(list, gt);
+  required bool? Function(E, E) equality,
+}) => QuickSort.listSortAny(list, equality);
 
 /// Swaps [E]lement at [a] and [E]lement at [b] in [array].
 ///
@@ -111,11 +113,15 @@ bool isSorted<N extends num>(List<N> array) {
 }
 
 /// Added in `2.8`.
-bool isSortedAny<E>(List<E> array, bool Function(E, E) gt) {
+bool isSortedAny<E>(List<E> array, {required bool? Function(E, E) equality}) {
   int i = 0;
   while (i + 1 < array.length - 1) {
-    if (gt(array[i++], array[i])) {
-      return false;
+    switch (equality(array[i++], array[i])) {
+      case true:
+        return false;
+      case null:
+      case false:
+        break;
     }
   }
   return true;
@@ -149,11 +155,7 @@ enum SortAlg {
   /// bool Function(E, E)? eq})` and any optional arguments.
   ///
   /// Added in `2.8`.
-  final int Function<E>(
-    List<E>, {
-    required bool Function(E, E) gt,
-    bool Function(E, E)? eq,
-  })
+  final int Function<E>(List<E>, {required bool? Function(E, E) equality})
   funcAny;
 
   /// If the algorithm does it in the [list] or creates a `new` one.
@@ -179,6 +181,5 @@ int inlineSort<N extends num>(List<N> list, {required SortAlg alg}) =>
 int inlineSortAny<E>(
   List<E> list, {
   required SortAlg alg,
-  required bool Function(E, E) greaterThan,
-  bool Function(E, E)? equalTo,
-}) => alg.funcAny(list, gt: greaterThan, eq: equalTo);
+  required bool? Function(E, E) equality,
+}) => alg.funcAny(list, equality: equality);

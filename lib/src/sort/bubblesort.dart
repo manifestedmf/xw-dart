@@ -63,7 +63,7 @@ class BubbleSort {
   /// Added in `2.8`.
   static ({int swaps, int checks}) listSortAny<E>(
     List<E> list,
-    bool Function(E, E) gt,
+    bool? Function(E, E) equality,
   ) {
     int index, nextIndex, rotation, swaps, checks;
     index = swaps = checks = 0;
@@ -77,12 +77,17 @@ class BubbleSort {
       }
       current = list[index];
       next = list[nextIndex];
-      if (gt(current, next)) {
-        list[index] = next;
-        list[nextIndex] = current;
-        ++swaps;
-      }
       ++checks;
+      switch (equality(current, next)) {
+        case null:
+          break;
+        case true:
+          list[index] = next;
+          list[nextIndex] = current;
+          ++swaps;
+        case false:
+          break;
+      }
       ++index;
       ++nextIndex;
     }

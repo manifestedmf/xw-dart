@@ -1,6 +1,5 @@
-import '../extension.dart';
-import '../mixins.dart';
-
+import '../extension.dart' show StringExt, NumExt;
+import '../mixins.dart' show Compare;
 import 'scanner.dart';
 
 const monthsName = [

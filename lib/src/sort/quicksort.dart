@@ -1,4 +1,4 @@
-import '../../sort.dart' as parent;
+import '../extension.dart' show ListE;
 
 /// Added in `2.8`.
 class QuickSort {
@@ -30,27 +30,27 @@ class QuickSort {
       checks++;
       if (array[index] <= lastElement) {
         primeIndex++;
-        parent.swapElement(array, primeIndex, index);
+        array.swap(primeIndex, index);
       }
     }
-    parent.swapElement(array, primeIndex + 1, end);
+    array.swap(primeIndex + 1, end);
     return (highestValueIndex: primeIndex + 1, checks: checks);
   }
 
   /// Added in `2.8`.
-  static int listSortAny<E>(List<E> list, bool Function(E, E) gt) =>
-      _quickSortAny(list, 0, list.length - 1, gt);
+  static int listSortAny<E>(List<E> list, bool? Function(E, E) equality) =>
+      _quickSortAny(list, 0, list.length - 1, equality);
   /// Added in `2.8`.
   static int _quickSortAny<E>(
     List<E> array,
     int start,
     int end,
-    bool Function(E, E) gt,
+    bool? Function(E, E) equality,
   ) {
     if (start < end) {
-      var (:highestValueIndex, :checks) = _partitionAny(array, start, end, gt);
-      checks += _quickSortAny(array, start, highestValueIndex - 1, gt);
-      checks += _quickSortAny(array, highestValueIndex + 1, end, gt);
+      var (:highestValueIndex, :checks) = _partitionAny(array, start, end, equality);
+      checks += _quickSortAny(array, start, highestValueIndex - 1, equality);
+      checks += _quickSortAny(array, highestValueIndex + 1, end, equality);
       return checks;
     }
     return 0;
@@ -60,19 +60,23 @@ class QuickSort {
     List<E> array,
     int start,
     int end,
-    bool Function(E, E) gt,
+    bool? Function(E, E) equality,
   ) {
     E lastElement = array[end];
     int checks = 0;
     int primeIndex = start - 1;
     for (int index = start; index < end; index++) {
       checks++;
-      if (!gt(array[index], lastElement)) {
-        primeIndex++;
-        parent.swapElement(array, primeIndex, index);
+      switch (equality(array[index], lastElement)) {
+        case null:
+        case false:
+          primeIndex++;
+          array.swap(primeIndex, index);
+        case true:
+          break;
       }
     }
-    parent.swapElement(array, primeIndex + 1, end);
+    array.swap(primeIndex + 1, end);
     return (highestValueIndex: primeIndex + 1, checks: checks);
   }
 }

@@ -1,18 +1,24 @@
 /// The package for the function [printf] & [printg]
 ///
 /// Added in `2.7.3`.
-library;
+library xw.printf;
 
+import 'dart:core' show String, Iterable, Object, List, int, UnimplementedError;
 import 'dart:io' show stdout;
-import 'src/standard.dart' show cut;
+import 'src/standard.dart' show cut, grow;
 import 'src/extension.dart' show ListE;
 
 /// Prints out to to the console with [stdout]`.`[write]`()`.
 ///
-/// Send in the input from [input], and the objects/nulls from [items].
+/// Send in the input from [input], and the `object?`s from [items].
 ///
-/// Adding some digits to the end of a `%?`
-/// will make it try to end at that length, else it will just add it.
+/// Adding some digits to the end of a `%?#`
+/// will make it extend with spaces after till it is that long.
+/// (`v2.8`)
+///
+/// Adding some digits to the middle of a `%#?`
+/// will make it extend with spaces before till it is that long.
+/// (`v2.8`)
 ///
 /// `%o`, grabs the next [Object], which cannot be a [nullable].
 /// (`v2.7.3`)
@@ -23,24 +29,54 @@ import 'src/extension.dart' show ListE;
 /// `%a`, grabs the next [Iterable].
 /// (`v2.8`)
 ///
+/// `%s`, grabs the next [String].
+/// (`v2.8`)
+///
 /// Added in `2.7.3`.
 void printf<E>(String input, [Iterable<E> items = const []]) {
   printg(scanf(input, items));
 }
+
+/// Prints with [printf], but with a forced line at the end.
+void printfln<E>(String input, [Iterable<E> items = const []]) =>
+    printf(input + "\n", items);
+
+/// Prints with a new line at the end.
+///
+/// Added in `2.7.3`.
+void println(Object? input) => printg(input.toString() + "\n");
 
 /// Added in `2.7.3`.
 enum _State {
   /// `2.7.3`
   percentage,
 
-  /// `2.7.3`
-  object,
+  /// `2.8`.
+  percentageBefore,
 
   /// `2.7.3`
-  nullable,
+  objectAfter,
+
+  /// `2.7.3`
+  nullableAfter,
 
   /// `2.8`
-  iterable,
+  iterableAfter,
+
+  /// `2.8`
+  stringAfter,
+
+  /// `2.8
+  objectBefore,
+
+  /// `2.8`
+  nullableBefore,
+
+  /// `2.8`
+  iterableBefore,
+
+  /// `2.8`
+  stringBefore,
 
   /// `2.7.3`
   text,
@@ -51,17 +87,40 @@ enum _State {
 
 /// Added in `2.7.3`.
 enum _Char {
+  /// `'%'`
+  ///
+  /// Initializer for other items.
+  ///
   /// `2.7.3`
   percent,
 
+  /// `'%o'`
+  ///
+  /// [Object].
+  ///
   /// `2.7.3`
-  o,
+  object,
 
+  /// `'%n'`
+  ///
+  /// [Object?].
+  ///
   /// `2.7.3`
-  n,
+  nullable,
 
+  /// `'%a'`
+  ///
+  /// [Iterable].
+  ///
   /// `2.8`
-  a,
+  array,
+
+  /// `'%s'`
+  ///
+  /// [String].
+  ///
+  /// `2.8`.
+  string,
 
   /// `2.7.3`
   text,
@@ -76,9 +135,10 @@ enum _Char {
 /// Added in `2.7.3`.
 _Char _character(String char) => switch (char) {
   "%" => _Char.percent,
-  "o" => _Char.o,
-  "n" => _Char.n,
-  "a" => _Char.a,
+  "o" => _Char.object,
+  "n" => _Char.nullable,
+  "a" => _Char.array,
+  "s" => _Char.string,
   "0" => _Char.digit,
   "1" => _Char.digit,
   "2" => _Char.digit,
@@ -95,21 +155,29 @@ _Char _character(String char) => switch (char) {
 
 /// Returns the formatted [String] from the according [input] and [items].
 ///
-/// Send in the input from [input], and the objects/nulls from [items].
+/// Send in the input from [input], and the `object?`s from [items].
 ///
-/// Adding some digits to the end of a `%?`
-/// will make it try to end at that length, else it will just add it.
+/// Adding some digits to the end of a `%?#`
+/// will make it extend with spaces after till it is that long.
+/// (`v2.8`)
+///
+/// Adding some digits to the middle of a `%#?`
+/// will make it extend with spaces before till it is that long.
+/// (`v2.8`)
 ///
 /// `%o`, grabs the next [Object], which cannot be a [nullable].
-/// (`v2.8`)
+/// (`v2.7.3`)
 ///
 /// `%n`, grabs the next item, which can be [nullable].
-/// (`v2.8`)
+/// (`v2.7.3`)
 ///
 /// `%a`, grabs the next [Iterable].
 /// (`v2.8`)
 ///
-/// Added in `2.8`.
+/// `%s`, grabs the next [String].
+/// (`v2.8`)
+///
+/// Added in `2.7.3`.
 String scanf<E>(String input, [Iterable<E> items = const []]) {
   if (items.isEmpty) {
     return input;
@@ -119,6 +187,8 @@ String scanf<E>(String input, [Iterable<E> items = const []]) {
     return _scanfUnsafe(input, items);
   }
 }
+
+// FIXME: add digits before, to be the current and add digits after.
 
 /// Added in `2.8`.
 class _scanfSafe<E extends Object> {
@@ -155,6 +225,11 @@ class _scanfSafe<E extends Object> {
   ///
   /// Added in `2.8`.
   int iterableOffset = 0;
+
+  /// The String offset
+  ///
+  /// Added in `2.8`.
+  int stringOffset = 0;
 
   /// the current char
   ///
@@ -195,22 +270,38 @@ class _scanfSafe<E extends Object> {
         case _Char.percent:
           switch (state) {
             case _State.percentage:
+              output += "%";
+              lineLength++;
+              starter = pointer;
               state = _State.text;
-            case _State.object:
-            case _State.nullable:
-            case _State.iterable:
+            case _State.percentageBefore:
+            case _State.objectAfter:
+            case _State.nullableAfter:
+            case _State.iterableAfter:
+            case _State.stringAfter:
+            case _State.objectBefore:
+            case _State.nullableBefore:
+            case _State.iterableBefore:
+            case _State.stringBefore:
             case _State.text:
             case _State.unknown:
               flush();
               state = _State.percentage;
           }
-        case _Char.o:
+        case _Char.object:
           switch (state) {
             case _State.percentage:
-              state = _State.object;
-            case _State.object:
-            case _State.nullable:
-            case _State.iterable:
+              state = _State.objectAfter;
+            case _State.percentageBefore:
+              state = _State.objectBefore;
+            case _State.objectAfter:
+            case _State.nullableAfter:
+            case _State.iterableAfter:
+            case _State.stringAfter:
+            case _State.objectBefore:
+            case _State.nullableBefore:
+            case _State.iterableBefore:
+            case _State.stringBefore:
               flush();
               state = _State.text;
             case _State.text:
@@ -218,13 +309,20 @@ class _scanfSafe<E extends Object> {
             case _State.unknown:
               state = _State.text;
           }
-        case _Char.n:
+        case _Char.nullable:
           switch (state) {
             case _State.percentage:
-              state = _State.nullable;
-            case _State.object:
-            case _State.nullable:
-            case _State.iterable:
+              state = _State.nullableAfter;
+            case _State.percentageBefore:
+              state = _State.nullableBefore;
+            case _State.objectAfter:
+            case _State.nullableAfter:
+            case _State.iterableAfter:
+            case _State.stringAfter:
+            case _State.objectBefore:
+            case _State.nullableBefore:
+            case _State.iterableBefore:
+            case _State.stringBefore:
               flush();
               state = _State.text;
             case _State.text:
@@ -232,13 +330,41 @@ class _scanfSafe<E extends Object> {
             case _State.unknown:
               state = _State.text;
           }
-        case _Char.a:
+        case _Char.array:
           switch (state) {
             case _State.percentage:
-              state = _State.iterable;
-            case _State.object:
-            case _State.nullable:
-            case _State.iterable:
+              state = _State.iterableAfter;
+            case _State.percentageBefore:
+              state = _State.iterableBefore;
+            case _State.objectAfter:
+            case _State.nullableAfter:
+            case _State.iterableAfter:
+            case _State.stringAfter:
+            case _State.objectBefore:
+            case _State.nullableBefore:
+            case _State.iterableBefore:
+            case _State.stringBefore:
+              flush();
+              state = _State.text;
+            case _State.text:
+              break;
+            case _State.unknown:
+              state = _State.text;
+          }
+        case _Char.string:
+          switch (state) {
+            case _State.percentage:
+              state = _State.stringAfter;
+            case _State.percentageBefore:
+              state = _State.stringBefore;
+            case _State.objectAfter:
+            case _State.nullableAfter:
+            case _State.iterableAfter:
+            case _State.stringAfter:
+            case _State.objectBefore:
+            case _State.nullableBefore:
+            case _State.iterableBefore:
+            case _State.stringBefore:
               flush();
               state = _State.text;
             case _State.text:
@@ -249,10 +375,16 @@ class _scanfSafe<E extends Object> {
         case _Char.text:
           switch (state) {
             case _State.percentage:
+            case _State.percentageBefore:
               state = _State.text;
-            case _State.object:
-            case _State.nullable:
-            case _State.iterable:
+            case _State.objectAfter:
+            case _State.nullableAfter:
+            case _State.iterableAfter:
+            case _State.stringAfter:
+            case _State.objectBefore:
+            case _State.nullableBefore:
+            case _State.iterableBefore:
+            case _State.stringBefore:
               flush();
               state = _State.text;
             case _State.text:
@@ -263,11 +395,19 @@ class _scanfSafe<E extends Object> {
         case _Char.digit:
           switch (state) {
             case _State.percentage:
-              state = _State.text;
-            case _State.object:
-            case _State.nullable:
-            case _State.iterable:
+              state = _State.percentageBefore;
+            case _State.percentageBefore:
+            case _State.objectAfter:
+            case _State.nullableAfter:
+            case _State.iterableAfter:
+            case _State.stringAfter:
               spaceAmount = spaceAmount * 10 + int.parse(char);
+            case _State.objectBefore:
+            case _State.nullableBefore:
+            case _State.iterableBefore:
+            case _State.stringBefore:
+              flush();
+              state = _State.text;
             case _State.text:
               break;
             case _State.unknown:
@@ -276,10 +416,15 @@ class _scanfSafe<E extends Object> {
         case _Char.newline:
           switch (state) {
             case _State.percentage:
-              flush();
-            case _State.object:
-            case _State.nullable:
-            case _State.iterable:
+            case _State.percentageBefore:
+            case _State.objectAfter:
+            case _State.nullableAfter:
+            case _State.iterableAfter:
+            case _State.stringAfter:
+            case _State.objectBefore:
+            case _State.nullableBefore:
+            case _State.iterableBefore:
+            case _State.stringBefore:
               flush();
               state = _State.text;
             case _State.text:
@@ -303,14 +448,16 @@ class _scanfSafe<E extends Object> {
   void flush() {
     switch (state) {
       case _State.percentage:
+      case _State.percentageBefore:
         tempStr = input.substring(starter, pointer);
-      case _State.object:
-      case _State.nullable:
+      case _State.objectAfter:
+      case _State.nullableAfter:
         heldValue = objects.removeFirst();
         tempStr = heldValue.toString();
         iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
-        addSpaces();
-      case _State.iterable:
+        stringOffset = cut(val: stringOffset, max: objects.length - 1);
+        addSpacesAfter();
+      case _State.iterableAfter:
         while (true) {
           heldValue = objects[iterableOffset];
           if (heldValue is Iterable) {
@@ -320,8 +467,59 @@ class _scanfSafe<E extends Object> {
           }
         }
         tempStr = heldValue.toString();
-        addSpaces();
+        addSpacesAfter();
         objects.removeAt(iterableOffset);
+        iterableOffset = grow(val: iterableOffset - 1, min: 0);
+        stringOffset = cut(val: stringOffset, max: objects.length - 1);
+      case _State.stringAfter:
+        while (true) {
+          heldValue = objects[stringOffset];
+          if (heldValue is String) {
+            break;
+          } else {
+            stringOffset++;
+          }
+        }
+        tempStr = heldValue as String;
+        addSpacesAfter();
+        objects.removeAt(stringOffset);
+        stringOffset = grow(val: stringOffset - 1, min: 0);
+        iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
+      case _State.objectBefore:
+      case _State.nullableBefore:
+        heldValue = objects.removeFirst();
+        tempStr = heldValue.toString();
+        iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
+        stringOffset = cut(val: stringOffset, max: objects.length - 1);
+        addSpacesBefore();
+      case _State.iterableBefore:
+        while (true) {
+          heldValue = objects[iterableOffset];
+          if (heldValue is Iterable) {
+            break;
+          } else {
+            iterableOffset++;
+          }
+        }
+        tempStr = heldValue.toString();
+        addSpacesBefore();
+        objects.removeAt(iterableOffset);
+        iterableOffset = grow(val: iterableOffset - 1, min: 0);
+        stringOffset = cut(val: stringOffset, max: objects.length - 1);
+      case _State.stringBefore:
+        while (true) {
+          heldValue = objects[stringOffset];
+          if (heldValue is String) {
+            break;
+          } else {
+            stringOffset++;
+          }
+        }
+        tempStr = heldValue as String;
+        addSpacesBefore();
+        objects.removeAt(stringOffset);
+        stringOffset = grow(val: stringOffset - 1, min: 0);
+        iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
       case _State.text:
         tempStr = input.substring(starter, pointer);
       case _State.unknown:
@@ -334,7 +532,14 @@ class _scanfSafe<E extends Object> {
   }
 
   /// Added in `2.8`.
-  void addSpaces() {
+  void addSpacesAfter() {
+    while (tempStr.length < spaceAmount - lineLength) {
+      tempStr += " ";
+    }
+  }
+
+  /// Added in `2.8`.
+  void addSpacesBefore() {
     while (tempStr.length < spaceAmount - lineLength) {
       tempStr = " " + tempStr;
     }
@@ -381,7 +586,7 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
         switch (state) {
           case _State.percentage:
             state = _State.text;
-          case _State.object:
+          case _State.objectAfter:
             while (true) {
               heldValue = objects[objectOffset];
               if (heldValue is Object) {
@@ -395,7 +600,7 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             }
             state = _State.percentage;
             starter = pointer;
-          case _State.nullable:
+          case _State.nullableAfter:
             heldValue = objects.first;
             output += heldValue.toString();
             objects.removeAt(0);
@@ -403,7 +608,7 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
             state = _State.percentage;
             starter = pointer;
-          case _State.iterable:
+          case _State.iterableAfter:
             while (true) {
               heldValue = objects[iterableOffset];
               if (heldValue is Iterable) {
@@ -423,12 +628,30 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
           case _State.unknown:
             state = _State.percentage;
             starter = pointer;
+          case _State.percentageBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.stringAfter:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.objectBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.nullableBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.iterableBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.stringBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
         }
-      case _Char.o:
+      case _Char.object:
         switch (state) {
           case _State.percentage:
-            state = _State.object;
-          case _State.object:
+            state = _State.objectAfter;
+          case _State.objectAfter:
             while (true) {
               heldValue = objects[objectOffset];
               if (heldValue is Object) {
@@ -442,7 +665,7 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             }
             state = _State.text;
             starter = pointer;
-          case _State.nullable:
+          case _State.nullableAfter:
             heldValue = objects.first;
             output += heldValue.toString();
             objects.removeAt(0);
@@ -450,7 +673,7 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
             state = _State.text;
             starter = pointer;
-          case _State.iterable:
+          case _State.iterableAfter:
             while (true) {
               heldValue = objects[iterableOffset];
               if (heldValue is Iterable) {
@@ -467,12 +690,30 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             break;
           case _State.unknown:
             state = _State.text;
+          case _State.percentageBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.stringAfter:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.objectBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.nullableBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.iterableBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.stringBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
         }
-      case _Char.n:
+      case _Char.nullable:
         switch (state) {
           case _State.percentage:
-            state = _State.nullable;
-          case _State.object:
+            state = _State.nullableAfter;
+          case _State.objectAfter:
             while (true) {
               heldValue = objects[objectOffset];
               if (heldValue is Object) {
@@ -486,7 +727,7 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             }
             state = _State.text;
             starter = pointer;
-          case _State.nullable:
+          case _State.nullableAfter:
             heldValue = objects.first;
             output += heldValue.toString();
             objects.removeAt(0);
@@ -494,7 +735,7 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
             state = _State.text;
             starter = pointer;
-          case _State.iterable:
+          case _State.iterableAfter:
             while (true) {
               heldValue = objects[iterableOffset];
               if (heldValue is Iterable) {
@@ -511,12 +752,30 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             break;
           case _State.unknown:
             state = _State.text;
+          case _State.percentageBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.stringAfter:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.objectBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.nullableBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.iterableBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.stringBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
         }
-      case _Char.a:
+      case _Char.array:
         switch (state) {
           case _State.percentage:
-            state = _State.iterable;
-          case _State.object:
+            state = _State.iterableAfter;
+          case _State.objectAfter:
             while (true) {
               heldValue = objects[objectOffset];
               if (heldValue is Object) {
@@ -530,7 +789,7 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             }
             state = _State.text;
             starter = pointer;
-          case _State.nullable:
+          case _State.nullableAfter:
             heldValue = objects.first;
             output += heldValue.toString();
             objects.removeAt(0);
@@ -538,7 +797,7 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
             state = _State.text;
             starter = pointer;
-          case _State.iterable:
+          case _State.iterableAfter:
             while (true) {
               heldValue = objects[iterableOffset];
               if (heldValue is Iterable) {
@@ -555,11 +814,29 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             break;
           case _State.unknown:
             state = _State.text;
+          case _State.percentageBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.stringAfter:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.objectBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.nullableBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.iterableBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.stringBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
         }
       case _Char.text:
         switch (state) {
           case _State.percentage:
-          case _State.object:
+          case _State.objectAfter:
             while (true) {
               heldValue = objects[objectOffset];
               if (heldValue is Object) {
@@ -573,7 +850,7 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             }
             state = _State.text;
             starter = pointer;
-          case _State.nullable:
+          case _State.nullableAfter:
             heldValue = objects.first;
             output += heldValue.toString();
             objects.removeAt(0);
@@ -581,7 +858,7 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             iterableOffset = cut(val: iterableOffset, max: objects.length - 1);
             state = _State.text;
             starter = pointer;
-          case _State.iterable:
+          case _State.iterableAfter:
             while (true) {
               heldValue = objects[iterableOffset];
               if (heldValue is Iterable) {
@@ -598,11 +875,32 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
             break;
           case _State.unknown:
             state = _State.text;
+          case _State.percentageBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.stringAfter:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.objectBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.nullableBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.iterableBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          case _State.stringBefore:
+            // TODO: Handle this case.
+            throw UnimplementedError();
         }
       case _Char.digit:
         // TODO: Handle this case.
         throw UnimplementedError();
       case _Char.newline:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case _Char.string:
         // TODO: Handle this case.
         throw UnimplementedError();
     }
@@ -611,7 +909,7 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
   switch (state) {
     case _State.percentage:
       output += input.substring(starter);
-    case _State.object:
+    case _State.objectAfter:
       while (true) {
         heldValue = objects[objectOffset];
         if (heldValue is Object) {
@@ -621,10 +919,10 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
           objectOffset++;
         }
       }
-    case _State.nullable:
+    case _State.nullableAfter:
       heldValue = objects.first;
       output += heldValue.toString();
-    case _State.iterable:
+    case _State.iterableAfter:
       while (true) {
         heldValue = objects[iterableOffset];
         if (heldValue is Iterable) {
@@ -638,16 +936,38 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
       output += input.substring(starter);
     case _State.unknown:
       break;
+    case _State.percentageBefore:
+      // TODO: Handle this case.
+      throw UnimplementedError();
+    case _State.stringAfter:
+      // TODO: Handle this case.
+      throw UnimplementedError();
+    case _State.objectBefore:
+      // TODO: Handle this case.
+      throw UnimplementedError();
+    case _State.nullableBefore:
+      // TODO: Handle this case.
+      throw UnimplementedError();
+    case _State.iterableBefore:
+      // TODO: Handle this case.
+      throw UnimplementedError();
+    case _State.stringBefore:
+      // TODO: Handle this case.
+      throw UnimplementedError();
   }
   return output;
 }
 
 /// The sequel to [printf], this takes only input and just does output.
+///
+/// Added in `2.7.3`.
 void printg(String input) {
   stdout.write(input);
 }
 
 /// [printg] but it has some more computation before sending it.
+///
+/// Added in `2.7.3`.
 void printh(Object? input) {
   printg(input.toString());
 }

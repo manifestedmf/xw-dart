@@ -1,7 +1,9 @@
 import 'equals.dart';
-import 'standard.dart' as std;
-import 'math/math.dart';
-import '../sort.dart' as sort;
+import 'standard.dart'
+    as std
+    show and, xand, nand, xnand, or, xor, nor, xnor, not;
+import 'math/math.dart' show pow, square, round, max, min, sum, properties;
+import '../sort.dart' as sort show inlineSort, SortAlg;
 
 // class Char {
 //   final int char;
@@ -11,7 +13,8 @@ import '../sort.dart' as sort;
 //   toString() => "".
 // }
 
-extension NumExtension on num {
+/// Added in `2.7`.
+extension NumExt on num {
   /// If the [num].[isWhole] or not;
   ///
   /// Is always true if the the [num] is [int];
@@ -121,7 +124,8 @@ extension NumExtension on num {
   };
 }
 
-extension IntExtension on int {
+/// Added in `2.7`.
+extension IntExt on int {
   int towards(int value) {
     if (value < this) {
       return this - 1;
@@ -176,7 +180,8 @@ extension IntExtension on int {
   int roundToThis() => this;
 }
 
-extension DoubleExtension on double {
+/// Added in `2.7`.
+extension DoubleExt on double {
   double towards(double value, [double amount = 1]) {
     if (value < this) {
       if (this - amount < value) {
@@ -227,6 +232,7 @@ extension ListE<E> on List<E> {
     }
     return found;
   }
+
   /// Removes the first item in the list.
   ///
   ///
@@ -298,7 +304,7 @@ extension ListN<N extends num> on List<N> {
   /// Added in `2.8`.
   void squareEach() => changeEach(square);
 
-  /// you have to have `import 'package:xw/sort.dart';` to do this.
+  /// [SortAlg] comes packaged with this.
   ///
   /// Added in `2.8`.
   void sortWithThis(sort.SortAlg algorithm) =>
@@ -349,6 +355,7 @@ extension IterableE<E> on Iterable<E> {
 
   /// Added in `2.8`.
   bool equalsDeep(Iterable<E> other) => iterableEqualsDeep(this, other);
+
   /// Non-CaseSensitive search.
   ///
   /// Added in `2.8`.
@@ -357,7 +364,7 @@ extension IterableE<E> on Iterable<E> {
       return contains(element);
     } else {
       List<E> array = toList();
-      array.changeEach((s){
+      array.changeEach((s) {
         if (s is String) {
           return s.toLowerCase() as E;
         } else {
@@ -367,6 +374,20 @@ extension IterableE<E> on Iterable<E> {
       return array.contains(element.toLowerCase());
     }
   }
+}
+
+/// Added in `2.8`.
+extension IterableN<N extends num> on Iterable<N> {
+  /// Added in `2.8`.
+  N get maxThis => max(this);
+
+  /// Added in `2.8`.
+  N get minThis => min(this);
+
+  /// Added in `2.8`.
+  N get sumThis => sum(this);
+
+  ({N max, N sum, N min}) get propertiesThis => properties(this);
 }
 
 extension IterableBool on Iterable<bool> {
@@ -398,11 +419,13 @@ extension IterableMapEntry<K, V> on Iterable<MapEntry<K, V>> {
   Map<K, V> toMap() => Map.fromEntries(this);
 }
 
-extension BoolExtension on bool {
+/// Added in `2.7`.
+extension BoolExt on bool {
   int toInt() => (this) ? 1 : 0;
 }
 
-extension StringExtension on String {
+/// Added in `2.7`.
+extension StringExt on String {
   String truncate(int characters) => substring(0, characters);
   String safeTruncate(int characters) =>
       (characters >= length) ? substring(0, length - 1) : truncate(characters);
@@ -498,10 +521,13 @@ extension StringExtension on String {
   bool get isUpperCase => isUpperCaseChar;
   @Deprecated("2.9 use isLowerCasedChar")
   bool get isLowerCase => isLowerCaseChar;
+
   /// Added in `2.8`.
   bool get isUpperCaseChar => length == 1 && isUpperCased;
+
   /// Added in `2.8`.
   bool get isLowerCaseChar => length == 1 && isLowerCased;
+
   /// Added in `2.8`.
   bool get isCaseInsensitiveChar => length == 1 && isUpperCased && isLowerCased;
 
@@ -603,11 +629,4 @@ extension StringExtension on String {
     }
     return mule;
   }
-}
-
-enum CaseKind {
-  upper,
-  lower,
-  insensitive,
-  ;
 }

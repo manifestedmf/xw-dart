@@ -1,6 +1,5 @@
-import 'date/date.dart';
-import 'extension.dart';
-import 'array.dart';
+import 'date/date.dart' show Date;
+import 'extension.dart' show IntExt;
 
 enum VersionId {
   //
@@ -808,8 +807,8 @@ class VersionToken {
   ///
   /// [nextVer], [nextManor], [nextStandard], [nextMajor],
   /// [nextName], [nextDate]
-  Array<bool> get validNext {
-    Array<bool> array = Array(6);
+  List<bool> get validNext {
+    List<bool> array = List.filled(6,false);
     array[0] = (_nextVer != null);
     array[1] = (_nextManor != null);
     array[2] = (_nextStandard != null);
@@ -823,8 +822,8 @@ class VersionToken {
   ///
   /// [prevVer], [prevManor], [prevStandard], [prevMajor],
   /// [prevName], [prevDate]
-  Array<bool> get validPrev {
-    Array<bool> array = Array(6);
+  List<bool> get validPrev {
+    List<bool> array = List.filled(6, false);
     array[0] = (_prevVer != null);
     array[1] = (_prevManor != null);
     array[2] = (_prevStandard != null);
@@ -838,19 +837,13 @@ class VersionToken {
   ///
   /// [thisVer], [thisManor], [thisStandard], [thisMajor],
   /// [thisName], [thisDate]
-  Array<bool> get validThis {
-    Array<bool> array = Array.fill(6, fill: true);
-    return array;
-  }
+  List<bool> get validThis => List.filled(6, true);
 
   /// can you do
   ///
   /// [highVer], [highManor], [highStandard], [highMajor],
   /// [highName], [highDate]
-  Array<bool> get validHigh {
-    Array<bool> array = Array.fill(6, fill: true);
-    return array;
-  }
+  List<bool> get validHigh =>  List.filled(6, true);
 
   // public conversion functions
 

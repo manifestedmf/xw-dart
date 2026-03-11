@@ -1,6 +1,6 @@
-import 'dart:io';
-import 'scan.dart';
-import 'parser.dart';
+import 'dart:io' show File;
+import 'scan.dart' show Scanner;
+import 'parser.dart' show Parser, Version;
 import 'ast.dart';
 
 

@@ -1,9 +1,9 @@
 // ignore_for_file: constant_identifier_names
 
-import '../mixins.dart';
-import '../../math.dart';
+import '../mixins.dart' show Compare;
+import '../../math.dart' show Fraction, pow;
 import 'ast.dart';
-import 'scan.dart';
+import 'scan.dart' show Token, TokenType, IncompleteToken;
 
 
 enum Version with Compare<Version> {
