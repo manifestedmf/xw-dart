@@ -38,12 +38,14 @@ void printf<E>(String input, [Iterable<E> items = const []]) {
 }
 
 /// Prints with [printf], but with a forced line at the end.
+///
+/// Added in `2.8`.
 void printfln<E>(String input, [Iterable<E> items = const []]) =>
     printf(input + "\n", items);
 
 /// Prints with a new line at the end.
 ///
-/// Added in `2.7.3`.
+/// Added in `2.8`.
 void println(Object? input) => printg(input.toString() + "\n");
 
 /// Added in `2.7.3`.

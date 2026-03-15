@@ -100,3 +100,39 @@ N grow<N extends num>({required N min, required N val}) => maxSimple(min, val);
 /// Added in `2.8`.
 N inverse<N extends num>({required N min, required N max, required N val}) =>
     max - val + min as N;
+
+/// Makes so there is at least [amount] of zeroes.
+///
+/// [amount] being one or less will only return [number] (in a string form).
+///
+/// the `return`s length will always at least be above [amount],
+/// indicated by `return.length`.
+///
+/// ` `
+///
+/// ```
+/// print(hAdder(50, 2)) // 50
+/// print(hAdder(56, 4)) // 0056
+/// print(hAdder(1896, 4)) // 1896
+/// print(hAdder(1, -2)) // 1
+/// ```
+///
+/// Do note, that there is a problem if any instance of
+/// `int.parse(hAdder(n, x))` is not n (Where n & x is an unknown int).
+/// Do please report it to the creator of this function
+/// (manifestedmf on github) or on their repository
+/// (manifestedmf/xw-dart on github).
+///
+/// Added in `2.8`.
+String hAdder(int number, int amount) {
+  String mule = "$number";
+  if (number.length < amount) {
+    String messenger = "";
+    for (int index = 0; index < amount - number.length; index++) {
+      messenger += "0";
+    }
+    mule = (number >= 0) ? mule.insert(messenger) : mule.insert(messenger, 1);
+  }
+  return mule;
+}
+

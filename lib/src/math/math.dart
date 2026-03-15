@@ -526,8 +526,27 @@ V sumMapValue<K, V extends num>(Map<K, V> map, [V? starting]) {
   return (max: max, min: min, sum: sum);
 }
 
+/// The [base] to [exponent].
+///
 /// Added in `2.7`.
 N pow<N extends num>(N base, N exponent) => math.pow(base, exponent) as N;
+
+// RT stands for Return Type.
+/// Added in `2.8`.
+RT powAny<RT>(
+  RT base,
+  RT exponent, {
+  required RT Function(RT, RT) times,
+  required RT Function(RT) minusOne,
+  required bool Function(RT) equalToZero,
+}) {
+  RT mule = base;
+  while (!equalToZero(exponent)) {
+    mule = times(mule, base);
+    exponent = minusOne(exponent);
+  }
+  return mule;
+}
 
 /// Added in `2.8`.
 N square<N extends num>(N base) => pow(base, (base is int) ? 2 as N : 2.0 as N);
@@ -713,12 +732,10 @@ class MathError {
 int factorial(int number) {
   if (number.isSigned) {
     throw MathError("$number can't be signed in $factorial().");
+  } else if (number == 0) {
+    return 1;
   } else {
-    int mule = 1;
-    for (int i = 2; i < number; i++) {
-      mule *= i;
-    }
-    return mule;
+    return factorial(number - 1) * number;
   }
 }
 
@@ -754,6 +771,42 @@ N pif<N extends num>(Iterable<N> nums, [N? starting]) {
     product = product * value as N;
   }
   return product;
+}
+
+/// Added in `2.8`.
+int fibonacci(int number) {
+  if (number <= 0) {
+    return 0;
+  } else if (number == 1) {
+    return 1;
+  } else {
+    return fibonacci(number - 2) + fibonacci(number - 1);
+  }
+}
+
+/// Gets all [fibonacci] numbers up to [number].
+///
+/// Doing
+/// ```
+/// List<int> fibonaccis = fibonacciList(n);
+/// int fibonacciIndex = fibonaccis[index];
+/// ```
+/// Will yield `fibonacciIndex` to be [fibonacci]`(`[index]`)`.
+///
+/// Added in `2.8`.
+List<int> fibonacciList(int number) {
+  if (number < 0) {
+    return [];
+  } else if (number == 0) {
+    return [0];
+  } else {
+    List<int> fibonaccis = [0, 1];
+    int index = 2;
+    for (; fibonaccis.length <= number; index++) {
+      fibonaccis.add(fibonaccis[index - 2] + fibonaccis[index - 1]);
+    }
+    return fibonaccis;
+  }
 }
 
 /// Added in `2.8`.

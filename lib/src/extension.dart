@@ -4,6 +4,7 @@ import 'standard.dart'
     show and, xand, nand, xnand, or, xor, nor, xnor, not;
 import 'math/math.dart' show pow, square, round, max, min, sum, properties;
 import '../sort.dart' as sort show inlineSort, SortAlg;
+import 'bitwise.dart' show readBit;
 
 // class Char {
 //   final int char;
@@ -126,11 +127,11 @@ extension NumExt on num {
 
 /// Added in `2.7`.
 extension IntExt on int {
-  int towards(int value) {
+  int towards(int value, [int amount = 1]) {
     if (value < this) {
-      return this - 1;
+      return this - amount;
     } else if (value > this) {
-      return this + 1;
+      return this + amount;
     } else {
       return this;
     }
@@ -178,6 +179,9 @@ extension IntExt on int {
 
   /// Added in `2.8`.
   int roundToThis() => this;
+
+  /// Added in `2.8`.
+  bool get isSigned => readBit(this, 63);
 }
 
 /// Added in `2.7`.
@@ -218,26 +222,47 @@ extension ListE<E> on List<E> {
   ///
   /// Returns `false` if there is no occurrence of [value].
   ///
+  /// Adds if [equal] returns `true`,
+  /// [equal] should compare input vs [value].
+  ///
+  /// [equal] is normally `(e) => e == value`.
+  ///
   /// Added in `2.8`.
-  bool removeAll(E value) {
-    int index = 0;
-    bool found = false;
-    while (index < length) {
-      if (value == this[index]) {
-        found = true;
-        removeAt(index);
-      } else {
-        index++;
+  bool removeAll(Object? value, [bool Function(E)? equal]) {
+    Set<int> indexes = indexesOf(value, equal);
+    if (indexes.isEmpty) {
+      return false;
+    } else {
+      for (int index = indexes.length - 1; index >= 0; index--) {
+        removeAt(indexes.elementAt(index));
+      }
+      return true;
+    }
+  }
+
+  /// Gives all indexes of occurrences of [value] in [this].
+  ///
+  /// Adds if [equal] returns `true`,
+  /// [equal] should compare input vs [value].
+  ///
+  /// [equal] is normally `(e) => e == value`.
+  ///
+  /// Added in `2.8`.
+  Set<int> indexesOf(Object? value, [bool Function(E)? equal]) {
+    equal ??= (e) => e == value;
+    Set<int> indexes = {};
+    for (int index = 0; index < length; index++) {
+      if (this[index] == value) {
+        indexes.add(index);
       }
     }
-    return found;
+    return indexes;
   }
 
   /// Removes the first item in the list.
   ///
-  ///
   /// Added in `2.8`.
-  E removeFirst() => removeAtOrNull(0) ?? (throw "No item in $this");
+  E removeFirst() => removeAt(0);
 
   /// Added in `2.8`.
   E? removeAtOrNull(int index) {
@@ -274,6 +299,19 @@ extension ListE<E> on List<E> {
   void changeEach(E Function(E) changer) {
     for (int index = 0; index < length; index++) {
       this[index] = changer(this[index]);
+    }
+  }
+
+  /// If [tester] returns `true` to element, then it removes it.
+  ///
+  /// Added in `2.8`.
+  void removeEach(bool Function(E) tester) {
+    for (int index = 0; index < length;) {
+      if (tester(this[index])) {
+        removeAt(index);
+      } else {
+        index++;
+      }
     }
   }
 
@@ -328,6 +366,7 @@ extension ListString on List<String> {
   };
 }
 
+/// Added in `2.8`.
 extension MapKV<K, V> on Map<K, V> {
   /// Added in `2.8`.
   bool equalsShallow(Map<K, V> other) => mapEqualsShallow(this, other);
@@ -339,6 +378,36 @@ extension MapKV<K, V> on Map<K, V> {
   ///
   /// Added in `2.7.3`.
   Map<V, K> toReversed() => entries.reverseEntries().toMap();
+
+  /// Added in `2.8`.
+  Set<K> get keySet => keys.toSet();
+
+  /// Added in `2.8`.
+  MapEntry<K, V> get first => entries.first;
+
+  /// Added in `2.8`.
+  MapEntry<K, V> get last => entries.last;
+
+  /// Added in `2.8`.
+  ({MapEntry<K, V> first, MapEntry<K, V> last}) get posProperties {
+    Iterable<MapEntry<K, V>> entries = this.entries;
+    return (first: entries.first, last: entries.last);
+  }
+
+  /// Added in `2.8`.
+  String join({String seperator = ", ", String connector = ": "}) {
+    if (isEmpty) {
+      return "";
+    }
+    Iterable<MapEntry<K,V>> entries = this.entries;
+    MapEntry<K, V> current = entries.first;
+    String mule = "${current.key}$connector${current.value}";
+    for (int index = 1; index < length; index++) {
+      current = entries.elementAt(index);
+      mule += "$seperator${current.key}$connector${current.value}";
+    }
+    return mule;
+  }
 }
 
 extension SetE<E> on Set<E> {
@@ -432,11 +501,12 @@ extension StringExt on String {
   String after(int start) => substring(start);
   String insert(String string, [int index = 0]) =>
       "${truncate(index)}$string${after(index)}";
-  String overwrite(String string, [int index = 0]) {
-    if (index + string.length >= length) {
+  String overwrite(String string, [int index = 0, int? size]) {
+    size ??= string.length;
+    if (index + size >= length) {
       return "${truncate(index)}$string";
     } else {
-      return "${truncate(index)}$string${after(index + string.length)}";
+      return "${truncate(index)}$string${after(index + size)}";
     }
   }
 

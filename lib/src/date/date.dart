@@ -971,6 +971,7 @@ class Date with Compare<Date> {
   //int get hashCode => year*303 ^ (day*5067 ^ month*6153);
 }
 
+@Deprecated("2.8.1 use hAdder in 'standard' library")
 /// Makes so there is at least [amount] of zeroes.
 ///
 /// [amount] being one or less will only return [number] (in a string form).
