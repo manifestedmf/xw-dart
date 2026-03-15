@@ -1,13 +1,8 @@
-/// The package for the function [printf] & [printg]
-///
-/// Added in `2.7.3`.
-@Deprecated("2.8.1 use io.dart")
-library xw.printf;
-
-import 'dart:core' show String, Iterable, Object, List, int, UnimplementedError, Deprecated;
-import 'dart:io' show stdout;
-import 'src/standard.dart' show cut, grow;
-import 'src/extension.dart' show ListE;
+import 'dart:core'
+    show String, Iterable, Object, List, int, bool, UnimplementedError;
+import 'dart:io' show stdout, stderr;
+import 'standard.dart' show cut, grow;
+import 'extension.dart' show ListE;
 
 /// Prints out to to the console with [stdout]`.`[write]`()`.
 ///
@@ -22,10 +17,10 @@ import 'src/extension.dart' show ListE;
 /// (`v2.8`)
 ///
 /// `%o`, grabs the next [Object], which cannot be a [nullable].
-/// (`v2.7.3`)
+/// (`v2.8`)
 ///
 /// `%n`, grabs the next item, which can be [nullable].
-/// (`v2.7.3`)
+/// (`v2.8`)
 ///
 /// `%a`, grabs the next [Iterable].
 /// (`v2.8`)
@@ -33,34 +28,42 @@ import 'src/extension.dart' show ListE;
 /// `%s`, grabs the next [String].
 /// (`v2.8`)
 ///
-/// Added in `2.7.3`.
-void printf<E>(String input, [Iterable<E> items = const []]) {
-  printg(scanf(input, items));
+/// Added in `2.8`.
+void printf<E>(
+  String input, {
+  Iterable<E> items = const [],
+  bool error = false,
+}) {
+  printg(scanf(input, items: items), error: error);
 }
 
 /// Prints with [printf], but with a forced line at the end.
 ///
 /// Added in `2.8`.
-void printfln<E>(String input, [Iterable<E> items = const []]) =>
-    printf(input + "\n", items);
+void printfln<E>(
+  String input, {
+  Iterable<E> items = const [],
+  bool error = false,
+}) => printf(input + "\n", items: items, error: error);
 
 /// Prints with a new line at the end.
 ///
 /// Added in `2.8`.
-void println(Object? input) => printg(input.toString() + "\n");
+void println(Object? input, {bool error = false}) =>
+    printg(input.toString() + "\n", error: error);
 
-/// Added in `2.7.3`.
+/// Added in `2.8`.
 enum _State {
-  /// `2.7.3`
+  /// `2.8`
   percentage,
 
   /// `2.8`.
   percentageBefore,
 
-  /// `2.7.3`
+  /// `2.8`
   objectAfter,
 
-  /// `2.7.3`
+  /// `2.8`
   nullableAfter,
 
   /// `2.8`
@@ -81,34 +84,34 @@ enum _State {
   /// `2.8`
   stringBefore,
 
-  /// `2.7.3`
+  /// `2.8`
   text,
 
-  /// `2.7.3`
+  /// `2.8`
   unknown,
 }
 
-/// Added in `2.7.3`.
+/// Added in `2.8`.
 enum _Char {
   /// `'%'`
   ///
   /// Initializer for other items.
   ///
-  /// `2.7.3`
+  /// `2.8`
   percent,
 
   /// `'%o'`
   ///
   /// [Object].
   ///
-  /// `2.7.3`
+  /// `2.8`
   object,
 
   /// `'%n'`
   ///
   /// [Object?].
   ///
-  /// `2.7.3`
+  /// `2.8`
   nullable,
 
   /// `'%a'`
@@ -125,7 +128,7 @@ enum _Char {
   /// `2.8`.
   string,
 
-  /// `2.7.3`
+  /// `2.8`
   text,
 
   /// `2.8`
@@ -135,7 +138,7 @@ enum _Char {
   newline,
 }
 
-/// Added in `2.7.3`.
+/// Added in `2.8`.
 _Char _character(String char) => switch (char) {
   "%" => _Char.percent,
   "o" => _Char.object,
@@ -169,10 +172,10 @@ _Char _character(String char) => switch (char) {
 /// (`v2.8`)
 ///
 /// `%o`, grabs the next [Object], which cannot be a [nullable].
-/// (`v2.7.3`)
+/// (`v2.8`)
 ///
 /// `%n`, grabs the next item, which can be [nullable].
-/// (`v2.7.3`)
+/// (`v2.8`)
 ///
 /// `%a`, grabs the next [Iterable].
 /// (`v2.8`)
@@ -180,8 +183,8 @@ _Char _character(String char) => switch (char) {
 /// `%s`, grabs the next [String].
 /// (`v2.8`)
 ///
-/// Added in `2.7.3`.
-String scanf<E>(String input, [Iterable<E> items = const []]) {
+/// Added in `2.8`.
+String scanf<E>(String input, {Iterable<E> items = const []}) {
   if (items.isEmpty) {
     return input;
   } else if (items is Iterable<Object>) {
@@ -963,14 +966,20 @@ String _scanfUnsafe<E>(String input, Iterable<E> items) {
 
 /// The sequel to [printf], this takes only input and just does output.
 ///
-/// Added in `2.7.3`.
-void printg(String input) {
-  stdout.write(input);
+/// if [error] is [true], then it prints to [stderr] instead of [stdout].
+///
+/// Added in `2.8`.
+void printg(String input, {bool error = false}) {
+  if (error) {
+    stderr.write(input);
+  } else {
+    stdout.write(input);
+  }
 }
 
 /// [printg] but it has some more computation before sending it.
 ///
-/// Added in `2.7.3`.
-void printh(Object? input) {
-  printg(input.toString());
+/// Added in `2.8`.
+void printh(Object? input, {bool error = false}) {
+  printg(input.toString(), error: error);
 }
