@@ -33,8 +33,12 @@ void printf<E>(
   String input, {
   Iterable<E> items = const [],
   bool error = false,
+  String Function(Iterable<Object?>)? iterJoin,
 }) {
-  printg(scanf(input, items: items), error: error);
+  printg(
+    scanf(input, items: items, iterJoin: iterJoin),
+    error: error,
+  );
 }
 
 /// Prints with [printf], but with a forced line at the end.
@@ -184,11 +188,15 @@ _Char _character(String char) => switch (char) {
 /// (`v2.8`)
 ///
 /// Added in `2.8`.
-String scanf<E>(String input, {Iterable<E> items = const []}) {
+String scanf<E>(
+  String input, {
+  Iterable<E> items = const [],
+  String Function(Iterable<Object?>)? iterJoin,
+}) {
   if (items.isEmpty) {
     return input;
   } else if (items is Iterable<Object>) {
-    return _scanfSafe.init(input, items as Iterable<Object>);
+    return _scanfSafe.init(input, items as Iterable<Object>, iterJoin ?? (i) => i.toString());
   } else {
     return _scanfUnsafe(input, items);
   }
@@ -262,10 +270,16 @@ class _scanfSafe<E extends Object> {
   /// Added in `2.8`.
   int lineLength = 0;
 
-  _scanfSafe(this.input, this.objects);
+  /// Added in `2.8`.
+  String Function(Iterable<Object?>) join;
 
-  static String init<E extends Object>(String input, Iterable<E> items) =>
-      _scanfSafe(input, items.toList()).scan();
+  _scanfSafe(this.input, this.objects, this.join);
+
+  static String init<E extends Object>(
+    String input,
+    Iterable<E> items,
+    String Function(Iterable<Object?>) iterJoin,
+  ) => _scanfSafe(input, items.toList(), iterJoin).scan();
 
   /// Added in `2.8`.
   String scan() {
@@ -472,7 +486,7 @@ class _scanfSafe<E extends Object> {
             iterableOffset++;
           }
         }
-        tempStr = heldValue.toString();
+        tempStr = join(heldValue as Iterable);
         addSpacesAfter();
         objects.removeAt(iterableOffset);
         iterableOffset = grow(val: iterableOffset - 1, min: 0);

@@ -1,6 +1,6 @@
 import '../extension.dart' show MapKV;
 import '../math/math.dart' show strToBase;
-import '../math/fraction.dart' show Fraction;
+import '../math/numbers.dart' show Fraction;
 import '../mixins.dart' show Compare;
 import '../equals.dart' show listEqualsDeep;
 import 'parser.dart' show Version;

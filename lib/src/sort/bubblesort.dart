@@ -1,4 +1,4 @@
-import '../math/fraction.dart';
+import '../math/numbers.dart';
 
 /// Added in `2.8`.
 class BubbleSort {

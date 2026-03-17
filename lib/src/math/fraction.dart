@@ -1,6 +1,4 @@
-import '../mixins.dart' show Compare;
-import '../extension.dart' show NumExt;
-import 'math.dart' show isDivBy, isMadeUpOf, pow, gcd;
+part of 'numbers.dart';
 
 /// The |absolute| value of [number].
 /// (The positive of [number]).
@@ -144,13 +142,22 @@ Fraction powFraction(Fraction base, int exponent) => base ^ exponent;
 /// Adds very specific [Fraction] class.
 ///
 /// Added in `2.7`.
-class Fraction with Compare<Fraction> {
-  final int _oper; // operand
-  final int _div; // divisor
+class Fraction with Compare<Fraction> implements Num {
+  /// The operand.
+  ///
+  /// Added in `2.7`.
+  final int oper;
+  /// The divisor.
+  ///
+  /// Added in `2.7`.
+  final int div;
+  /// If the [Fraction] is fully known to be compressed.
+  ///
+  /// Added in `2.7.3`.
   final bool _isCompressed;
 
-  int get integer => _oper ~/ _div;
-  double get float => _oper / _div;
+  int get integer => oper ~/ div;
+  double get float => oper / div;
   Fraction get fraction => this;
 
   /// Added in `2.8`.
@@ -270,16 +277,16 @@ class Fraction with Compare<Fraction> {
   static const Fraction nineTenths = Fraction._compressed(9, 10);
 
   /// Added in `2.7`.
-  bool get isWhole => !isNaN && (_oper % _div == 0 || _oper == 0);
+  bool get isWhole => !isNaN && (oper % div == 0 || oper == 0);
   Fraction roundToFraction() {
     Fraction fraction = toCompressed();
-    int oper = fraction._oper;
+    int oper = fraction.this.oper;
     int index = 1;
-    while (!isDivBy(oper, fraction._div)) {
+    while (!isDivBy(oper, fraction.div)) {
       oper += index;
       index = -++index;
     }
-    return Fraction.compressed(oper, fraction._div);
+    return Fraction.compressed(oper, fraction.div);
   }
 
   int round() => roundToFraction().integer;
@@ -288,10 +295,10 @@ class Fraction with Compare<Fraction> {
   String get visualRepresentation {
     if (isWhole) {
       return "= $integer";
-    } else if (isMadeUpOf(_div, [2, 5])) {
+    } else if (isMadeUpOf(div, [2, 5])) {
       return "= $float";
-    } else if (isMadeUpOf(_div, [3])) {
-      return (_oper % 3 == 1) ? "= $integer.33..." : "= $integer.66...7";
+    } else if (isMadeUpOf(div, [3])) {
+      return (oper % 3 == 1) ? "= $integer.33..." : "= $integer.66...7";
     } else {
       return "≈ $float";
     }
@@ -303,7 +310,7 @@ class Fraction with Compare<Fraction> {
   @override
   String toString() => "$string $visualRepresentation";
 
-  String get string => "$_oper/$_div";
+  String get string => "$oper/$div";
 
   /// Added in `2.7`.
   factory Fraction.fromDouble(double number) =>
@@ -326,10 +333,10 @@ class Fraction with Compare<Fraction> {
   /// For any [const] material. All others should use [Fraction.compressed]
   ///
   /// Added in `2.7.3`.
-  const Fraction.constant(this._oper, this._div) : _isCompressed = false;
+  const Fraction.constant(this.oper, this.div) : _isCompressed = false;
 
   /// Added in `2.7.3`.
-  const Fraction._compressed(this._oper, this._div) : _isCompressed = true;
+  const Fraction._compressed(this.oper, this.div) : _isCompressed = true;
 
   /// Added in `2.7`.
   factory Fraction.compressed(int operand, int divisor) {
@@ -356,7 +363,7 @@ class Fraction with Compare<Fraction> {
   Fraction toCompressed() => (_isCompressed) ? this : _compress();
 
   /// Added in `2.7.3`.
-  Fraction _compress() => Fraction.compressed(_oper, _div);
+  Fraction _compress() => Fraction.compressed(oper, div);
 
   @override
   /// Added in `2.7`.
@@ -368,7 +375,7 @@ class Fraction with Compare<Fraction> {
     } else {
       Fraction thisF = toCompressed();
       Fraction otherF = other.toCompressed();
-      return thisF._div == otherF._div && thisF._oper == otherF._oper;
+      return thisF.div == otherF.div && thisF.oper == otherF.oper;
     }
   }
 
@@ -376,7 +383,7 @@ class Fraction with Compare<Fraction> {
   /// Added in `2.7`.
   int get hashCode {
     if (_isCompressed) {
-      return Object.hash(_oper, _div);
+      return Object.hash(oper, div);
     } else {
       return Fraction.compressor(this).hashCode;
     }
@@ -396,30 +403,30 @@ class Fraction with Compare<Fraction> {
 
   /// Added in `2.7`.
   Fraction operator +(Fraction other) => Fraction.compressed(
-    _oper * other._div + _div * other._oper,
-    _div * other._div,
+    oper * other.div + div * other.oper,
+    div * other.div,
   );
   // a*d + b*c, b*d
 
   /// Added in `2.7`.
   Fraction operator -(Fraction other) => Fraction.compressed(
-    _oper * other._div - _div * other._oper,
-    _div * other._div,
+    oper * other.div - div * other.oper,
+    div * other.div,
   );
   // a*d - b*c, b*d
 
   /// Added in `2.7`.
   Fraction operator -() {
     if (_isCompressed) {
-      return Fraction._compressed(-_oper, _div);
+      return Fraction._compressed(-oper, div);
     } else {
-      return Fraction.compressed(-_oper, -_div);
+      return Fraction.compressed(-oper, -div);
     }
   }
 
   /// Added in `2.7`.
   Fraction operator *(Fraction other) =>
-      Fraction.compressed(_oper * other._oper, _div * other._div);
+      Fraction.compressed(oper * other.oper, div * other.div);
 
   /// Added in `2.7`.
   Fraction operator /(Fraction other) => this * ~other;
@@ -430,7 +437,7 @@ class Fraction with Compare<Fraction> {
   /// Added in `2.7`.
   Fraction operator %(Fraction other) {
     if (other == one) {
-      return Fraction.compressed(_div % _oper, _oper);
+      return Fraction.compressed(div % oper, oper);
     } else {
       Fraction mule = this;
       while (mule < other) {
@@ -443,28 +450,28 @@ class Fraction with Compare<Fraction> {
     }
   }
 
-  /// Raises [_oper] & [_div] to [exponent].
+  /// Raises [oper] & [div] to [exponent].
   ///
   /// Added in `2.7`.
   Fraction operator ^(int exponent) =>
-      Fraction.compressed(pow(_oper, exponent), pow(_div, exponent));
+      Fraction.compressed(pow(oper, exponent), pow(div, exponent));
 
-  /// Flips [_div] & [_oper].
+  /// Flips [div] & [oper].
   ///
   /// Added in `2.7`.
-  Fraction operator ~() => Fraction.compressed(_div, _oper);
+  Fraction operator ~() => Fraction.compressed(div, oper);
 
   /// Added in `2.7`.
-  bool get isNaN => _div == 0;
+  bool get isNaN => div == 0;
 
   /// Added in `2.7`.
-  bool get isInfinite => _div == 0;
+  bool get isInfinite => div == 0;
 
   /// Added in `2.7`.
-  bool get isFinite => _div != 0;
+  bool get isFinite => div != 0;
 
   /// Added in `2.7`.
-  bool get isNegative => _div.isNegative ^ _oper.isNegative;
+  bool get isNegative => div.isNegative ^ oper.isNegative;
 
   /// Added in `2.7`.
   bool get isPositive => !isNegative;
@@ -472,11 +479,11 @@ class Fraction with Compare<Fraction> {
   /// Added in `2.7`.
   Fraction floorToFraction() {
     Fraction fraction = toCompressed();
-    if (fraction._div == 1) {
+    if (fraction.div == 1) {
       return fraction;
     } else {
       return Fraction.compressed(
-        getPreviousFactor(fraction._oper, fraction._div),
+        getPreviousFactor(fraction.oper, fraction.div),
         1,
       );
     }
@@ -491,11 +498,11 @@ class Fraction with Compare<Fraction> {
   /// Added in `2.7.3`.
   Fraction ceilToFraction() {
     Fraction fraction = toCompressed();
-    if (fraction._div == 1) {
+    if (fraction.div == 1) {
       return fraction;
     } else {
       return Fraction.compressed(
-        getNextFactor(fraction._oper, fraction._div),
+        getNextFactor(fraction.oper, fraction.div),
         1,
       );
     }
@@ -506,6 +513,12 @@ class Fraction with Compare<Fraction> {
 
   /// Added in `2.7.3`.
   double ceilToDouble() => ceilToFraction().float;
+
+  @override
+  Num parse(String text) => throw UnimplementedError();
+
+  @override
+  Num? tryParse(String text) => throw UnimplementedError();
 }
 
 /// Added in `2.7`.

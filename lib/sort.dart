@@ -1,7 +1,7 @@
 /// Added in `2.8`.
 library;
 
-import 'src/math/fraction.dart' show Fraction;
+import 'src/math/numbers.dart' show Fraction;
 import 'src/sort/bubblesort.dart' show BubbleSort;
 import 'src/sort/mergesort.dart' show MergeSort;
 import 'src/sort/quicksort.dart' show QuickSort;

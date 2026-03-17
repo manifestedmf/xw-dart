@@ -386,7 +386,55 @@ extension MapKV<K, V> on Map<K, V> {
   MapEntry<K, V> get first => entries.first;
 
   /// Added in `2.8`.
+  K get firstKey => first.key;
+
+  /// Added in `2.8`.
+  V get firstValue => first.value;
+
+  /// Added in `2.8`.
   MapEntry<K, V> get last => entries.last;
+
+  /// Added in `2.8`.
+  K get lastKey => last.key;
+
+  /// Added in `2.8`.
+  V get lastValue => last.value;
+
+  /// Added in `2.8`.
+  MapEntry<K, V> get single => entries.single;
+
+  /// Added in `2.8`.
+  K get singleKey => single.key;
+
+  /// Added in `2.8`.
+  V get singleValue => single.value;
+
+  /// Added in `2.8`.
+  MapEntry<K, V>? get firstOrNull => entries.firstOrNull;
+
+  /// Added in `2.8`.
+  K? get firstKeyOrNull => firstOrNull?.key;
+
+  /// Added in `2.8`.
+  V? get firstValueOrNull => firstOrNull?.value;
+
+  /// Added in `2.8`.
+  MapEntry<K, V>? get lastOrNull => entries.lastOrNull;
+
+  /// Added in `2.8`.
+  K? get lastKeyOrNull => lastOrNull?.key;
+
+  /// Added in `2.8`.
+  V? get lastValueOrNull => lastOrNull?.value;
+
+  /// Added in `2.8`.
+  MapEntry<K, V>? get singleOrNull => entries.singleOrNull;
+
+  /// Added in `2.8`.
+  K? get singleKeyOrNull => singleOrNull?.key;
+
+  /// Added in `2.8`.
+  V? get singleValueOrNull => singleOrNull?.value;
 
   /// Added in `2.8`.
   ({MapEntry<K, V> first, MapEntry<K, V> last}) get posProperties {
@@ -399,7 +447,7 @@ extension MapKV<K, V> on Map<K, V> {
     if (isEmpty) {
       return "";
     }
-    Iterable<MapEntry<K,V>> entries = this.entries;
+    Iterable<MapEntry<K, V>> entries = this.entries;
     MapEntry<K, V> current = entries.first;
     String mule = "${current.key}$connector${current.value}";
     for (int index = 1; index < length; index++) {
@@ -499,8 +547,10 @@ extension StringExt on String {
   String safeTruncate(int characters) =>
       (characters >= length) ? substring(0, length - 1) : truncate(characters);
   String after(int start) => substring(start);
-  String insert(String string, [int index = 0]) =>
-      "${truncate(index)}$string${after(index)}";
+  String insert(String string, [int index = 0, bool leftToRight = true]) =>
+      (leftToRight)
+      ? "${truncate(index)}$string${after(index)}"
+      : "${truncate(length - index)}$string${after(length - index)}";
   String overwrite(String string, [int index = 0, int? size]) {
     size ??= string.length;
     if (index + size >= length) {
@@ -699,4 +749,11 @@ extension StringExt on String {
     }
     return mule;
   }
+
+  // TODO: fixME
+  /// Added in `2.8`.
+  Never containsAll(Iterable<Pattern> patterns) => throw bool;
+
+  /// Added in `2.8`.
+  Never containsOne(Iterable<Pattern> patterns) => throw bool;
 }

@@ -5,7 +5,8 @@
 /// primeFactors,
 /// isDivBy,
 /// isPrime
-library;
+library xw.math;
 
-export 'src/math/fraction.dart';
+export 'src/math/numbers.dart' hide Int, Num;
 export 'src/math/math.dart';
+export 'src/math/random.dart';

@@ -10,7 +10,7 @@ import '../extension.dart' show MapKV, NumExt, StringExt, IntExt;
 /// ```
 ///
 /// Added in `2.7`.
-int abs(int signed) => (signed < 0) ? -signed : signed;
+N abs<N extends num>(N signed) => (signed < 0) ? -signed as N : signed;
 
 /// The Representation for each digit, so for example `'0'` is `0` and
 /// `'A'` is `10`.
@@ -549,7 +549,11 @@ RT powAny<RT>(
 }
 
 /// Added in `2.8`.
-N square<N extends num>(N base) => pow(base, (base is int) ? 2 as N : 2.0 as N);
+N square<N extends num>(N base) => base * base as N;
+
+/// Added in `2.8`.
+RT squareAny<RT>(RT base, {required RT Function(RT, RT) times}) =>
+    times(base, base);
 
 /// Added in `2.8`.
 N round<N extends num>(N number) =>
@@ -562,6 +566,31 @@ N round<N extends num>(N number) =>
 num sqrt(num number) {
   double value = math.sqrt(number);
   return (value.isWhole) ? value.toInt() : value;
+}
+
+/// Added in `2.8`.
+N binarySearch<N extends num>(Iterable<N> numbers, N value) {
+  int minIndex, maxIndex, index, prevIndex;
+  N number;
+  minIndex = 0;
+  maxIndex = numbers.length - 1;
+  index = maxIndex ~/ 2;
+  prevIndex = -1;
+  while (index != prevIndex) {
+    number = numbers.elementAt(index);
+    if (number == value) {
+      return number;
+    } else if (number > value) {
+      maxIndex = index;
+      prevIndex = index;
+      index = (minIndex + maxIndex) ~/ 2;
+    } else {
+      minIndex = index;
+      prevIndex = index;
+      index = (minIndex + maxIndex) ~/ 2;
+    }
+  }
+  return (value is int) ? -1 as N : -1.0 as N;
 }
 
 /// Gives back [pow]`(`[base]`, 1/`[root]`)`.
