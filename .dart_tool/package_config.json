@@ -2,13 +2,19 @@
   "configVersion": 2,
   "packages": [
     {
+      "name": "lints",
+      "rootUri": "file:///C:/Users/lukas/AppData/Local/Pub/Cache/hosted/pub.dev/lints-6.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.8"
+    },
+    {
       "name": "xw",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "3.10"
+      "languageVersion": "3.11"
     }
   ],
   "generator": "pub",
-  "generatorVersion": "3.11.0",
+  "generatorVersion": "3.11.3",
   "pubCache": "file:///C:/Users/lukas/AppData/Local/Pub/Cache"
 }

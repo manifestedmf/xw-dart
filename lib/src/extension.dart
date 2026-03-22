@@ -5,6 +5,7 @@ import 'standard.dart'
 import 'math/math.dart' show pow, square, round, max, min, sum, properties;
 import '../sort.dart' as sort show inlineSort, SortAlg;
 import 'bitwise.dart' show readBit;
+import '../typedef.dart' show Words, Amount;
 
 // class Char {
 //   final int char;
@@ -323,6 +324,24 @@ extension ListE<E> on List<E> {
     this[a] = this[b];
     this[b] = element;
   }
+
+  /// Overwrites each element from
+  /// [start] (inclusive) to [end] (exclusive), with [other].
+  ///
+  /// Returns the amount of times it has overwritten,
+  /// which can either be [other]`.length`
+  /// or [end] - [start].
+  ///
+  /// Added in `2.8`.
+  int overwrite(List<E> other, [int start = 0, int? end]) {
+    end ??= length;
+    int index;
+    index = 0;
+    while (start < end && index < other.length) {
+      this[start++] = other[index++];
+    }
+    return index;
+  }
 }
 
 extension ListBool on List<bool> {
@@ -356,12 +375,12 @@ extension ListNum on List<num> {
 
 extension ListString on List<String> {
   /// Added in `2.8`.
-  Map<String, int> toMapUpperCaseAmount() => {
+  Amount<String> toMapUpperCaseAmount() => {
     for (var current in this) current: current.upperCaseAmount,
   };
 
   /// Added in `2.8`.
-  Map<String, int> toMapLowerCaseAmount() => {
+  Amount<String> toMapLowerCaseAmount() => {
     for (var current in this) current: current.lowerCaseAmount,
   };
 }
@@ -456,6 +475,14 @@ extension MapKV<K, V> on Map<K, V> {
     }
     return mule;
   }
+
+  /// If [this] has only `1` element.
+  ///
+  /// Added in `2.8`.
+  bool get isSingle => length == 1;
+
+  /// Added in `2.8`.
+  void addEntry(MapEntry<K, V> entry) => addEntries({entry});
 }
 
 extension SetE<E> on Set<E> {
@@ -491,6 +518,11 @@ extension IterableE<E> on Iterable<E> {
       return array.contains(element.toLowerCase());
     }
   }
+
+  /// If [this] has only `1` element.
+  ///
+  /// Added in `2.8`.
+  bool get isSingle => length == 1;
 }
 
 /// Added in `2.8`.
@@ -680,7 +712,7 @@ extension StringExt on String {
   /// This function should not return any string with no contents ( `""` ).
   ///
   /// Added in `2.8`.
-  Iterable<String> toWords() {
+  Words toWords() {
     List<String> mule = [];
     String char, builder;
     builder = "";
@@ -705,7 +737,7 @@ extension StringExt on String {
   /// Puts each line into a [List].
   ///
   /// Added in `2.8`.
-  Iterable<String> toLines() {
+  Words toLines() {
     List<String> mule = [];
     String char, builder;
     builder = "";

@@ -48,13 +48,13 @@ void printfln<E>(
   String input, {
   Iterable<E> items = const [],
   bool error = false,
-}) => printf(input + "\n", items: items, error: error);
+}) => printf("$input\n", items: items, error: error);
 
 /// Prints with a new line at the end.
 ///
 /// Added in `2.8`.
 void println(Object? input, {bool error = false}) =>
-    printg(input.toString() + "\n", error: error);
+    printg("$input\n", error: error);
 
 /// Added in `2.8`.
 enum _State {
@@ -196,7 +196,7 @@ String scanf<E>(
   if (items.isEmpty) {
     return input;
   } else if (items is Iterable<Object>) {
-    return _scanfSafe.init(input, items as Iterable<Object>, iterJoin ?? (i) => i.toString());
+    return _ScanfSafe.init(input, items as Iterable<Object>, iterJoin ?? (i) => i.toString());
   } else {
     return _scanfUnsafe(input, items);
   }
@@ -205,7 +205,7 @@ String scanf<E>(
 // FIXME: add digits before, to be the current and add digits after.
 
 /// Added in `2.8`.
-class _scanfSafe<E extends Object> {
+class _ScanfSafe<E extends Object> {
   /// Added in `2.8`.
   final String input;
 
@@ -273,13 +273,13 @@ class _scanfSafe<E extends Object> {
   /// Added in `2.8`.
   String Function(Iterable<Object?>) join;
 
-  _scanfSafe(this.input, this.objects, this.join);
+  _ScanfSafe(this.input, this.objects, this.join);
 
   static String init<E extends Object>(
     String input,
     Iterable<E> items,
     String Function(Iterable<Object?>) iterJoin,
-  ) => _scanfSafe(input, items.toList(), iterJoin).scan();
+  ) => _ScanfSafe(input, items.toList(), iterJoin).scan();
 
   /// Added in `2.8`.
   String scan() {
@@ -561,7 +561,7 @@ class _scanfSafe<E extends Object> {
   /// Added in `2.8`.
   void addSpacesBefore() {
     while (tempStr.length < spaceAmount - lineLength) {
-      tempStr = " " + tempStr;
+      tempStr = " $tempStr";
     }
   }
 }

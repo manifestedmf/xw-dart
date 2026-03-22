@@ -30,7 +30,7 @@ Set<MapEntry<K, Fraction>> maxMapValueFraction<K>(
 ]) {
   if (map.isEmpty) {
     if (ifNone == null) {
-      throw StateError("No Optional Parameter Set");
+      throw ArgumentError("No optional parameter set", "ifNone");
     }
     return {ifNone};
   }
@@ -142,7 +142,7 @@ Fraction powFraction(Fraction base, int exponent) => base ^ exponent;
 /// Adds very specific [Fraction] class.
 ///
 /// Added in `2.7`.
-class Fraction with Compare<Fraction> implements Num {
+class Fraction extends Num with Compare<Fraction> {
   /// The operand.
   ///
   /// Added in `2.7`.
@@ -280,7 +280,7 @@ class Fraction with Compare<Fraction> implements Num {
   bool get isWhole => !isNaN && (oper % div == 0 || oper == 0);
   Fraction roundToFraction() {
     Fraction fraction = toCompressed();
-    int oper = fraction.this.oper;
+    int oper = fraction.oper;
     int index = 1;
     while (!isDivBy(oper, fraction.div)) {
       oper += index;
@@ -427,12 +427,15 @@ class Fraction with Compare<Fraction> implements Num {
   /// Added in `2.7`.
   Fraction operator *(Fraction other) =>
       Fraction.compressed(oper * other.oper, div * other.div);
-
+  /// Divides this by other.
+  ///
   /// Added in `2.7`.
   Fraction operator /(Fraction other) => this * ~other;
 
+  /// Divides and floors to nearest whole number.
+  ///
   /// Added in `2.7`.
-  Fraction operator ~/(Fraction other) => this / other;
+  Fraction operator ~/(Fraction other) => (this / other).floorToFraction();
 
   /// Added in `2.7`.
   Fraction operator %(Fraction other) {
@@ -459,7 +462,13 @@ class Fraction with Compare<Fraction> implements Num {
   /// Flips [div] & [oper].
   ///
   /// Added in `2.7`.
+  @Deprecated("2.7.1 use .flip()")
   Fraction operator ~() => Fraction.compressed(div, oper);
+
+  /// Flips [div] & [oper].
+  ///
+  /// Added in `2.8`.
+  Fraction flip() => Fraction.compressed(div, oper);
 
   /// Added in `2.7`.
   bool get isNaN => div == 0;
@@ -514,11 +523,11 @@ class Fraction with Compare<Fraction> implements Num {
   /// Added in `2.7.3`.
   double ceilToDouble() => ceilToFraction().float;
 
-  @override
-  Num parse(String text) => throw UnimplementedError();
+  // @override
+  // Fraction parse(String text) => throw UnimplementedError();
 
-  @override
-  Num? tryParse(String text) => throw UnimplementedError();
+  // @override
+  // Fraction? tryParse(String text) => throw UnimplementedError();
 }
 
 /// Added in `2.7`.

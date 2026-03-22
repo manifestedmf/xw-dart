@@ -6,3 +6,9 @@ export 'date.dart' hide hAdder;
 export 'mixins.dart';
 export 'extension.dart';
 export 'standard.dart';
+
+class UnexpectedError extends Error {
+  final Object? message;
+
+  UnexpectedError([this.message]);
+}

@@ -4,6 +4,7 @@ sealed class Color {
 }
 
 /// Added in `2.8`.
+// ignore: camel_case_types
 class sRGB extends Color {
   /// Added in `2.8`.
   final int red;

@@ -154,9 +154,9 @@ class Array<T> extends Iterable<T> {
   @override
   int get hashCode => Object.hashAll(this);
 
-  static get _noItems => ArrayException("There is no items in the array, "
+  static ArrayException get _noItems => ArrayException("There is no items in the array, "
       "Array: []");
-  static _emptyPlace(int index) => ArrayException("$index has no item");
+  static ArrayException _emptyPlace(int index) => ArrayException("$index has no item");
 }
 
 class _ArrayEmpty {}
@@ -177,6 +177,13 @@ class _ArrayIterator<T> implements Iterator<T> {
     }
     return true;
   }
+
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is _ArrayIterator && runtimeType == other.runtimeType &&
+              _array == other._array && _index == other._index;
 
   @override
   int get hashCode => Object.hash(_index, current, _array);

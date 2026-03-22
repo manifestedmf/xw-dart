@@ -12,7 +12,7 @@ class HeapSort {
 
   static void _buildMaxHeap<N extends num>(List<N> A) {
     A.heapSize = A.length;
-    for (int i = A.length ~/ 2; i >= 1; i--) {
+    for (int i = A.length >> 1; i >= 1; i--) {
       _maxHeapify(A, i);
     }
   }

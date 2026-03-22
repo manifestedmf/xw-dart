@@ -5,6 +5,7 @@ import 'src/math/numbers.dart' show Fraction;
 import 'src/sort/bubblesort.dart' show BubbleSort;
 import 'src/sort/mergesort.dart' show MergeSort;
 import 'src/sort/quicksort.dart' show QuickSort;
+import 'src/math/random.dart' show shuffleList;
 
 /// Sorts using the [BubbleSort] method.
 ///
@@ -84,6 +85,30 @@ int quickSortAny<E>(
   required bool? Function(E, E) equality,
 }) => QuickSort.listSortAny(list, equality);
 
+/// Shuffles [list] randomly, till it gets out the sorted value.
+///
+/// Added in `2.8`.
+int bogoSort<N extends num>(List<N> list) {
+  int shuffles = 0;
+  while (!isSorted(list)) {
+    shuffleList(list);
+    shuffles++;
+  }
+  return shuffles;
+}
+
+/// Shuffles [list] randomly, till it gets out the sorted value.
+///
+/// Added in `2.8`.
+int bogoSortAny<E>(List<E> list, {required bool? Function(E, E) equality}) {
+  int shuffles = 0;
+  while (!isSortedAny(list, equality: equality)) {
+    shuffleList(list);
+    shuffles++;
+  }
+  return shuffles;
+}
+
 /// Swaps [E]lement at [a] and [E]lement at [b] in [array].
 ///
 /// This is what the [swapElement] does (in a generic language).
@@ -151,6 +176,7 @@ enum SortAlg {
   /// Any function for a list.
   ///
   /// Call must be
+  // ignore: unintended_html_in_doc_comment
   /// `int Function<E>(List<E>, {required bool Function(E, E) gt,
   /// bool Function(E, E)? eq})` and any optional arguments.
   ///

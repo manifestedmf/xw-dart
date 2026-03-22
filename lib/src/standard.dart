@@ -87,6 +87,7 @@ int wrapper({required int lowest, required int highest, required int value}) {
 /// Added in `2.7.2`.
 N trim<N extends num>({required N min, required N max, required N val}) =>
     maxSimple(min, minSimple(max, val));
+
 /// If [val] is higher than [max], then it cuts [val] to be the same value as [max].
 ///
 /// Added in `2.8`.
@@ -136,3 +137,5 @@ String hAdder(int number, int amount) {
   return mule;
 }
 
+/// Added in `2.8`.
+bool? invert(bool? input) => (input == null) ? null : !input;

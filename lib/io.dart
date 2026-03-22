@@ -12,4 +12,4 @@ export 'src/input.dart';
 /// Exits the program with [code].
 ///
 /// Added in `2.8`.
-exit(int code) => io.exit(code);
+Never exit(int code) => io.exit(code);

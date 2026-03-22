@@ -17,7 +17,7 @@ class MergeSort {
   static int _mergeSort<N extends num>(List<N> array, int start, int end) {
     if (start < end) {
       int checks = 0;
-      int half = (start + end) ~/ 2;
+      int half = (start + end) >> 1;
       checks += _mergeSort(array, start, half);
       checks += _mergeSort(array, half + 1, end);
       checks += _merge(array, start, half, end);
@@ -80,7 +80,7 @@ class MergeSort {
   ) {
     if (start < end) {
       int checks = 0;
-      int half = (start + end) ~/ 2;
+      int half = (start + end) >> 1;
       checks += _mergeSortAny(array, start, half, equality);
       checks += _mergeSortAny(array, half + 1, end, equality);
       checks += _mergeAny(array, start, half, end, equality);

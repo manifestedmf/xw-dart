@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 import '../extension.dart' show MapKV, NumExt, StringExt, IntExt;
 
+final ArgumentError _ifNoneError = ArgumentError("No optional parameter set", "ifNone");
+
 /// The |absolute| value of [signed].
 ///
 /// ```
@@ -199,6 +201,9 @@ String baseToBase({
 ///
 /// If there are no values in [numbers], then it returns [ifNone].
 ///
+/// If [ifNone] is a null while there are no values in [numbers],
+/// then it throws a [ArgumentError].
+///
 /// ```
 /// print(max([0, 15, 23, 29, 11, -6])); // 29
 /// print(max([], -5)); // -5
@@ -210,7 +215,7 @@ String baseToBase({
 /// Added in `2.7`.
 N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
   if (numbers.isEmpty) {
-    return ifNone ?? (throw StateError("No Optional Parameter Set"));
+    return ifNone ?? (throw _ifNoneError);
   }
   N max = numbers.first;
   for (N current in numbers) {
@@ -225,6 +230,9 @@ N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
 /// Uses [greaterThan] to know if it needs to swap the current max.
 /// Uses [equalValue] to know if it has the same value (but not fully equal).
 ///
+/// If [ifNone] is a null while there are no values in [elements],
+/// then it throws a [ArgumentError].
+///
 /// Added in `2.8`.
 Set<E> maxAny<E>(
   Iterable<E> elements, {
@@ -233,7 +241,7 @@ Set<E> maxAny<E>(
   Set<E>? ifNone,
 }) {
   if (elements.isEmpty) {
-    return ifNone ?? (throw StateError("No Optional Parameter Set"));
+    return ifNone ?? (throw _ifNoneError);
   }
   equalValue ??= (a, b) => a == b;
   Set<E> max = {};
@@ -262,6 +270,10 @@ N maxSimple<N extends num>(N a, N b) => math.max(a, b);
 
 /// Gives the [MapEntry] with the highest key([K]) value.
 ///
+/// If [ifNone] is a null while there are no values in [map],
+/// then it throws a [ArgumentError].
+///
+///
 /// Added in `2.7`.
 MapEntry<K, V> maxMapKey<K extends num, V>(
   Map<K, V> map, [
@@ -280,25 +292,28 @@ MapEntry<K, V> maxMapKey<K extends num, V>(
   return max;
 }
 
-/// Gives the [MapEntry]s with the highest value([V]) value.
+/// Gives a [Map] with the only the highest value([V]).
+///
+/// If [ifNone] is a null while there are no values in [map],
+/// then it throws a [ArgumentError].
 ///
 /// Added in `2.7`.
-Set<MapEntry<K, V>> maxMapValue<K, V extends num>(
+Map<K, V> maxMapValue<K, V extends num>(
   Map<K, V> map, [
-  Set<MapEntry<K, V>>? ifNone,
+  Map<K, V>? ifNone,
 ]) {
   if (map.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
   }
   Iterable<MapEntry<K, V>> entries = map.entries;
-  Set<MapEntry<K, V>> maxSet = {entries.first};
+  Map<K, V> maxSet = {entries.first.key: entries.first.value};
   V max = entries.first.value;
   for (MapEntry<K, V> current in entries) {
     if (current.value > max) {
-      maxSet = {current};
+      maxSet = {current.key: current.value};
       max = current.value;
     } else if (current.value == max) {
-      maxSet.add(current);
+      maxSet.addEntry(current);
     }
   }
   return maxSet;
@@ -574,7 +589,7 @@ N binarySearch<N extends num>(Iterable<N> numbers, N value) {
   N number;
   minIndex = 0;
   maxIndex = numbers.length - 1;
-  index = maxIndex ~/ 2;
+  index = maxIndex >> 1;
   prevIndex = -1;
   while (index != prevIndex) {
     number = numbers.elementAt(index);
@@ -583,11 +598,11 @@ N binarySearch<N extends num>(Iterable<N> numbers, N value) {
     } else if (number > value) {
       maxIndex = index;
       prevIndex = index;
-      index = (minIndex + maxIndex) ~/ 2;
+      index = (minIndex + maxIndex) >> 1;
     } else {
       minIndex = index;
       prevIndex = index;
-      index = (minIndex + maxIndex) ~/ 2;
+      index = (minIndex + maxIndex) >> 1;
     }
   }
   return (value is int) ? -1 as N : -1.0 as N;
@@ -836,6 +851,46 @@ List<int> fibonacciList(int number) {
     }
     return fibonaccis;
   }
+}
+
+/// Added in `2.8`.
+enum Operator {
+  /// Added in `2.8`.
+  plus(char: "+"),
+
+  /// Added in `2.8`.
+  minus(char: "-"),
+
+  /// Added in `2.8`.
+  times(char: "*"),
+
+  /// Added in `2.8`.
+  divide(char: "/");
+
+  /// Added in `2.8`.
+  final String char;
+  const Operator({required this.char});
+  /// Throws a [ArgumentError] if [char] is not a valid [Operator].
+  ///
+  /// Added in `2.8`.
+  static Operator fromChar(String char) {
+    for (Operator current in values) {
+      if (current.char == char) {
+        return current;
+      }
+    }
+    throw ArgumentError.value(char, "char", "Needs to be a operator");
+  }
+}
+
+/// Added in `2.8.1`.
+num reversePolishCalculator(String input) {
+  int index = 0;
+  num left, right;
+  void parseNext() {}
+  parseNext();
+
+  return 2;
 }
 
 /// Added in `2.8`.
