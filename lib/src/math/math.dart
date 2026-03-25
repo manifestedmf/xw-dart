@@ -1,7 +1,10 @@
 import 'dart:math' as math;
 import '../extension.dart' show MapKV, NumExt, StringExt, IntExt;
 
-final ArgumentError _ifNoneError = ArgumentError("No optional parameter set", "ifNone");
+final ArgumentError _ifNoneError = ArgumentError(
+  "No optional parameter set",
+  "ifNone",
+);
 
 /// The |absolute| value of [signed].
 ///
@@ -298,10 +301,7 @@ MapEntry<K, V> maxMapKey<K extends num, V>(
 /// then it throws a [ArgumentError].
 ///
 /// Added in `2.7`.
-Map<K, V> maxMapValue<K, V extends num>(
-  Map<K, V> map, [
-  Map<K, V>? ifNone,
-]) {
+Map<K, V> maxMapValue<K, V extends num>(Map<K, V> map, [Map<K, V>? ifNone]) {
   if (map.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
   }
@@ -415,7 +415,9 @@ Set<MapEntry<K, V>> minMapValue<K, V extends num>(
 /// Added in `2.7`.
 N sum<N extends num>(Iterable<N> numbers, [N? starting]) {
   N sum;
-  sum = (starting == null) ? ((N == int) ? 0 : 0.0) as N : starting;
+  sum = (starting == null)
+      ? ((numbers is Iterable<int>) ? 0 : 0.0) as N
+      : starting;
   for (N current in numbers) {
     sum = sum + current as N;
   }
@@ -453,35 +455,56 @@ V sumMapValue<K, V extends num>(Map<K, V> map, [V? starting]) {
   return sum;
 }
 
+/// Added in `2.8`.
+N product<N extends num>(Iterable<N> numbers, [N? starting]) {
+  N product;
+  product = (starting == null)
+      ? ((numbers is Iterable<int>) ? 0 : 0.0) as N
+      : starting;
+  for (N current in numbers) {
+    product = product * current as N;
+  }
+  return product;
+}
+
 /// The [max], [min] and [sum] of a [Iterable].
 ///
 /// Added in `2.8`.
-({N max, N min, N sum}) properties<N extends num>(
+({N max, N min, N sum, N product}) properties<N extends num>(
   Iterable<N> numbers, {
-  N? starting,
+  N? startingSum,
+  N? startingProduct,
   N? ifNoneMax,
   N? ifNoneMin,
 }) {
-  starting ??= (numbers is Iterable<double>) ? 0.0 as N : 0 as N;
+  startingSum ??= (numbers is Iterable<double>) ? 0.0 as N : 0 as N;
+  startingProduct ??= (numbers is Iterable<double>) ? 0.0 as N : 0 as N;
   if (numbers.isEmpty) {
     if (ifNoneMax == null || ifNoneMin == null) {
-      throw throw StateError("No Optional Parameter Set");
+      throw throw _ifNoneError;
     } else {
-      return (max: ifNoneMax, min: ifNoneMin, sum: starting);
+      return (
+        max: ifNoneMax,
+        min: ifNoneMin,
+        sum: startingSum,
+        product: startingProduct,
+      );
     }
   }
-  N sum = starting;
+  N sum = startingSum;
+  N product = startingProduct;
   N max = numbers.first;
   N min = numbers.first;
   for (N current in numbers) {
     sum = sum + current as N;
+    product = product * current as N;
     if (current > max) {
       max = current;
     } else if (current < min) {
       min = current;
     }
   }
-  return (max: max, min: min, sum: sum);
+  return (max: max, min: min, sum: sum, product: product);
 }
 
 /// The [max], [min] and [sum] of a [Iterable].
@@ -497,28 +520,37 @@ V sumMapValue<K, V extends num>(Map<K, V> map, [V? starting]) {
 /// by the user.
 ///
 /// Added in `2.8`.
-({Set<E> max, Set<E> min, E sum}) propertiesAny<E>(
+({Set<E> max, Set<E> min, E sum, E product}) propertiesAny<E>(
   Iterable<E> elements, {
-  required E starting,
+  required E startingSum,
+  required E startingProduct,
   Set<E>? ifNoneMax,
   Set<E>? ifNoneMin,
   required bool? Function(E, E) equality,
   required E Function(E, E) plus,
+  required E Function(E, E) times,
 }) {
   if (elements.isEmpty) {
     if (ifNoneMax == null || ifNoneMin == null) {
       throw throw StateError("No Optional Parameter Set");
     } else {
-      return (max: ifNoneMax, min: ifNoneMin, sum: starting);
+      return (
+        max: ifNoneMax,
+        min: ifNoneMin,
+        sum: startingSum,
+        product: startingProduct,
+      );
     }
   }
-  E sum = starting;
+  E sum = startingSum;
+  E product = startingProduct;
   Set<E> max = {};
   E maxVal = elements.first;
   Set<E> min = {};
   E minVal = elements.first;
   for (E current in elements) {
     sum = plus(sum, current);
+    product = plus(product, current);
     switch (equality(maxVal, current)) {
       case null:
         max.add(current);
@@ -538,13 +570,18 @@ V sumMapValue<K, V extends num>(Map<K, V> map, [V? starting]) {
         minVal = current;
     }
   }
-  return (max: max, min: min, sum: sum);
+  return (max: max, min: min, sum: sum, product: product);
 }
 
 /// The [base] to [exponent].
 ///
 /// Added in `2.7`.
-N pow<N extends num>(N base, N exponent) => math.pow(base, exponent) as N;
+N pow<N extends num>(N base, N exponent) {
+  if (N != num && base is int && exponent is int && exponent < 0) {
+    throw ArgumentError.value(exponent, "exponent", "Negative exponent");
+  }
+  return math.pow(base, exponent) as N;
+}
 
 // RT stands for Return Type.
 /// Added in `2.8`.
@@ -665,7 +702,10 @@ bool isLow(num number) => (number % 1 < 0.5);
 bool isHigh(num number) => !isLow(number);
 
 /// Added in `2.7`.
-bool isDivBy(int oper, int number) => oper % number == 0;
+bool isDivBy(int oper, int div) => oper % div == 0;
+
+/// Added in `2.8`.
+bool isDivBy2(int oper) => oper & 1 == 0;
 
 /// Explicit that the first is 1.
 ///
@@ -703,6 +743,10 @@ List<int> primeFactors(int number) {
   }
   List<int> aFactors = primeFactors(a);
   List<int> bFactors = primeFactors(b);
+  while (aFactors[0] == bFactors[0]) {
+    aFactors.removeAt(0);
+    bFactors.removeAt(0);
+  }
   int currentA, currentB;
   int bIndex, aIndex;
   bIndex = aIndex = 0;
@@ -710,23 +754,41 @@ List<int> primeFactors(int number) {
     currentA = aFactors[aIndex];
     currentB = bFactors[bIndex];
     if (currentA == currentB) {
-      a ~/= currentA;
-      b ~/= currentB;
       aFactors.removeAt(aIndex);
       bFactors.removeAt(bIndex);
     } else if (currentB < currentA) {
       ++aIndex;
-    } else if (currentA > currentB) {
+    } else if (currentA < currentB) {
       ++bIndex;
     }
   }
-  return (a: a, b: b);
+  return (a: product(aFactors), b: product(bFactors));
 }
 
 /// If [number] is prime.
 ///
 /// Added in `2.7`.
-bool isPrime(int number) => (primeFactors(number).length == 1);
+bool isPrime(final int number) {
+  if (number & 1 == 0) {
+    return false;
+  }
+  if (number.isNegative) {
+    return false;
+  }
+  int div = 3;
+  final int highestDiv = sqrt(number).toInt();
+  while (div <= highestDiv) {
+    if (div & 1 == 0) {
+      div++;
+    }
+    if (isDivBy(number, div)) {
+      return false;
+    } else {
+      div++;
+    }
+  }
+  return true;
+}
 
 /// If number is constructed of primes
 ///
@@ -772,10 +834,18 @@ class MathError {
 
 /// Gives the factorial of an unsigned int being, [number].
 ///
+/// Throws a [RangeError] if [number] is less than 0.
+///
 /// Added in `2.8`.
 int factorial(int number) {
   if (number.isSigned) {
-    throw MathError("$number can't be signed in $factorial().");
+    throw RangeError.range(
+      number,
+      0,
+      null,
+      "number",
+      "function doesn't support signed factorials",
+    );
   } else if (number == 0) {
     return 1;
   } else {
@@ -798,21 +868,46 @@ N termial<N extends num>(N number) {
 */
 /// The Σ used in math.
 ///
+/// Uses [f] (x),
+/// where x starts at [start] (inclusive),
+/// and ends at [end] (inclusive).
+///
+/// Throws [RangeError],
+/// if [start] is greater than [end].
+///
 /// Added in `2.8`.
-N sigmaf<N extends num>(Iterable<N> nums, [N? starting]) => sum(nums, starting);
+N sigmaFunc<N extends num>(
+  N Function(int) f, {
+  int start = 0,
+  required int end,
+}) {
+  if (start > end) {
+    throw RangeError.range(end, start, null, "end");
+  }
+  N sum = f(start);
+  for (int i = start + 1; i <= end; i++) {
+    sum = sum + f(i) as N;
+  }
+  return sum;
+}
 
 /// The Π used in math.
 ///
+/// Uses [f] (x),
+/// where x starts at [start] (inclusive),
+/// and ends at [end] (inclusive).
+///
+/// Throws [RangeError],
+/// if [start] is greater than [end].
+///
 /// Added in `2.8`.
-N pif<N extends num>(Iterable<N> nums, [N? starting]) {
-  N product;
-  if (starting == null) {
-    product = (N == int) ? 1 as N : 1.0 as N;
-  } else {
-    product = starting;
+N piFunc<N extends num>(N Function(int) f, {int start = 0, required int end}) {
+  if (start > end) {
+    throw RangeError.range(end, start, null, "end");
   }
-  for (N value in nums) {
-    product = product * value as N;
+  N product = f(start);
+  for (int i = start + 1; i <= end; i++) {
+    product = product * f(i) as N;
   }
   return product;
 }
@@ -870,6 +965,7 @@ enum Operator {
   /// Added in `2.8`.
   final String char;
   const Operator({required this.char});
+
   /// Throws a [ArgumentError] if [char] is not a valid [Operator].
   ///
   /// Added in `2.8`.
@@ -882,7 +978,7 @@ enum Operator {
     throw ArgumentError.value(char, "char", "Needs to be a operator");
   }
 }
-
+/*
 /// Added in `2.8.1`.
 num reversePolishCalculator(String input) {
   int index = 0;
@@ -892,6 +988,7 @@ num reversePolishCalculator(String input) {
 
   return 2;
 }
+ */
 
 /// Added in `2.8`.
 extension DoubleMathExt on double {

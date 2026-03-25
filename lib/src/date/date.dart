@@ -188,10 +188,12 @@ enum Weekday {
 /// print(date); // 'Wed'
 /// ```
 class Date with Compare<Date> {
-  // TODO: should be changed to a non-private day.
-  final int _day;
-  final int _month;
-  final int _year;
+  /// The [day] amount.
+  final int day;
+  /// The [month] amount.
+  final int month;
+  /// The [year] amount.
+  final int year;
   final List<FormatToken> _format;
 
   // static months
@@ -606,25 +608,25 @@ class Date with Compare<Date> {
     lowDay = low.dayOfTheYear;
     if (high == low) {
       return 0;
-    } else if (high._month == low._month && high._year == low._year) {
+    } else if (high.month == low.month && high.year == low.year) {
       return high.day - low.day;
-    } else if (high._year == low._year) {
+    } else if (high.year == low.year) {
       return highDay - lowDay;
     } else {
       int dayAmount = 0;
-      if (high._year < low._year) {
+      if (high.year < low.year) {
         dayAmount += highDay - 1;
         do {
           dayAmount -= high.yearMax;
-          high = Date(1, Date.jan, high._year + 1);
-        } while (high._year != low._year);
+          high = Date(1, Date.jan, high.year + 1);
+        } while (high.year != low.year);
         dayAmount -= lowDay - high.dayOfTheYear;
-      } else if (high._year > low._year) {
+      } else if (high.year > low.year) {
         dayAmount += highDay - 1;
         do {
           dayAmount += high.yearMax;
-          high = Date(1, Date.jan, high._year - 1);
-        } while (high._year != low._year);
+          high = Date(1, Date.jan, high.year - 1);
+        } while (high.year != low.year);
         dayAmount += high.dayOfTheYear - lowDay;
       }
       return dayAmount;
@@ -635,18 +637,18 @@ class Date with Compare<Date> {
   /// Is a `Interface`-`Compute` getter.
   ///
   /// Is the same as [computeIsLeapYear]`(`[year]`)`.
-  bool get isLeapYear => computeIsLeapYear(_year);
+  bool get isLeapYear => computeIsLeapYear(year);
 
   /// Is a `Interface`-`Compute` getter.
   ///
   /// Is the same as [computeMonthMax]`(`[month]`, `[isLeapYear]`)`.
-  int get monthMax => computeMonthMax(_month, isLeapYear);
+  int get monthMax => computeMonthMax(month, isLeapYear);
 
   /// Is a `Interface`-`Compute` getter.
   ///
   /// Is the same as
   /// [computeDayOfTheYear]`(`[day]`, `[month]`, `[isLeapYear]`)`.
-  int get dayOfTheYear => computeDayOfTheYear(_day, _month, isLeapYear);
+  int get dayOfTheYear => computeDayOfTheYear(day, month, isLeapYear);
 
   /// Is a `Interface`-`Compute` getter.
   ///
@@ -689,22 +691,6 @@ class Date with Compare<Date> {
   /// Returns `false` if weekday is not saturday or sunday.
   bool get isWeekend => weekday.value > 5;
 
-  // gets
-  /// This is a `Value` getter.
-  ///
-  /// The [day].
-  int get day => _day;
-
-  /// This is a `Value` getter.
-  ///
-  /// The [month].
-  int get month => _month;
-
-  /// This is a `Value` getter.
-  ///
-  /// The [year].
-  int get year => _year;
-
   /// This is a `Value` getter.
   ///
   /// The [format], do note that is is a `List<FormatToken>`.
@@ -713,14 +699,14 @@ class Date with Compare<Date> {
   /// This is a `Interface`-`Compute` getter.
   ///
   /// The opposite [day] of the [month].
-  int get opDay => monthMax - _day + 1;
+  int get opDay => monthMax - day + 1;
 
   // Constant Movers
   /// This is a `Value` setter.
   ///
   /// Changes the [year] to the [setYear].
   Date setYear(int setYear) {
-    return Date._insert(_day, _month, setYear, _format);
+    return Date._insert(day, month, setYear, _format);
   }
 
   /// This is a `Value` setter.
@@ -730,7 +716,7 @@ class Date with Compare<Date> {
     if (setMonth != monthConst(setMonth)) {
       throw "expected a value between 1 and 12, got $setMonth";
     }
-    return Date._insert(_day, setMonth, _year, _format);
+    return Date._insert(day, setMonth, year, _format);
   }
 
   /// This is a `Value` setter.
@@ -740,14 +726,14 @@ class Date with Compare<Date> {
     if (setDay != dayConst(setDay, monthMax, isLeapYear)) {
       throw "expected value between 1 and $monthMax, got $setDay";
     }
-    return Date._insert(setDay, _month, _year, _format);
+    return Date._insert(setDay, month, year, _format);
   }
 
   /// This is a `Value` setter.
   ///
   /// Changes the [format] to the [format]
   Date setFormat(String format) {
-    return Date(_day, _month, _year, format: format);
+    return Date(day, month, year, format: format);
   }
 
   // Field Movers
@@ -755,7 +741,7 @@ class Date with Compare<Date> {
   ///
   /// Changes the [year] by the [amount].
   Date changeYear(int amount) =>
-      Date._insert(_day, _month, _year + amount, _format);
+      Date._insert(day, month, year + amount, _format);
 
   /// This is a `Value`-`Change` getter.
   ///
@@ -771,8 +757,8 @@ class Date with Compare<Date> {
   ///
   /// Changes the [month] by the [amount].
   Date changeMonth(int amount) {
-    var (:month, :year) = _changeMonth(amount, _month, _year);
-    return Date._insert(_day, month, year, _format);
+    var (:month, :year) = _changeMonth(amount, this.month, this.year);
+    return Date._insert(day, month, year, _format);
   }
 
   /// This is a `Value`-`Change` getter.
@@ -789,7 +775,7 @@ class Date with Compare<Date> {
   ///
   /// Changes the [day] by the [amount].
   Date changeDay(int amount) {
-    var (:day, :month, :year) = _changeDay(amount, _day, _month, _year);
+    var (:day, :month, :year) = _changeDay(amount, this.day, this.month, this.year);
     return Date._insert(day, month, year, _format);
   }
 
@@ -843,7 +829,7 @@ class Date with Compare<Date> {
   }
 
   /// DO NOT USE THIS IF YOU DON'T KNOW WHAT YOU ARE DOING
-  const Date._constructor(this._day, this._month, this._year, this._format);
+  const Date._constructor(this.day, this.month, this.year, this._format);
 
   /*int toInt() {
     if (_year >= 0) {
@@ -868,37 +854,37 @@ class Date with Compare<Date> {
       switch (current.type) {
         case FormatType.dayVal:
           {
-            mule += hAdder(_day, current.h);
+            mule += hAdder(day, current.h);
           }
         case FormatType.dayth:
           {
-            mule += placeDenoter(int.parse(hAdder(_day, current.h)));
+            mule += placeDenoter(int.parse(hAdder(day, current.h)));
           }
         case FormatType.monthVal:
           {
-            mule += hAdder(_month, current.h);
+            mule += hAdder(month, current.h);
           }
         case FormatType.monthName:
           {
             mule += (current.trunc == -1)
-                ? monthName(_month)
-                : monthName(_month).safeTruncate(current.trunc);
+                ? monthName(month)
+                : monthName(month).safeTruncate(current.trunc);
           }
         case FormatType.yearVal:
           {
-            mule += hAdder(_year, current.h);
+            mule += hAdder(year, current.h);
           }
         case FormatType.yearMillennium:
           {
-            mule += hAdder(_year % 1000, current.h);
+            mule += hAdder(year % 1000, current.h);
           }
         case FormatType.yearCentury:
           {
-            mule += hAdder(_year % 100, current.h);
+            mule += hAdder(year % 100, current.h);
           }
         case FormatType.yearDecade:
           {
-            mule += hAdder(_year % 10, current.h);
+            mule += hAdder(year % 10, current.h);
           }
         case FormatType.weekdayVal:
           {
@@ -929,19 +915,19 @@ class Date with Compare<Date> {
   ///
   /// Is the [other] after [this]?
   bool operator <(Date other) {
-    if (_year < other._year) {
+    if (year < other.year) {
       return true;
-    } else if (_year > other._year) {
+    } else if (year > other.year) {
       return false;
     }
     // now we know they are at the same year
-    if (_month < other._month) {
+    if (month < other.month) {
       return true;
-    } else if (_month > other._month) {
+    } else if (month > other.month) {
       return false;
     }
     // now we know they are at the same year and month
-    return _day < other._day;
+    return day < other.day;
   }
 
   /*Date operator +(Object obj) {

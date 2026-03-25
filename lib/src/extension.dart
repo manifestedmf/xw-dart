@@ -536,7 +536,7 @@ extension IterableN<N extends num> on Iterable<N> {
   /// Added in `2.8`.
   N get sumThis => sum(this);
 
-  ({N max, N sum, N min}) get propertiesThis => properties(this);
+  ({N max, N sum, N min, N product}) get propertiesThis => properties(this);
 }
 
 extension IterableBool on Iterable<bool> {
@@ -782,10 +782,12 @@ extension StringExt on String {
     return mule;
   }
 
-  // TODO: fixME
-  /// Added in `2.8`.
+  // TODO: fix me
+  /*
+  /// Added in `2.8.1`.
   Never containsAll(Iterable<Pattern> patterns) => throw bool;
 
-  /// Added in `2.8`.
+  /// Added in `2.8.1`.
   Never containsOne(Iterable<Pattern> patterns) => throw bool;
+   */
 }

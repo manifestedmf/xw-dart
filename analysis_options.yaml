@@ -1,5 +1,6 @@
 analyzer:
   errors:
+    curly_braces_in_flow_control_structures: ignore
     unnecessary_library_name: ignore
 include: package:lints/recommended.yaml
 

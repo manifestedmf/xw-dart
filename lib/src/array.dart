@@ -8,11 +8,16 @@ class ArrayException {
 
   @override
   toString() {
-    if (message == null) {return "IncompleteToken error";}
-    else {return "IncompleteToken: $message";}
+    if (message == null) {
+      return "IncompleteToken error";
+    } else {
+      return "IncompleteToken: $message";
+    }
   }
 }
 
+// don't delete
+@Deprecated("2.8.1 this doesn't work as intended")
 class Array<T> extends Iterable<T> {
   late final List<dynamic> _array;
   late final int _length;
@@ -55,7 +60,9 @@ class Array<T> extends Iterable<T> {
       withArray ??= Array(0);
       int index = 0;
       for (T i in withArray) {
-        if (index >= array.length) {break;}
+        if (index >= array.length) {
+          break;
+        }
         array[index++] = i;
       }
     }
@@ -88,43 +95,50 @@ class Array<T> extends Iterable<T> {
   static ArrayCreator<T> stdCreate<T>() => ArrayCreator<T>._();
 
   String get _positions {
-    if (_length == 0) {return "NO VALID POSITIONS";}
-    else if (_length == 1) {return "0";}
-    else if (_length == 2) {return "0, 1";}
-    else if (_length == 3) {return "0, 1, 2";}
-    else {return "0, 1, ..., ${_length-1}";}
+    if (_length == 0) {
+      return "NO VALID POSITIONS";
+    } else if (_length == 1) {
+      return "0";
+    } else if (_length == 2) {
+      return "0, 1";
+    } else if (_length == 3) {
+      return "0, 1, 2";
+    } else {
+      return "0, 1, ..., ${_length - 1}";
+    }
   }
 
   T operator [](int index) {
     index = wrapper(lowest: -length, highest: length - 1, value: index);
     return (_array[index] == _ArrayEmpty())
-      ? throw ArrayException("$index is empty")
-      : _array[index];
+        ? throw ArrayException("$index is empty")
+        : _array[index];
   }
+
   void operator []=(int index, T value) {
     index = wrapper(lowest: -length, highest: length - 1, value: index);
     _array[index] = value;
   }
 
   @override
-  T get first =>
-    (_array[0] == _ArrayEmpty()) ? throw ArrayException("0 is empty") : _array[0];
+  T get first => (_array[0] == _ArrayEmpty())
+      ? throw ArrayException("0 is empty")
+      : _array[0];
 
   @override
   T elementAt(int index) => (_array[index] == _ArrayEmpty())
-    ? throw ArrayException("$index is empty")
-    : _array[index];
+      ? throw ArrayException("$index is empty")
+      : _array[index];
 
   dynamic elementAtAdmin(int index) => _array[index];
 
   @override
   String toString() => "$_array";
 
-
   /// sub [Array]
   Array<T> subarray(int start, [int? end]) {
     end ??= length;
-    return Array(end-start);
+    return Array(end - start);
   }
 
   @override
@@ -132,10 +146,10 @@ class Array<T> extends Iterable<T> {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is Array &&
-      runtimeType == other.runtimeType &&
-        listEqualsDeep(_array, other._array);
+      identical(this, other) ||
+      other is Array &&
+          runtimeType == other.runtimeType &&
+          listEqualsDeep(_array, other._array);
 
   /*Array<T?> subar({int start = 0, int? end}) {
     if (start == 0 && end == null) {return this;}
@@ -154,9 +168,12 @@ class Array<T> extends Iterable<T> {
   @override
   int get hashCode => Object.hashAll(this);
 
-  static ArrayException get _noItems => ArrayException("There is no items in the array, "
-      "Array: []");
-  static ArrayException _emptyPlace(int index) => ArrayException("$index has no item");
+  static ArrayException get _noItems => ArrayException(
+    "There is no items in the array, "
+    "Array: []",
+  );
+  static ArrayException _emptyPlace(int index) =>
+      ArrayException("$index has no item");
 }
 
 class _ArrayEmpty {}
@@ -178,12 +195,13 @@ class _ArrayIterator<T> implements Iterator<T> {
     return true;
   }
 
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is _ArrayIterator && runtimeType == other.runtimeType &&
-              _array == other._array && _index == other._index;
+      other is _ArrayIterator &&
+          runtimeType == other.runtimeType &&
+          _array == other._array &&
+          _index == other._index;
 
   @override
   int get hashCode => Object.hash(_index, current, _array);

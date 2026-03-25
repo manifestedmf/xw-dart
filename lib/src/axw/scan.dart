@@ -5,8 +5,11 @@ class IncompleteToken {
 
   @override
   toString() {
-    if (message == null) {return "IncompleteToken error";}
-    else {return "IncompleteToken: $message";}
+    if (message == null) {
+      return "IncompleteToken error";
+    } else {
+      return "IncompleteToken: $message";
+    }
   }
 }
 
@@ -50,14 +53,15 @@ class Token {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Token && runtimeType == other.runtimeType &&
-              _type == other._type && _text == other._text &&
-              _offset == other._offset;
+      other is Token &&
+          runtimeType == other.runtimeType &&
+          _type == other._type &&
+          _text == other._text &&
+          _offset == other._offset;
 
   @override
   int get hashCode => _type.hashCode ^ _text.hashCode ^ _offset.hashCode;
 }
-
 
 enum State {
   whitespace(null),
@@ -80,12 +84,12 @@ enum State {
   listEnd(TokenType.rightBracket),
   blockStart(TokenType.leftBrace),
   colon(TokenType.colon),
-  blockEnd(TokenType.rightBrace),
-  ;
+  blockEnd(TokenType.rightBrace);
+
   final TokenType? type;
   final bool error;
-  const State(this.type):error = false;
-  const State.error():type = null,error = true;
+  const State(this.type) : error = false;
+  const State.error() : type = null, error = true;
 }
 
 enum CharacterTypes {
@@ -122,7 +126,7 @@ class Scanner {
   State _state = State.whitespace;
   List<Token> list = [];
 
-  Scanner(this.fileContents,{bool dev = false}):devMode = dev;
+  Scanner(this.fileContents, {bool dev = false}) : devMode = dev;
 
   static const digit = {zero, one, "2", "3", "4", "5", "6", "7", "8", "9"};
   static const zero = "0";
@@ -152,13 +156,13 @@ class Scanner {
     "f",
     "F",
   };
-  static const voidId = {"void","null"};
-  static const binInit = {"n","N"};
-  static const hexInit = {"x","X"};
-  static const octInit = {"t","T"};
+  static const voidId = {"void", "null"};
+  static const binInit = {"n", "N"};
+  static const hexInit = {"x", "X"};
+  static const octInit = {"t", "T"};
   static const space = " ";
   static const newline = "\n";
-  static const whitespace = {space,newline};
+  static const whitespace = {space, newline};
   static const equal = "=";
   static const breaker = ";";
   static const seperator = ",";
@@ -170,85 +174,114 @@ class Scanner {
   static const stringMarker = "\"";
   static const charMarker = "'";
   static const escape = "\\";
-  static const charLow = {"a","b","c","d","e","f",
-    "g","h","i","j","k","l",
-    "m","n","o","p","q","r",
-    "s","t","u","v","w","x","y","z"};
-  static const charHigh = {"A","B","C","D","E","F",
-    "G","H","I","J","K","L",
-    "M","N","O","P","Q","R",
-    "S","T","U","V","W","X","Y","Z"};
+  static const charLow = {
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+  };
+  static const charHigh = {
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+  };
 
-  static List<Token> scan(String fileContents,{bool dev = false}) {
-    Scanner scanner = Scanner(fileContents,dev:dev);
+  static List<Token> scan(String fileContents, {bool dev = false}) {
+    Scanner scanner = Scanner(fileContents, dev: dev);
     return scanner._scan();
   }
 
   static CharacterTypes character(String char) {
     if (char == space) {
       return CharacterTypes.space;
-    }
-    else if (char == newline) {
+    } else if (char == newline) {
       return CharacterTypes.newline;
-    }
-    else if (char == zero) {
+    } else if (char == zero) {
       return CharacterTypes.zero;
-    }
-    else if (char == one) {
+    } else if (char == one) {
       return CharacterTypes.one;
-    }
-    else if (digit.contains(char)) {
+    } else if (digit.contains(char)) {
       return CharacterTypes.digit;
-    }
-    else if (char == floater) {
+    } else if (char == floater) {
       return CharacterTypes.floater;
-    }
-    else if (binInit.contains(char)) {
+    } else if (binInit.contains(char)) {
       return CharacterTypes.nAny;
-    }
-    else if (hexInit.contains(char)) {
+    } else if (hexInit.contains(char)) {
       return CharacterTypes.xAny;
-    }
-    else if (hexadecimal.contains(char)) {
+    } else if (hexadecimal.contains(char)) {
       return CharacterTypes.hexadecimalChars;
-    }
-    else if (char == equal) {
+    } else if (char == equal) {
       return CharacterTypes.equal;
-    }
-    else if (char == breaker) {
+    } else if (char == breaker) {
       return CharacterTypes.semicolon;
-    }
-    else if (char == seperator) {
+    } else if (char == seperator) {
       return CharacterTypes.comma;
-    }
-    else if (char == mapper) {
+    } else if (char == mapper) {
       return CharacterTypes.colon;
-    }
-    else if (char == listLeft) {
+    } else if (char == listLeft) {
       return CharacterTypes.leftBracket;
-    }
-    else if (char == listRight) {
+    } else if (char == listRight) {
       return CharacterTypes.rightBracket;
-    }
-    else if (char == containerLeft) {
+    } else if (char == containerLeft) {
       return CharacterTypes.leftBrace;
-    }
-    else if (char == containerRight) {
+    } else if (char == containerRight) {
       return CharacterTypes.rightBrace;
-    }
-    else if (char == stringMarker) {
+    } else if (char == stringMarker) {
       return CharacterTypes.str;
-    }
-    else if (char == charMarker) {
+    } else if (char == charMarker) {
       return CharacterTypes.apos;
-    }
-    else if (char == escape) {
+    } else if (char == escape) {
       return CharacterTypes.backslash;
-    }
-    else if (charLow.contains(char) || charHigh.contains(char)) {
+    } else if (charLow.contains(char) || charHigh.contains(char)) {
       return CharacterTypes.character;
+    } else {
+      throw "$char is not a valid character in AXW files";
     }
-    else {throw "$char is not a valid character in AXW files";}
   }
 
   List<Token> _scan() {
@@ -256,251 +289,416 @@ class Scanner {
       String char = fileContents[_index];
       CharacterTypes ct = character(char);
       switch (ct) {
-        case CharacterTypes.digit: {
-          switch (_state) {
-            case State.zero: {_state = State.integer;}
-            case State.hexadecimal:
-            case State.float:
-            case State.stringIn:
-            case State.charIn:
-            case State.identifier:
-            case State.integer: {}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.stringOut;}
-            case _: {
-              flush();
-              _state = State.integer;
-              _print("initializing integer with: '$char'");
+        case CharacterTypes.digit:
+          {
+            switch (_state) {
+              case State.zero:
+                {
+                  _state = State.integer;
+                }
+              case State.hexadecimal:
+              case State.float:
+              case State.stringIn:
+              case State.charIn:
+              case State.identifier:
+              case State.integer:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.stringOut;
+                }
+              case _:
+                {
+                  flush();
+                  _state = State.integer;
+                  _print("initializing integer with: '$char'");
+                }
             }
           }
-        }
-        case CharacterTypes.zero: {
-          switch (_state) {
-            case State.zero: {_state = State.integer;}
-            case State.integer:
-            case State.identifier:
-            case State.float:
-            case State.binary:
-            case State.stringIn:
-            case State.charIn:
-            case State.hexadecimal: {}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.charIn;}
-            case _: {
-              flush();
-              _state = State.zero;
+        case CharacterTypes.zero:
+          {
+            switch (_state) {
+              case State.zero:
+                {
+                  _state = State.integer;
+                }
+              case State.integer:
+              case State.identifier:
+              case State.float:
+              case State.binary:
+              case State.stringIn:
+              case State.charIn:
+              case State.hexadecimal:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case _:
+                {
+                  flush();
+                  _state = State.zero;
+                }
             }
           }
-        }
-        case CharacterTypes.one: {
-          switch (_state) {
-            case State.zero: {_state = State.integer;}
-            case State.integer:
-            case State.identifier:
-            case State.float:
-            case State.binary:
-            case State.stringIn:
-            case State.charIn:
-            case State.hexadecimal: {}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.charIn;}
-            case _: {
-              flush();
-              _state = State.integer;
+        case CharacterTypes.one:
+          {
+            switch (_state) {
+              case State.zero:
+                {
+                  _state = State.integer;
+                }
+              case State.integer:
+              case State.identifier:
+              case State.float:
+              case State.binary:
+              case State.stringIn:
+              case State.charIn:
+              case State.hexadecimal:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case _:
+                {
+                  flush();
+                  _state = State.integer;
+                }
             }
           }
-        }
-        case CharacterTypes.hexadecimalChars: {
-          switch (_state) {
-            case State.hexadecimal:
-            case State.stringIn:
-            case State.charIn:
-            case State.identifier: {}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.charIn;}
-            case _: {
-              flush();
-              _state = State.identifier;
+        case CharacterTypes.hexadecimalChars:
+          {
+            switch (_state) {
+              case State.hexadecimal:
+              case State.stringIn:
+              case State.charIn:
+              case State.identifier:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case _:
+                {
+                  flush();
+                  _state = State.identifier;
+                }
             }
           }
-        }
-        case CharacterTypes.xAny: {
-          switch (_state) {
-            case State.stringIn:
-            case State.charIn:
-            case State.identifier: {}
-            case State.zero: {_state = State.hexadecimal;}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.charIn;}
-            case _:
-              flush();
-              _state = State.identifier;
-          }
-        }
-        case CharacterTypes.nAny: {
-          switch (_state) {
-            case State.zero: {_state = State.binary;}
-            case State.stringIn:
-            case State.identifier:
-            case State.charIn: {}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.charIn;}
-            case _:
-              flush();
-              _state = State.identifier;
-          }
-        }
-        case CharacterTypes.floater: {
-          switch (_state) {
-            case State.stringIn:
-            case State.charIn:
-            case State.identifier: {}
-            case State.integer:
-            case State.zero: {_state = State.float;}
-            case State.float:
-              throw "can't have multiple '.' in a float";
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.charIn;}
-            case _:
-              flush();
-              _state = State.float;
-          }
-        }
-        case CharacterTypes.space: {
-          switch (_state) {
-            case State.whitespace:
-            case State.charIn:
-            case State.stringIn: {}
-            case _: {
-              flush();
-              _state = State.whitespace;
+        case CharacterTypes.xAny:
+          {
+            switch (_state) {
+              case State.stringIn:
+              case State.charIn:
+              case State.identifier:
+                {}
+              case State.zero:
+                {
+                  _state = State.hexadecimal;
+                }
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case _:
+                flush();
+                _state = State.identifier;
             }
           }
-        }
-        case CharacterTypes.newline: {
-          switch (_state) {
-            case State.whitespace: {}
-            case _: {
-              flush();
-              _state = State.whitespace;
+        case CharacterTypes.nAny:
+          {
+            switch (_state) {
+              case State.zero:
+                {
+                  _state = State.binary;
+                }
+              case State.stringIn:
+              case State.identifier:
+              case State.charIn:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case _:
+                flush();
+                _state = State.identifier;
             }
           }
-        }
-        case CharacterTypes.str: {
-          switch (_state) {
-            case State.stringIn: {_state = State.stringOut;}
-            case State.charIn: {}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.stringOut;}
-            case _: {
-              flush();
-              _state = State.stringIn;
+        case CharacterTypes.floater:
+          {
+            switch (_state) {
+              case State.stringIn:
+              case State.charIn:
+              case State.identifier:
+                {}
+              case State.integer:
+              case State.zero:
+                {
+                  _state = State.float;
+                }
+              case State.float:
+                throw "can't have multiple '.' in a float";
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case _:
+                flush();
+                _state = State.float;
             }
           }
-        }
-        case CharacterTypes.apos: {
-          // TODO: Handle this case.
-          throw UnimplementedError();
-        }
-        case CharacterTypes.equal: {
-          switch (_state) {
-            case State.stringIn:
-            case State.charIn: {}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.charIn;}
-            case _: {
-              flush();
-              _state = State.equal;
+        case CharacterTypes.space:
+          {
+            switch (_state) {
+              case State.whitespace:
+              case State.charIn:
+              case State.stringIn:
+                {}
+              case _:
+                {
+                  flush();
+                  _state = State.whitespace;
+                }
             }
           }
-        }
-        case CharacterTypes.semicolon: {
-          switch (_state) {
-            case State.stringIn:
-            case State.charIn: {}
-            case State.escapeString: {_state = State.charIn;}
-            case State.escapeChar: {_state = State.stringIn;}
-            case _: {
-              flush();
-              _state = State.semicolon;
+        case CharacterTypes.newline:
+          {
+            switch (_state) {
+              case State.whitespace:
+                {}
+              case _:
+                {
+                  flush();
+                  _state = State.whitespace;
+                }
             }
           }
-        }
-        case CharacterTypes.backslash: {
-          // TODO: Handle this case.
-          throw UnimplementedError();
-        }
-        case CharacterTypes.leftBracket: {
-          switch (_state) {
-            case State.stringIn:
-            case State.charIn: {}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.charIn;}
-            case _:
-              flush();
-              _state = State.listStart;
+        case CharacterTypes.str:
+          {
+            switch (_state) {
+              case State.stringIn:
+                {
+                  _state = State.stringOut;
+                }
+              case State.charIn:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.stringOut;
+                }
+              case _:
+                {
+                  flush();
+                  _state = State.stringIn;
+                }
+            }
           }
-        }
-        case CharacterTypes.comma: {
-          switch (_state) {
-            case State.stringIn:
-            case State.charIn: {}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.charIn;}
-            case _:
-              flush();
-              _state = State.comma;
+        case CharacterTypes.apos:
+          {
+            // TODO: Handle this case.
+            throw UnimplementedError();
           }
-        }
-        case CharacterTypes.rightBracket: {
-          switch (_state) {
-            case State.stringIn:
-            case State.charIn: {}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.charIn;}
-            case _:
-              flush();
-              _state = State.listEnd;
+        case CharacterTypes.equal:
+          {
+            switch (_state) {
+              case State.stringIn:
+              case State.charIn:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case _:
+                {
+                  flush();
+                  _state = State.equal;
+                }
+            }
           }
-        }
-        case CharacterTypes.leftBrace: {
-          switch (_state) {
-            case State.charIn:
-            case State.stringIn: {}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.charIn;}
-            case _:
-              flush();
-              _state = State.blockStart;
+        case CharacterTypes.semicolon:
+          {
+            switch (_state) {
+              case State.stringIn:
+              case State.charIn:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.charIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.stringIn;
+                }
+              case _:
+                {
+                  flush();
+                  _state = State.semicolon;
+                }
+            }
           }
-        }
-        case CharacterTypes.colon: {
-          // TODO: Handle this case.
-          throw UnimplementedError();
-        }
-        case CharacterTypes.rightBrace: {
-          switch (_state) {
-            case State.charIn:
-            case State.stringIn: {}
-            case State.escapeString: {_state = State.stringIn;}
-            case State.escapeChar: {_state = State.charIn;}
-            case _:
-              flush();
-              _state = State.blockEnd;
+        case CharacterTypes.backslash:
+          {
+            // TODO: Handle this case.
+            throw UnimplementedError();
           }
-        }
-        case CharacterTypes.character: {
-          switch (_state) {
-            case State.stringIn:
-            case State.identifier:
-            case State.charIn: {}
-            case State.escapeChar: {_state = State.charIn;}
-            case State.escapeString: {_state = State.stringIn;}
-            case _:
-              flush();
-              _state = State.identifier;
+        case CharacterTypes.leftBracket:
+          {
+            switch (_state) {
+              case State.stringIn:
+              case State.charIn:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case _:
+                flush();
+                _state = State.listStart;
+            }
           }
-        }
+        case CharacterTypes.comma:
+          {
+            switch (_state) {
+              case State.stringIn:
+              case State.charIn:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case _:
+                flush();
+                _state = State.comma;
+            }
+          }
+        case CharacterTypes.rightBracket:
+          {
+            switch (_state) {
+              case State.stringIn:
+              case State.charIn:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case _:
+                flush();
+                _state = State.listEnd;
+            }
+          }
+        case CharacterTypes.leftBrace:
+          {
+            switch (_state) {
+              case State.charIn:
+              case State.stringIn:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case _:
+                flush();
+                _state = State.blockStart;
+            }
+          }
+        case CharacterTypes.colon:
+          {
+            // TODO: Handle this case.
+            throw UnimplementedError();
+          }
+        case CharacterTypes.rightBrace:
+          {
+            switch (_state) {
+              case State.charIn:
+              case State.stringIn:
+                {}
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case _:
+                flush();
+                _state = State.blockEnd;
+            }
+          }
+        case CharacterTypes.character:
+          {
+            switch (_state) {
+              case State.stringIn:
+              case State.identifier:
+              case State.charIn:
+                {}
+              case State.escapeChar:
+                {
+                  _state = State.charIn;
+                }
+              case State.escapeString:
+                {
+                  _state = State.stringIn;
+                }
+              case _:
+                flush();
+                _state = State.identifier;
+            }
+          }
       }
       _index++;
     }
@@ -638,6 +836,7 @@ class Scanner {
     String char = fileContents[_index];
     if (char == space || char == newline) {}
   }
+
   /*void scanSpace() {
     String subst = fileContents.substring(_start,_index);
     switch (_state) {
@@ -737,24 +936,33 @@ class Scanner {
   void setState() {_state = state;}*/
   /// ends current state and adds it, if it is a valid adder
   void flush() {
-    if (_state.error) {throw IncompleteToken();}
+    if (_state.error) {
+      throw IncompleteToken();
+    }
     TokenType? tokenType = _state.type;
     if (tokenType != null) {
-      String subst = fileContents.substring(_start,_index);
-      if (voidId.contains(subst)) {list.add(Token(subst,TokenType.none,_start));}
-      else {list.add(Token(subst, tokenType, _start));}
+      String subst = fileContents.substring(_start, _index);
+      if (voidId.contains(subst)) {
+        list.add(Token(subst, TokenType.none, _start));
+      } else {
+        list.add(Token(subst, tokenType, _start));
+      }
       _print("completed token: '${tokenType.name}':'$subst'");
     }
     _start = _index;
   }
+
   /// prints if devMode is true
   void _print(String contents) {
-    if (devMode) {print(contents);}
+    if (devMode) {
+      print(contents);
+    }
   }
-/*void _printf(String contents) {
+
+  /*void _printf(String contents) {
     if (devMode) {stdout.write(contents);}
   }*/
-/*void flush() {
+  /*void flush() {
     String char = fileContents[_index];
     switch (_state) {
       case State.unknown:

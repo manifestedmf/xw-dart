@@ -9,11 +9,9 @@ class Int implements Num {
   @override
   String toString() => _internal.toString();
 
-  @override
-  Int parse(String text) => Int(int.parse(text));
+  static Int parse(String text) => Int(int.parse(text));
 
-  @override
-  Int? tryParse(String text) {
+  static Int? tryParse(String text) {
     int? parsed = int.tryParse(text);
     if (parsed == null) {
       return null;
