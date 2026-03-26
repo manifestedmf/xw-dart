@@ -1,16 +1,18 @@
+import 'dart:convert';
 import 'dart:math' show Random;
 import 'math.dart' as math show abs, sumMapValue;
 import 'numbers.dart' show Fraction;
 import '../rgb.dart' show sRGB;
 import '../standard.dart' show trim;
-import '../../sort.dart' show swapElement;
-import '../extension.dart' show MapKV, IterableE;
+import '../extension.dart' show MapKV, IterableE, ListE;
 import '../../core.dart' show UnexpectedError;
 import '../../typedef.dart' show Amount;
 
 export 'dart:math' show Random;
 
 /// Generates a random [int] from [low] (inclusive) to [high] (inclusive).
+///
+/// This advances [random] by `1` step.
 ///
 /// If [low] is `0`,
 /// then it is equivalent to [random]`.`[nextInt]`(`[high]` + 1)`.
@@ -89,6 +91,8 @@ int randomInt32({Random? random, int? seed, bool secure = false}) {
 /// `0.0` (inclusive) to `1.0` (exclusive),
 /// meaning the return is `>= 0.0` and `< 1.0`.
 ///
+/// This advances [random] by `1` step.
+///
 /// If you already have a pre-existent [Random],
 /// then use the [random] argument.
 ///
@@ -115,6 +119,8 @@ double randomFloat({Random? random, int? seed, bool secure = false}) {
 /// Generates a random [double] from
 /// [low] (inclusive) to [high] (exclusive),
 /// meaning the return is `>= `[low] and `< `[high].
+///
+/// This advances [random] by `1` step.
 ///
 /// If you already have a pre-existent [Random],
 /// then use the [random] argument.
@@ -148,6 +154,8 @@ double randomDouble(
 }
 
 /// Generates a random [bool].
+///
+/// This advances [random] by `1` step.
 ///
 /// The chance for getting a `true` is used by the [chance] argument.
 ///
@@ -259,6 +267,8 @@ sRGB randomRGB({
 /// Gives back a random element in [elements]
 /// from [start] (inclusive) to [end] (inclusive).
 ///
+/// This advances [random] by `1` step.
+///
 /// If you already have a pre-existent [Random],
 /// then use the [random] argument.
 ///
@@ -294,7 +304,6 @@ E randomElement<E>(
 ///
 /// This advances [random] by [list]`.length` steps.
 ///
-///
 /// If you already have a pre-existent [Random],
 /// then use the [random] argument.
 ///
@@ -325,8 +334,7 @@ void shuffleList<E>(
   }
   int step = 0;
   while (step < list.length) {
-    swapElement(
-      list,
+    list.swap(
       step,
       randomInt(step, list.length - 1, random: random, secure: secure),
     );
@@ -334,9 +342,8 @@ void shuffleList<E>(
   }
 }
 
-/*
 /// Swaps a `2` random positions in [list],
-/// can only be same position if [same] is `true`.
+/// can only be same position if [possiblySame] is `true`.
 ///
 /*
 /// If [alwaysUse] is `true`,
@@ -344,8 +351,8 @@ void shuffleList<E>(
 /// for example: `swapRandomElement(`[[]`5, 2])`
 /// would always swap it to being [[]`2, 5]`,
 /// so it doesn't need to use [random] but it will still do.
-*/
 ///
+*/
 /// This advances [random] by `2` steps.
 ///
 /// If you already have a pre-existent [Random],
@@ -360,18 +367,18 @@ void shuffleList<E>(
 ///
 /// If a combination like
 /// `swapRandomElement(`[[]`3], same: false)` or
-/// `swapRandomElement(`[[]`], same: false`
+/// `swapRandomElement(`[[]`], same: false)`
 /// happens, then it will throw a [StateError].
 ///
 /// [secure] overrides over [random] and [seed],
 /// while [random] overrides [seed].
 ///
-/// Added in `2.8`.
+/// Added in `2.8.1`.
 void swapRandomElement<E>(
   List<E> list, {
   int start = 0,
   int? end,
-  bool same = false,
+  bool possiblySame = false,
   Random? random,
   int? seed,
   bool secure = false,
@@ -381,21 +388,29 @@ void swapRandomElement<E>(
   } else {
     random ??= Random(seed);
   }
-  if (list.isEmpty && !same) {
+  if (list.isEmpty && !possiblySame) {
     throw StateError(
       "$list can't be empty and not be allowed to swap same place",
     );
-  } else if (list.isSingle && !same) {
+  } else if (list.isSingle && !possiblySame) {
     throw StateError(
       "$list can't be single and not be allowed to swap same place",
     );
   }
   end ??= list.length;
-  int gotten = randomInt(start, end);
-  swapElement(list, gotten);
+  int gotten = randomInt(start, end, random: random, secure: secure);
+  if (possiblySame) {
+    list.swap(gotten, randomInt(start, end));
+    return;
+  } else {
+    int other = randomInt(start, end - 1, random: random, secure: secure);
+    if (other >= gotten) {
+      other++;
+    }
+    list.swap(gotten, other);
+    return;
+  }
 }
-*/
-
 
 /// Gives back a random [E] in [items],
 /// with `key` being chosen by the chance of `value / sum(items.values)`.
@@ -456,3 +471,137 @@ E randomOf<E>(
   throw UnexpectedError("Previous loop should have caught a value");
 }
 
+/// Generates a random [String], [maxLength] being `null`,
+/// means it can be (1 << 8) length.
+///
+/// If [minLength] is negative, then it throws a [ArgumentError].
+///
+/// Throws [RangeError] if `maxLength < minLength`.
+///
+/// This advances [random] by random
+/// from `1 + `[minLength]
+/// to `1 + `[maxLength] steps.
+///
+/// [charCode], is the generator of chars,
+/// if it gives out a `2` length string, then it throws a [ArgumentError].
+/// If [charCode] is `null`, then it uses [String.fromCharCodes].
+///
+/// [highestUnit] is the highest code unit that can be used
+/// (use if [charCode] is changed).
+///
+/// If you already have a pre-existent [Random],
+/// then use the [random] argument.
+///
+/// If you don't have a [Random] but do have a seed,
+/// then use the [seed] argument.
+///
+/// If you want a cryptographically secure [Random],
+/// then make [secure] `true`, if it can't generate one,
+/// then it throws a [UnsupportedError].
+///
+/// [secure] overrides over [random] and [seed],
+/// while [random] overrides [seed].
+///
+/// If [maxLength] is `0`, then it always be `""`
+/// and wouldn't need to use [random],
+/// but if [alwaysUse] is `true`, then it will use it regardless
+/// if it knows it or not.
+///
+/// Added in `2.8.1`.
+String randomString({
+  int minLength = 0,
+  int maxLength = 1 << 8,
+  Converter<List<int>, String>? charCode,
+  int highestUnit = 1 << 16,
+  Random? random,
+  int? seed,
+  bool secure = false,
+  bool alwaysUse = false,
+}) {
+  if (minLength.isNegative) {
+    throw ArgumentError.value(minLength, "min", "Can't be negative");
+  }
+  if (maxLength < minLength) {
+    throw RangeError.range(maxLength, minLength, 1 << 8, "max");
+  }
+  if (secure) {
+    random = Random.secure();
+  } else {
+    random ??= Random(seed);
+  }
+  if (maxLength == 0) {
+    if (alwaysUse) {
+      random.nextBool();
+    }
+    return "";
+  }
+  List<int> bytes = List.filled(
+    randomInt(minLength, maxLength),
+    0,
+    growable: false,
+  );
+  bytes.changeEach(
+    (ul) => randomInt(0, highestUnit, random: random, secure: secure),
+  );
+  if (charCode == null) {
+    return String.fromCharCodes(bytes);
+  } else {
+    String converted = charCode.convert(bytes);
+    if (converted.length != bytes.length) {
+      throw ArgumentError.value(
+        charCode,
+        "charCodes",
+        "Can't have a non-char string",
+      );
+    } else {
+      return converted;
+    }
+  }
+}
+
+/// Generates a random [String] that has length of `1`.
+///
+/// This advances [random] by `1` step.
+///
+/// [charCode], is the generator of chars,
+/// if it gives out a `2` length string, then it throws a [ArgumentError].
+/// If [charCode] is `null`, then it uses [String.fromCharCodes].
+///
+/// [highestUnit] is the highest code unit that can be used
+/// (use if [charCode] is changed).
+///
+/// If you already have a pre-existent [Random],
+/// then use the [random] argument.
+///
+/// If you don't have a [Random] but do have a seed,
+/// then use the [seed] argument.
+///
+/// If you want a cryptographically secure [Random],
+/// then make [secure] `true`, if it can't generate one,
+/// then it throws a [UnsupportedError].
+///
+/// [secure] overrides over [random] and [seed],
+/// while [random] overrides [seed].
+///
+/// If [allowEOF] is `true`, then it can return `""`.
+///
+/// Added in `2.8.1`.
+String randomChar({
+  Converter<List<int>, String>? charCode,
+  int highestUnit = 1 << 16,
+  Random? random,
+  int? seed,
+  bool secure = false,
+  bool allowEOF = true,
+}) {
+  int pos = highestUnit + 1;
+  if (allowEOF) {
+    pos++;
+  }
+  if (secure) {
+    random = Random.secure();
+  } else {
+    random ??= Random(seed);
+  }
+  int char = random.nextInt(pos + 1);
+}

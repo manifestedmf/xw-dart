@@ -230,8 +230,12 @@ N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
 }
 
 /// The [max]es in [elements].
-/// Uses [greaterThan] to know if it needs to swap the current max.
-/// Uses [equalValue] to know if it has the same value (but not fully equal).
+///
+/// If [equality] is `false`, it does nothing.
+///
+/// If [equality] is `null`, it adds to the pile of [max]es.
+///
+/// If [equality] is `true`, it swaps the current max.
 ///
 /// If [ifNone] is a null while there are no values in [elements],
 /// then it throws a [ArgumentError].
@@ -239,22 +243,23 @@ N max<N extends num>(Iterable<N> numbers, [N? ifNone]) {
 /// Added in `2.8`.
 Set<E> maxAny<E>(
   Iterable<E> elements, {
-  required bool Function(E, E) greaterThan,
-  bool Function(E, E)? equalValue,
+  required bool? Function(E, E) equality,
   Set<E>? ifNone,
 }) {
   if (elements.isEmpty) {
     return ifNone ?? (throw _ifNoneError);
   }
-  equalValue ??= (a, b) => a == b;
   Set<E> max = {};
   E maxVal = elements.first;
   for (E current in elements) {
-    if (greaterThan(current, maxVal)) {
-      max = {current};
-      maxVal = current;
-    } else if (equalValue(current, maxVal)) {
-      max.add(current);
+    switch (equality(current, maxVal)) {
+      case null:
+        max.add(current);
+      case true:
+        max = {current};
+        maxVal = current;
+      case false:
+        break;
     }
   }
   return max;
@@ -306,17 +311,17 @@ Map<K, V> maxMapValue<K, V extends num>(Map<K, V> map, [Map<K, V>? ifNone]) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
   }
   Iterable<MapEntry<K, V>> entries = map.entries;
-  Map<K, V> maxSet = {entries.first.key: entries.first.value};
+  Map<K, V> maxMap = {entries.first.key: entries.first.value};
   V max = entries.first.value;
   for (MapEntry<K, V> current in entries) {
     if (current.value > max) {
-      maxSet = {current.key: current.value};
+      maxMap = {current.key: current.value};
       max = current.value;
     } else if (current.value == max) {
-      maxSet.addEntry(current);
+      maxMap.addEntry(current);
     }
   }
-  return maxSet;
+  return maxMap;
 }
 
 /// Gets the min value in [numbers].
@@ -338,28 +343,33 @@ N min<N extends num>(Iterable<N> numbers, [N? ifNone]) {
 }
 
 /// The [min]s in [elements].
-/// Uses [lessThan] to know if it needs to swap the current min.
-/// Uses [equalValue] to know if it has the same value (but not fully equal).
+///
+/// If [equality] is `false`, it needs to swap the current min.
+///
+/// If [equality] is `null`, it adds to the pile of [min]s.
+///
+/// If [equality] is `true`, it does nothing.
 ///
 /// Added in `2.8`.
 Set<E> minAny<E>(
   Iterable<E> elements, {
-  required bool Function(E, E) lessThan,
-  bool Function(E, E)? equalValue,
+  required bool? Function(E, E) equality,
   Set<E>? ifNone,
 }) {
   if (elements.isEmpty) {
     return ifNone ?? (throw StateError("No Optional Parameter Set"));
   }
-  equalValue ??= (a, b) => a == b;
   Set<E> min = {};
   E minVal = elements.first;
   for (E current in elements) {
-    if (lessThan(current, minVal)) {
-      min = {current};
-      minVal = current;
-    } else if (equalValue(current, minVal)) {
-      min.add(current);
+    switch (equality(current, minVal)) {
+      case true:
+        break;
+      case false:
+        min = {current};
+        minVal = current;
+      case null:
+        min.add(current);
     }
   }
   return min;
@@ -389,25 +399,25 @@ MapEntry<K, V> minMapKey<K extends num, V>(
 }
 
 /// Added in `2.7`.
-Set<MapEntry<K, V>> minMapValue<K, V extends num>(
+Map<K, V> minMapValue<K, V extends num>(
   Map<K, V> map, [
-  Set<MapEntry<K, V>>? ifNone,
+  Map<K, V>? ifNone,
 ]) {
   if (map.isEmpty) {
-    return ifNone ?? (throw StateError("No Optional Parameter Set"));
+    return ifNone ?? (throw _ifNoneError);
   }
   Iterable<MapEntry<K, V>> entries = map.entries;
-  Set<MapEntry<K, V>> minSet = {entries.first};
+  Map<K, V> minMap = {entries.first.key: entries.first.value};
   V min = entries.first.value;
   for (MapEntry<K, V> current in entries) {
     if (current.value < min) {
-      minSet = {current};
+      minMap = {current.key: current.value};
       min = current.value;
     } else if (current.value == min) {
-      minSet.add(current);
+      minMap.addEntry(current);
     }
   }
-  return minSet;
+  return minMap;
 }
 
 /// Gets the sum of [numbers], The starting value is [starting].
@@ -478,7 +488,7 @@ N product<N extends num>(Iterable<N> numbers, [N? starting]) {
   N? ifNoneMin,
 }) {
   startingSum ??= (numbers is Iterable<double>) ? 0.0 as N : 0 as N;
-  startingProduct ??= (numbers is Iterable<double>) ? 0.0 as N : 0 as N;
+  startingProduct ??= (numbers is Iterable<double>) ? 1.0 as N : 1 as N;
   if (numbers.isEmpty) {
     if (ifNoneMax == null || ifNoneMin == null) {
       throw throw _ifNoneError;
@@ -621,7 +631,7 @@ num sqrt(num number) {
 }
 
 /// Added in `2.8`.
-N binarySearch<N extends num>(Iterable<N> numbers, N value) {
+N? binarySearch<N extends num>(Iterable<N> numbers, N value) {
   int minIndex, maxIndex, index, prevIndex;
   N number;
   minIndex = 0;
@@ -642,7 +652,7 @@ N binarySearch<N extends num>(Iterable<N> numbers, N value) {
       index = (minIndex + maxIndex) >> 1;
     }
   }
-  return (value is int) ? -1 as N : -1.0 as N;
+  return null;
 }
 
 /// Gives back [pow]`(`[base]`, 1/`[root]`)`.
@@ -825,13 +835,6 @@ bool isMadeUpOf(int number, List<int> primes) {
   return true;
 }
 
-/// Added in `2.8`.
-class MathError {
-  final String? message;
-
-  const MathError([this.message]);
-}
-
 /// Gives the factorial of an unsigned int being, [number].
 ///
 /// Throws a [RangeError] if [number] is less than 0.
@@ -978,6 +981,7 @@ enum Operator {
     throw ArgumentError.value(char, "char", "Needs to be a operator");
   }
 }
+// TODO: add
 /*
 /// Added in `2.8.1`.
 num reversePolishCalculator(String input) {

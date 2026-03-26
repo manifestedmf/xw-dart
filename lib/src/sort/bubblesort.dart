@@ -8,6 +8,7 @@ class BubbleSort {
   ///
   /// Added in `2.8`.
   static ({int swaps, int checks}) listSort<N extends num>(List<N> list) {
+    bool swapped = false;
     int index, nextIndex, rotation, swaps, checks;
     index = swaps = checks = 0;
     nextIndex = rotation = 1;
@@ -17,6 +18,11 @@ class BubbleSort {
         index = 0;
         nextIndex = 1;
         ++rotation;
+        if (!swapped) {
+          return (swaps: swaps, checks: checks);
+        } else {
+          swapped = false;
+        }
       }
       current = list[index];
       next = list[nextIndex];
@@ -24,6 +30,7 @@ class BubbleSort {
         list[index] = next;
         list[nextIndex] = current;
         ++swaps;
+        swapped = true;
       }
       ++checks;
       index++;
@@ -34,6 +41,7 @@ class BubbleSort {
 
   /// Added in `2.8`.
   static ({int swaps, int checks}) listSortFraction(List<Fraction> list) {
+    bool swapped = false;
     int index, nextIndex, rotation, swaps, checks;
     index = swaps = checks = 0;
     nextIndex = rotation = 1;
@@ -43,6 +51,11 @@ class BubbleSort {
         index = 0;
         nextIndex = 1;
         ++rotation;
+        if (!swapped) {
+          return (swaps: swaps, checks: checks);
+        } else {
+          swapped = false;
+        }
       }
       current = list[index];
       next = list[nextIndex];
@@ -50,6 +63,7 @@ class BubbleSort {
         list[index] = next;
         list[nextIndex] = current;
         ++swaps;
+        swapped = true;
       }
       ++checks;
       ++index;
@@ -65,6 +79,7 @@ class BubbleSort {
     List<E> list,
     bool? Function(E, E) equality,
   ) {
+    bool swapped = false;
     int index, nextIndex, rotation, swaps, checks;
     index = swaps = checks = 0;
     nextIndex = rotation = 1;
@@ -74,6 +89,11 @@ class BubbleSort {
         index = 0;
         nextIndex = 1;
         ++rotation;
+        if (!swapped) {
+          return (checks: checks, swaps: swaps);
+        } else {
+          swapped = false;
+        }
       }
       current = list[index];
       next = list[nextIndex];
@@ -85,6 +105,7 @@ class BubbleSort {
           list[index] = next;
           list[nextIndex] = current;
           ++swaps;
+          swapped = true;
         case false:
           break;
       }

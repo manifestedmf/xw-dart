@@ -7,6 +7,6 @@
 /// isPrime
 library xw.math;
 
-export 'src/math/numbers.dart' hide Int, Num;
+export 'src/math/numbers.dart';
 export 'src/math/math.dart';
-export 'src/math/random.dart';
+export 'random.dart';

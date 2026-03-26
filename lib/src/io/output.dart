@@ -1,12 +1,12 @@
 import 'dart:core'
     show String, Iterable, Object, List, int, bool, ArgumentError;
 import 'dart:io' show stdout, stderr;
-import 'standard.dart' show cut, grow;
-import 'extension.dart' show ListE, StringExt;
+import '../standard.dart' show cut, grow;
+import '../extension.dart' show ListE, StringExt;
 
 /// Prints out to to the console with [stdout]`.`[write]`()`.
 ///
-/// Send in the input from [input], and the `object?`s from [items].
+/// Send in the input from [input], and the [Object]`?`s from [items].
 ///
 /// Adding some digits to the end of a `%?#`
 /// will make it extend with spaces after till it is that long.
@@ -33,7 +33,7 @@ void printf<E>(
   String input, {
   Iterable<E> items = const [],
   bool error = false,
-  String Function(Iterable<Object?>)? iterJoin,
+  String Function(Iterable)? iterJoin,
 }) {
   printg(
     scanf(input, items: items, iterJoin: iterJoin),
@@ -48,6 +48,7 @@ void printfln<E>(
   String input, {
   Iterable<E> items = const [],
   bool error = false,
+  String Function(Iterable)? iterJoin,
 }) => printf("$input\n", items: items, error: error);
 
 /// Prints with a new line at the end.
@@ -188,7 +189,7 @@ _Char _character(String char) => switch (char) {
 
 /// Returns the formatted [String] from the according [input] and [items].
 ///
-/// Send in the input from [input], and the `object?`s from [items].
+/// Send in the input from [input], and the [Object]`?`s from [items].
 ///
 /// Adding some digits to the end of a `%?#`
 /// will make it extend with spaces after till it is that long.
@@ -214,7 +215,7 @@ _Char _character(String char) => switch (char) {
 String scanf<E>(
   String input, {
   Iterable<E> items = const [],
-  String Function(Iterable<Object?>)? iterJoin,
+  String Function(Iterable)? iterJoin,
 }) {
   if (items.isEmpty) {
     int pointer = 0;
@@ -347,13 +348,13 @@ class _Scanf<E> {
   static String initSafe<E extends Object>(
     String input,
     Iterable<E> items,
-    String Function(Iterable<Object?>) iterJoin,
+    String Function(Iterable) iterJoin,
   ) => _Scanf(input, items.toList(), iterJoin, true).scan();
 
   static String initUnsafe<E>(
     String input,
     Iterable<E> items,
-    String Function(Iterable<Object?>) iterJoin,
+    String Function(Iterable) iterJoin,
   ) => _Scanf(input, items.toList(), iterJoin, false).scan();
 
   /// Added in `2.8`.

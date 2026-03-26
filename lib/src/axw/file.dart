@@ -1,7 +1,8 @@
-import 'dart:io' show File;
+import 'dart:io' as io show File;
 import 'scan.dart' show Scanner;
 import 'parser.dart' show Parser, Version;
 import 'ast.dart';
+import '../io/file.dart' show File;
 
 
 
@@ -87,7 +88,7 @@ import 'ast.dart';
 ///
 /// [Identifier] :
 /// -   [String]
-class AXW {
+class AXW /*implements File*/ {
   Version _version = Version.AXW20;
   List<Declaration> _environment = [];
   String _fileContents = "";
@@ -95,7 +96,7 @@ class AXW {
 
   void _update() {
     String garbageFile = _fileContents;
-    _fileContents = File(fileName).readAsStringSync();
+    _fileContents = io.File(fileName).readAsStringSync();
     if (garbageFile != _fileContents) {
       Scanner scan = Scanner(_fileContents);
       Parser parse = Parser(scan.list);

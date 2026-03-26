@@ -5,7 +5,7 @@ import 'src/math/numbers.dart' show Fraction;
 import 'src/sort/bubblesort.dart' show BubbleSort;
 import 'src/sort/mergesort.dart' show MergeSort;
 import 'src/sort/quicksort.dart' show QuickSort;
-import 'src/math/random.dart' show shuffleList;
+import 'src/math/random.dart' show shuffleList, swapRandomElement;
 
 /// Sorts using the [BubbleSort] method.
 ///
@@ -65,8 +65,8 @@ int mergeSortAny<E>(List<E> list, {required bool? Function(E, E) equality}) =>
 List<E> mergeListAny<E>(
   List<E> a,
   List<E> b, {
-  required bool Function(E, E) gt,
-}) => MergeSort.listMergeAny(a, b, gt);
+  required bool? Function(E, E) equality,
+}) => MergeSort.listMergeAny(a, b, equality);
 
 /// Added in `2.8.`
 int quickSort<N extends num>(List<N> list) => QuickSort.listSort(list);
@@ -80,10 +80,8 @@ int quickSort<N extends num>(List<N> list) => QuickSort.listSort(list);
 /// `array[a] <= lastElement`.
 ///
 /// Added in `2.8`.
-int quickSortAny<E>(
-  List<E> list, {
-  required bool? Function(E, E) equality,
-}) => QuickSort.listSortAny(list, equality);
+int quickSortAny<E>(List<E> list, {required bool? Function(E, E) equality}) =>
+    QuickSort.listSortAny(list, equality);
 
 /// Shuffles [list] randomly, till it gets out the sorted value.
 ///
@@ -109,6 +107,30 @@ int bogoSortAny<E>(List<E> list, {required bool? Function(E, E) equality}) {
   return shuffles;
 }
 
+/// Swaps 2 elements in [list] randomly, till it gets out the sorted value.
+///
+/// Added in `2.8.1`.
+int bozoSort<N extends num>(List<N> list) {
+  int swaps = 0;
+  while (!isSorted(list)) {
+    swapRandomElement(list);
+    swaps++;
+  }
+  return swaps;
+}
+
+/// Swaps 2 elements in [list] randomly, till it gets out the sorted value.
+///
+/// Added in `2.8.1`.
+int bozoSortAny<E>(List<E> list, {required bool? Function(E, E) equality}) {
+  int swaps = 0;
+  while (!isSortedAny(list, equality: equality)) {
+    swapRandomElement(list);
+    swaps++;
+  }
+  return swaps;
+}
+
 /// Swaps [E]lement at [a] and [E]lement at [b] in [array].
 ///
 /// This is what the [swapElement] does (in a generic language).
@@ -126,6 +148,8 @@ void swapElement<E>(List<E> array, int a, int b) {
   return;
 }
 
+/// Checks if [array] is sorted.
+///
 /// Added in `2.8`.
 bool isSorted<N extends num>(List<N> array) {
   int i = 0;
@@ -163,22 +187,20 @@ enum SortAlg {
   merge(funcStd: mergeSort, funcAny: mergeSortAny, isInline: true),
 
   /// Added in `2.8`.
-  quick(funcStd: quickSort, funcAny: quickSortAny, isInline: true);
+  quick(funcStd: quickSort, funcAny: quickSortAny, isInline: true),
+
+  /// Added in `2.8.1`.
+  bogo(funcStd: bogoSort, funcAny: bogoSortAny, isInline: true),
+
+  /// Added in `2.8.1`.
+  bozo(funcStd: bozoSort, funcAny: bozoSortAny, isInline: true);
 
   /// Standard function for a list.
-  ///
-  /// Call must be
-  /// `int Function<N extends num>(List<N>)` and any optional arguments;
   ///
   /// Added in `2.8`.
   final int Function<N extends num>(List<N>) funcStd;
 
   /// Any function for a list.
-  ///
-  /// Call must be
-  // ignore: unintended_html_in_doc_comment
-  /// `int Function<E>(List<E>, {required bool Function(E, E) gt,
-  /// bool Function(E, E)? eq})` and any optional arguments.
   ///
   /// Added in `2.8`.
   final int Function<E>(List<E>, {required bool? Function(E, E) equality})

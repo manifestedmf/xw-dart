@@ -9,6 +9,7 @@
       <sourceFolder url="file://$MODULE_DIR$/lib/src/date" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/lib/src/math" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/lib/src/sort" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/lib/src/io" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
