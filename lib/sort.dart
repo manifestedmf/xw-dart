@@ -131,6 +131,42 @@ int bozoSortAny<E>(List<E> list, {required bool? Function(E, E) equality}) {
   return swaps;
 }
 
+/// Deletes any data that isn't one more than the previous.
+///
+/// Returns the amount deleted.
+///
+/// Added in `2.8.1`.
+int stalinSort<N extends num>(List<N> list) {
+  int deleted = 0;
+  for (int index = list.length - 2; index > 0; index--) {
+    if (list[index] > list[index + 1]) {
+      list.removeAt(index + 1);
+      deleted++;
+    }
+  }
+  return deleted;
+}
+
+/// Deletes any data that isn't one more than the previous.
+///
+/// Returns the amount deleted.
+///
+/// Added in `2.8.1`.
+int stalinSortAny<E>(List<E> list, {required bool? Function(E, E) equality}) {
+  int deleted = 0;
+  for (int index = list.length - 2; index > 0; index--) {
+    switch (equality(list[index], list[index + 1])) {
+      case true:
+        list.removeAt(index + 1);
+        deleted++;
+      case false:
+      case null:
+        break;
+    }
+  }
+  return deleted;
+}
+
 /// Swaps [E]lement at [a] and [E]lement at [b] in [array].
 ///
 /// This is what the [swapElement] does (in a generic language).
@@ -193,14 +229,22 @@ enum SortAlg {
   bogo(funcStd: bogoSort, funcAny: bogoSortAny, isInline: true),
 
   /// Added in `2.8.1`.
-  bozo(funcStd: bozoSort, funcAny: bozoSortAny, isInline: true);
+  bozo(funcStd: bozoSort, funcAny: bozoSortAny, isInline: true),
 
-  /// Standard function for a list.
+  /// Added in `2.8.1`.
+  stalin(
+    funcStd: stalinSort,
+    funcAny: stalinSortAny,
+    isInline: true,
+    losesData: true,
+  );
+
+  /// The `std` function for a list.
   ///
   /// Added in `2.8`.
   final int Function<N extends num>(List<N>) funcStd;
 
-  /// Any function for a list.
+  /// The `any` function for a list.
   ///
   /// Added in `2.8`.
   final int Function<E>(List<E>, {required bool? Function(E, E) equality})
@@ -210,10 +254,17 @@ enum SortAlg {
   ///
   /// Added in `2.8`.
   final bool isInline;
+
+  /// If the algorithm loses some of its date when processed.
+  ///
+  /// Added in `2.8.1`.
+  final bool losesData;
+
   const SortAlg({
     required this.funcStd,
     required this.funcAny,
     required this.isInline,
+    this.losesData = false,
   });
 }
 

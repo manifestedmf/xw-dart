@@ -548,11 +548,7 @@ String randomString({
   } else {
     String converted = charCode.convert(bytes);
     if (converted.length != bytes.length) {
-      throw ArgumentError.value(
-        charCode,
-        "charCodes",
-        "Can't have a non-char string",
-      );
+      throw ArgumentError.value(charCode, "charCode", "Has to give out chars");
     } else {
       return converted;
     }
@@ -594,14 +590,25 @@ String randomChar({
   bool secure = false,
   bool allowEOF = true,
 }) {
-  int pos = highestUnit + 1;
   if (allowEOF) {
-    pos++;
+    highestUnit++;
   }
   if (secure) {
     random = Random.secure();
   } else {
     random ??= Random(seed);
   }
-  int char = random.nextInt(pos + 1);
+  int code = randomInt(0, highestUnit, random: random);
+  if (code == highestUnit) {
+    return "";
+  } else if (charCode == null) {
+    return String.fromCharCode(code);
+  } else {
+    String char = charCode.convert([code]);
+    if (char.length != 1) {
+      throw ArgumentError.value(charCode, "charCode", "Has to give out chars");
+    } else {
+      return char;
+    }
+  }
 }
