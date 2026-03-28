@@ -465,6 +465,9 @@ extension MapKV<K, V> on Map<K, V> {
   String join({String seperator = ", ", String connector = ": "}) {
     if (isEmpty) {
       return "";
+    } else if (seperator == ", " && connector == ": ") {
+      String string = toString();
+      return string.substring(1, string.length - 1);
     }
     Iterable<MapEntry<K, V>> entries = this.entries;
     MapEntry<K, V> current = entries.first;

@@ -831,6 +831,12 @@ class Date with Compare<Date> {
   /// DO NOT USE THIS IF YOU DON'T KNOW WHAT YOU ARE DOING
   const Date._constructor(this.day, this.month, this.year, this._format);
 
+  /// Added in `2.8.1`.
+  factory Date.now() {
+    DateTime time = DateTime.now();
+    return Date(time.day, time.month, time.year);
+  }
+
   /*int toInt() {
     if (_year >= 0) {
       while (_year > 0) {
