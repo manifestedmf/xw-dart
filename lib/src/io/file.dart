@@ -11,10 +11,10 @@ class SyntaxError extends Error {
   @override
   toString() {
     String extra = "";
-    if (pos == null) {
+    if (pos != null) {
       extra += " at $pos";
     }
-    if (message == null) {
+    if (message != null) {
       extra += ": $message";
     }
     return "Unexpected character: '$char'$extra";

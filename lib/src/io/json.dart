@@ -1,12 +1,12 @@
 import 'dart:io' as io show File;
 import 'file.dart';
-import '../extension.dart' show StringExt;
+import '../extension.dart' show StringExt, MapKV;
 import 'dart:convert' show Encoding;
-export 'dart:convert';
+export 'dart:convert' hide Encoding;
 
 /// Added in `2.8.1`.
 class Json implements File {
-  late Map<String, JsonType> _json;
+  late JsonType _json;
   // TODO: make to Json to a async class
   //late Stream<List<int>> _contents;
   late String _contents;
@@ -15,31 +15,41 @@ class Json implements File {
   // late String _tempString;
   int _pos = 0;
   String get _char => _contents[_pos];
+  bool get _isEOF => _pos >= _contents.length;
 
   @override
   final String address;
 
   Json(this.address, {required this.encoding}) : _file = io.File(address) {
     _contents = _file.readAsStringSync(encoding: encoding);
-    _json = {};
-    _parseJson();
+    _json = _parseJson();
   }
 
-  void _parseJson() {
-    _parseElement();
-  }
+  JsonType get json => _json;
 
-  void _parseElement() {
+  @override
+  toString({bool newlines = false}) => _json.toString(newlines: newlines);
+
+  JsonType? operator [](String key) => (_json as JsonObject)[key];
+
+  JsonType _parseJson() => _parseElement();
+
+  JsonType _parseElement() {
     _tryParseWhitespace();
-    _parseValue();
+    JsonType type = _parseValue();
     _tryParseWhitespace();
+    return type;
   }
 
   bool _tryParseWhitespace() {
+    if (_isEOF) {
+      return false;
+    }
     switch (_char) {
       /*case "":
         _pos++;
         return true;*/
+      case " ":
       case "\n":
       case "\r":
       case "\t":
@@ -51,16 +61,22 @@ class Json implements File {
     }
   }
 
-  void _parseValue() {
-    _tryParseWhitespace();
+  JsonType _parseValue() {
     if (_canParseString) {
-      _parseString();
+      return _parseString();
     } else if (_canParseNumber) {
-      _parseNumber();
+      return _parseNumber();
     } else if (_isObjectEntry) {
-      _parseObject();
+      return _parseObject();
+    } else if (_isArrayEntry) {
+      return _parseArray();
+    } else if (_canParseBoolean) {
+      return _parseBoolean();
+    } else if (_canParseNull) {
+      return _parseNull();
+    } else {
+      throw SyntaxError(_char, _pos);
     }
-    _tryParseWhitespace();
   }
 
   bool get _canParseString => _char == r'"';
@@ -156,30 +172,23 @@ class Json implements File {
   }*/
 
   String _parseInteger() {
-    String string;
+    String string = "";
     if (_isMinus) {
       string = r"-";
       _pos++;
     }
-    if (_isOneNine) {
-      string = _parseOneNine() + _parseDigits();
+    if (_isZero) {
+      string += "0";
+      _pos++;
     } else if (_isDigit) {
-      string = _parseDigit();
+      string += _parseDigits();
     } else {
       throw SyntaxError(_char, _pos, "Expected a digit");
     }
     return string;
   }
 
-  bool get _isOneNine => _isDigit && _char != r"0";
-
-  String _parseOneNine() {
-    if (_isOneNine) {
-      return _contents[_pos++];
-    } else {
-      throw SyntaxError(_char, _pos);
-    }
-  }
+  bool get _isZero => _char == r"0";
 
   String _parseDigits() {
     String string = _parseDigit();
@@ -193,14 +202,16 @@ class Json implements File {
 
   String _parseDigit() {
     if (_isDigit) {
-      return _char;
+      return _contents[_pos++];
     } else {
       throw SyntaxError(_char, _pos);
     }
   }
 
   String _tryParseFraction() {
-    if (_char == r".") {
+    if (_isEOF) {
+      return r"";
+    } else if (_char == r".") {
       ++_pos;
       return ".${_parseDigits()}";
     } else {
@@ -209,7 +220,9 @@ class Json implements File {
   }
 
   String _tryParseExponent() {
-    if (_char == r"e" || _char == r"E") {
+    if (_isEOF) {
+      return r"";
+    } else if (_char == r"e" || _char == r"E") {
       return "e${_tryParseSign()}${_parseDigits()}";
     } else {
       return r"";
@@ -217,7 +230,9 @@ class Json implements File {
   }
 
   String _tryParseSign() {
-    if (_isMinus || _char == r"+") {
+    if (_isEOF) {
+      return r"";
+    } else if (_isMinus || _char == r"+") {
       return _char;
     } else {
       return r"";
@@ -230,7 +245,14 @@ class Json implements File {
   JsonObject _parseObject() {
     _parseObjectEntry();
     _tryParseWhitespace();
-    if (_isObjectExit)
+    if (_isObjectExit) {
+      _parseObjectExit();
+      return JsonObject({});
+    } else {
+      Map<String, JsonType> members = _parseMembers();
+      _parseObjectExit();
+      return JsonObject(members);
+    }
   }
 
   void _parseObjectEntry() {
@@ -240,6 +262,127 @@ class Json implements File {
       throw SyntaxError(_char, _pos);
     }
   }
+
+  void _parseObjectExit() {
+    if (_isObjectExit) {
+      ++_pos;
+    } else {
+      throw SyntaxError(_char, _pos);
+    }
+  }
+
+  Map<String, JsonType> _parseMembers() {
+    return Map.fromEntries(_parseMembersPrivate());
+  }
+
+  List<MapEntry<String, JsonType>> _parseMembersPrivate() {
+    List<MapEntry<String, JsonType>> entries = [_parseMember()];
+    if (_isComma) {
+      ++_pos;
+      entries.addAll(_parseMembersPrivate());
+    }
+    return entries;
+  }
+
+  bool get _isComma => _char == r",";
+
+  MapEntry<String, JsonType> _parseMember() {
+    _tryParseWhitespace();
+    JsonString string = _parseString();
+    _tryParseWhitespace();
+    _parseColon();
+    return MapEntry(string.value, _parseElement());
+  }
+
+  void _parseColon() {
+    if (_char == r":") {
+      ++_pos;
+    } else {
+      throw SyntaxError(_char, _pos);
+    }
+  }
+
+  bool get _isArrayEntry => _char == r"[";
+  bool get _isArrayExit => _char == r"]";
+
+  JsonArray _parseArray() {
+    _parseArrayEntry();
+    _tryParseWhitespace();
+    if (_isArrayExit) {
+      _parseArrayExit();
+      return JsonArray([]);
+    } else {
+      List<JsonType> elements = _parseElements();
+      _parseArrayExit();
+      return JsonArray(elements);
+    }
+  }
+
+  void _parseArrayEntry() {
+    if (_isArrayEntry) {
+      ++_pos;
+    } else {
+      throw SyntaxError(_char, _pos);
+    }
+  }
+
+  void _parseArrayExit() {
+    if (_isArrayExit) {
+      ++_pos;
+    } else {
+      throw SyntaxError(_char, _pos);
+    }
+  }
+
+  List<JsonType> _parseElements() {
+    List<JsonType> elements = [_parseElement()];
+    if (_isComma) {
+      ++_pos;
+      elements.addAll(_parseElements());
+    }
+    return elements;
+  }
+
+  bool get _canParseBoolean => _isTrue || _isFalse;
+  bool get _isTrue => _char == r"t";
+  bool get _isFalse => _char == r"f";
+
+  JsonBoolean _parseBoolean() {
+    if (_isTrue) {
+      return _parseTrue();
+    } else {
+      return _parseFalse();
+    }
+  }
+
+  JsonBoolean _parseTrue() {
+    _pos += 4;
+    if (_contents.substring(_pos - 4, _pos) == r"true") {
+      return JsonBoolean(true);
+    } else {
+      throw SyntaxError(_contents.substring(_pos - 4, _pos), _pos - 4);
+    }
+  }
+
+  JsonBoolean _parseFalse() {
+    _pos += 5;
+    if (_contents.substring(_pos - 5, _pos) == r"false") {
+      return JsonBoolean(false);
+    } else {
+      throw SyntaxError(_contents.substring(_pos - 5, _pos), _pos - 5);
+    }
+  }
+
+  bool get _canParseNull => _char == r"n";
+
+  JsonNull _parseNull() {
+    _pos += 4;
+    if (_contents.substring(_pos - 4, _pos) == r"null") {
+      return JsonNull();
+    } else {
+      throw SyntaxError(_contents.substring(_pos - 4, _pos), _pos - 4);
+    }
+  }
 }
 
 /// [I] is `internal`.
@@ -247,12 +390,14 @@ class Json implements File {
 /// Added in `2.8.1`.
 sealed class JsonType<I> {
   /// Added in `2.8.1`.
-  JsonType();
+  const JsonType();
 
   /// Added in `2.8.1`.
   I get value;
+
   /// Added in `2.8.1`.
-  set value(I val);
+  //set value(I val);
+
   /// Added in `2.8.1`.
   static JsonType<I> create<I>(I val) {
     if (val is num) {
@@ -271,108 +416,155 @@ sealed class JsonType<I> {
       throw ArgumentError.value(val, "val", "No Json type matching that value");
     }
   }
+
+  /// Added in `2.8.1`.
+  JsonType<I> copy() => create(value);
+
+  /// Added in `2.8.1`.
+  @override
+  String toString({bool newlines = false, int spaces = 0}) => value.toString();
 }
 
 /// Added in `2.8.1`.
 final class JsonNumber extends JsonType<num> {
   /// Added in `2.8.1`.
-  num number;
+  final num number;
 
-  JsonNumber(this.number);
+  const JsonNumber(this.number);
 
   @override
   num get value => number;
-  @override
+
+  /*@override
   set value(num val) {
     number = val;
-  }
-
-  @override
-  String toString() => number.toString();
+  }*/
 }
 
 /// Added in `2.8.1`.
 final class JsonString extends JsonType<String> {
-  String string;
+  final String string;
 
-  JsonString(this.string);
+  const JsonString(this.string);
 
   @override
   String get value => string;
 
-  @override
+  /*@override
   set value(String val) {
     string = val;
-  }
+  }*/
 
   @override
-  String toString() => '"$string"';
+  String toString({bool newlines = false, int spaces = 0}) => '"$string"';
 }
 
 /// Added in `2.8.1`.
 final class JsonBoolean extends JsonType<bool> {
-  bool boolean;
+  final bool boolean;
 
-  JsonBoolean(this.boolean);
+  const JsonBoolean(this.boolean);
 
   @override
   bool get value => boolean;
 
-  @override
+  /*@override
   set value(bool val) {
     boolean = val;
-  }
-
-  @override
-  String toString() => boolean.toString();
+  }*/
 }
 
 /// Added in `2.8.1`.
 final class JsonArray extends JsonType<List<JsonType>> {
-  List<JsonType> array;
+  final List<JsonType> array;
 
-  JsonArray(this.array);
+  const JsonArray(this.array);
 
   @override
   List<JsonType> get value => array;
 
-  @override
+  /*@override
   set value(List<JsonType> val) {
     array = val;
-  }
+  }*/
 
   @override
-  String toString() => array.toString();
+  String toString({bool newlines = false, int spaces = 0}) {
+    if (!newlines) {
+      return array.toString();
+    } else {
+      if (array.isEmpty) {
+        return "[]";
+      }
+      spaces += 2;
+      String string =
+          "[\n${" " * spaces}"
+          "${array.first.toString(newlines: true, spaces: spaces)}";
+      for (int index = 1; index < array.length; index++) {
+        string +=
+            ",\n"
+            "${" " * spaces}"
+            "${array[index].toString(newlines: true, spaces: spaces)}";
+      }
+      return "$string\n${" " * (spaces - 2)}]";
+    }
+  }
+
+  JsonType operator [](int index) => array[index];
+  void operator []=(int index, JsonType type) => array[index] = type;
 }
 
 /// Added in `2.8.1`.
 final class JsonObject extends JsonType<Map<String, JsonType>> {
-  Map<String, JsonType> object;
+  final Map<String, JsonType> object;
 
-  JsonObject(this.object);
+  const JsonObject(this.object);
 
   @override
   Map<String, JsonType> get value => object;
 
-  @override
+  /*@override
   set value(Map<String, JsonType> val) {
     object = val;
-  }
+  }*/
 
   @override
-  String toString() => object.toString();
+  String toString({bool newlines = false, int spaces = 0}) {
+    if (!newlines) {
+      String string = "{";
+      for (var current in object.entries) {
+        string += "\"${current.key}\": ${current.value}";
+      }
+      return "$string}";
+    } else {
+      if (object.isEmpty) {
+        return "{}";
+      }
+      spaces += 2;
+      String string =
+          "{\n${" " * spaces}${object.firstKey}: "
+          "${object.firstValue.toString(newlines: true, spaces: spaces)}";
+      for (int index = 1; index < object.length; index++) {
+        string +=
+        ",\n"
+            "${" " * spaces}${object.keys.elementAt(index)}: "
+            "${object.values.elementAt(index).toString(newlines: true, spaces: spaces)}";
+      }
+      return "$string\n${" " * (spaces - 2)}}";
+    }
+  }
+
+  JsonType? operator [](String key) => object[key];
+  void operator []=(String key, JsonType value) => object[key] = value;
 }
 
 /// Added in `2.8.1`.
 final class JsonNull extends JsonType<Null> {
-  JsonNull();
+  const JsonNull();
 
   @override
   Null get value => null;
 
-  @override
-  set value(Null val) {}
-
-  @override
-  String toString() => "null";
+  /*@override
+  set value(Null val) {}*/
 }

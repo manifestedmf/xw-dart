@@ -9,6 +9,7 @@ import 'dart:io' as io show exit;
 export 'src/io/output.dart';
 export 'src/io/input.dart';
 //export 'src/io/file.dart';
+export 'src/io/json.dart';
 
 /// Exits the program with [code].
 ///
