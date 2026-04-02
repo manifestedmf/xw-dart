@@ -1,0 +1,298 @@
+For version 2.0;
+
+manager
+  header
+  header declarations
+
+header
+  ws "AXW" ws digit semicolon
+  ws "AXW" ws digit "." digit semicolon
+
+declarations
+  declaration
+  declaration declarations
+
+declaration
+  expressionDeclaration
+  structDeclaration
+
+structDeclaration
+  ws "Struct" ws identifier ws "{" structFields "}" ws ";" ws
+  ws "Struct" ws identifier ws "{" ws "}" ws ";" ws
+
+structFields
+  structField
+  structField structFields
+
+structField
+  expressionDeclaration
+  ws identifier ws ";" ws
+
+expressionDeclaration
+  ws identifier ws "=" expression
+
+expression
+  ws value ws
+
+value
+  string
+  int
+  list
+  float
+  map
+  hexadecimal
+  binary
+  char
+  null
+  bool
+  structExpression
+
+string
+  '0020' . '10FFFF' - '"' - "\"
+  "\" escape
+
+escape
+  '"'
+  "\"
+  "/"
+  "b"
+  "f"
+  "n"
+  "r"
+  "t"
+  "u" hexadecimalChar hexadecimalChar hexadecimalChar hexadecimalChar
+  "x" hexadecimalChar hexadecimalChar
+
+hexadecimalChar
+  digit
+  "A" . "F"
+  "a" . "f"
+
+digit
+  bin
+  "2" . "9"
+
+bin
+  "0"
+  "1"
+
+binary
+  "0x" binaries
+
+binaries
+  bin
+  bin binaries
+
+int
+  digit
+  digit int
+
+list
+  "[" ws "]"
+  "[" expressions "]"
+
+expressions
+  expression
+  expression "," expressions
+
+float
+  int "." int
+
+map
+  "{" ws "}"
+  "{" members "}"
+
+members
+  member
+  member "," members
+
+member
+  expression ":" expression
+
+<?HexadecimalExpression?> RP+
+  σ  ~/0x\~β
+      :
+        <!SD!>
+        /a\β
+        /b\β
+        /c\β
+        /d\β
+        /e\β
+        /f\β
+      ;π λ
+  ε
+-0xAfB2
+ο
+  Is an int mostly.
+  Minimum of 64 bits.
+  This output has to be able to do +, -, * and ~/.
+χ
+
+<?FloatExpression?> RP+
+  σ  <!IntExpression!> /.\ <!IntExpression!>  ε
+-56.23
+ο
+  Should be a Fraction class mostly. => (int, int).
+  The other option is a double.
+  Minimum of 64 bits.
+  This output has to be able to do +, -, *, ~/, round, floor and ceil.
+χ
+
+<?ListExpression?> RP+
+  /[\
+    <!Expression!>π( /,\ ) Ω
+  /]\
+-[ [ 5 , 32, 32.5 ], "AB" ]
+ο
+  Is the Language's list item (list|array).
+  This output has to be able to do [].
+χ
+
+<?VoidExpression?> RP+
+  :
+    ~/null\~α
+    ~/void\~α
+  ;Σ
+-
+ο
+  Is the language standard return value.
+  If the language has null value, then it returns it. (like dart)
+χ
+
+<?BoolExpression?> RP+
+  :
+    ~/true\~α
+    ~/false\~α
+  ;Σ
+-
+ο
+  Uses language's conditional properties.
+  C would be true: 1, false: 0.
+  Dart would be true: true, false: false.
+χ
+
+<?DictExpression?> RP+
+  /{\
+    ( <!Identifier!>λ /:\ <!Expression!>λ )π( /,\ ) Ω
+  /}\
+-{ a : "5" }
+
+<?VarExpression?> RP+
+  <!Identifier!>
+-
+ο
+  Uses language's map class.
+  If there is no map class then it delivers two Lists.
+χ
+
+-?StringExpression?> RP+
+  σ  /"\
+    :
+      <!Char!>
+      / \
+    ;π Ω
+  /"\  ε
+-"twenty2"
+ο
+  The standard way to express a string in the language.
+  Worst case is a list of int.
+χ
+
+<?CharExpression?> RP+
+  σ  /'\
+    :
+      <!Char!>
+      / \
+    ;Σ Ω
+  /'\  ε
+-'B'
+o
+  The language's char class.
+  Gives back a string with a length of 1|0, if there are no chars.
+χ
+
+<?Char?> RP+
+  :
+    <!CharTextInclusive!>
+    <!SD!>
+  ;
+-b
+
+<?CharTextInclusive?> RP+
+  :
+    <!CharTextExclusive!>
+    σ  <!Backslash!> <!CharTextExclusive!>  ε
+  ;
+-
+
+<?Identifier?> RP+
+  <!CharTextExclusive!>Σ λ
+  :
+    <!CharTextExclusive!>
+    <!SD!>
+  ;π Ω
+-
+
+<?CharTextExclusive?> RP+
+  :
+    /a\β
+    /b\β
+    /c\β
+    /d\β
+    /e\β
+    /f\β
+    /g\β
+    /h\β
+    /i\β
+    /j\β
+    /k\β
+    /l\β
+    /m\β
+    /n\β
+    /o\β
+    /p\β
+    /q\β
+    /r\β
+    /s\β
+    /t\β
+    /u\β
+    /v\β
+    /w\β
+    /x\β
+    /y\β
+    /z\β
+  ;Σ
+-B
+
+<?Backslash?> RP+
+  /\\
+-\
+
+<?SD?> RP+
+  :
+    /0\
+    /1\
+    /2\
+    /3\
+    /4\
+    /5\
+    /6\
+    /7\
+    /8\
+    /9\
+  ;Σ
+-0
+
+<?StructExpression?> RP+
+  pseudo
+-
+
+semicolon
+  ws ";" ws
+
+ws
+  ""
+  '0020' ws
+  '000A' ws
+  '000D' ws
+  '0009' ws

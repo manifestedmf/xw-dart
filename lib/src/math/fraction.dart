@@ -334,6 +334,7 @@ class Fraction extends Num with Compare<Fraction> {
       return "$float";
     }
   }
+
   String get closeness {
     if (isWhole) {
       return "=";
@@ -571,8 +572,48 @@ class Fraction extends Num with Compare<Fraction> {
   // @override
   // Fraction parse(String text) => throw UnimplementedError();
 
-  // @override
-  // Fraction? tryParse(String text) => throw UnimplementedError();
+  /*
+  /// Added in `2.8.1`.
+  static Fraction? tryParse(String text) {
+    int oper = 0;
+    int div = 0;
+    bool expectedOper = true;
+    for (int index = 0; index < text.length; index++) {
+      switch (text[index]) {
+        case " ":
+        case "\n":
+        case "\t":
+        case "\r":
+          break;
+        case "/":
+          if (expectedOper) {
+            expectedOper = false;
+          } else {
+            return null;
+          }
+        case "0":
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+        case "6":
+        case "7":
+        case "8":
+        case "9":
+          if (expectedOper) {
+            oper *= 10;
+            oper += int.parse(text[index]);
+          } else {
+            div *= 10;
+            oper += int.parse(text[index]);
+          }
+        case _:
+          return null;
+      }
+    }
+  }
+  */
 }
 
 /// Added in `2.7`.

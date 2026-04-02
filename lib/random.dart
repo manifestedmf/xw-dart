@@ -4,6 +4,6 @@
 /// Added in `2.8`.
 library xw.random;
 
-export 'src/math/random.dart';
+export 'src/math/random/functions.dart';
 export 'src/math/numbers.dart' show Fraction;
 

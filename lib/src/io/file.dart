@@ -17,7 +17,7 @@ class SyntaxError extends Error {
     if (message != null) {
       extra += ": $message";
     }
-    return "Unexpected character: '$char'$extra";
+    return "SyntaxError: '$char'$extra";
   }
 }
 

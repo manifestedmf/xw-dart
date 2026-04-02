@@ -5,7 +5,7 @@ import 'src/math/numbers.dart' show Fraction;
 import 'src/sort/bubblesort.dart' show BubbleSort;
 import 'src/sort/mergesort.dart' show MergeSort;
 import 'src/sort/quicksort.dart' show QuickSort;
-import 'src/math/random.dart' show shuffleList, swapRandomElement;
+import 'src/math/random/functions.dart' show shuffleList, swapRandomElement;
 
 /// Sorts using the [BubbleSort] method.
 ///

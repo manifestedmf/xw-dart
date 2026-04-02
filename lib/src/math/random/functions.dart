@@ -1,14 +1,12 @@
-import 'dart:convert';
 import 'dart:math' show Random;
-import 'math.dart' as math show abs, sumMapValue;
-import 'numbers.dart' show Fraction;
-import '../rgb.dart' show sRGB;
-import '../standard.dart' show trim;
-import '../extension.dart' show MapKV, IterableE, ListE;
-import '../../core.dart' show UnexpectedError;
-import '../../typedef.dart' show Amount;
-
-export 'dart:math' show Random;
+import '../math.dart' as math show abs, sumMapValue;
+import '../numbers.dart' show Fraction;
+import '../../rgb.dart' show sRGB;
+import '../../standard.dart' show trim;
+import '../../extension.dart' show MapKV, IterableE, ListE;
+import '../../../core.dart' show UnexpectedError;
+import '../../../typedef.dart' show Amount;
+import 'classes.dart' as rnd;
 
 /// Generates a random [int] from [low] (inclusive) to [high] (inclusive).
 ///
@@ -482,12 +480,12 @@ E randomOf<E>(
 /// from `1 + `[minLength]
 /// to `1 + `[maxLength] steps.
 ///
-/// [charCode], is the generator of chars,
+/// [convert], is the generator of chars,
 /// if it gives out a `2` length string, then it throws a [ArgumentError].
-/// If [charCode] is `null`, then it uses [String.fromCharCodes].
+/// If [convert] is `null`, then it uses [String.fromCharCodes].
 ///
 /// [highestUnit] is the highest code unit that can be used
-/// (use if [charCode] is changed).
+/// (use if [convert] is changed).
 ///
 /// If you already have a pre-existent [Random],
 /// then use the [random] argument.
@@ -511,7 +509,7 @@ E randomOf<E>(
 String randomString({
   int minLength = 0,
   int maxLength = 1 << 8,
-  Converter<List<int>, String>? charCode,
+  String Function(List<int>)? convert,
   int highestUnit = 1 << 16,
   Random? random,
   int? seed,
@@ -543,12 +541,12 @@ String randomString({
   bytes.changeEach(
     (ul) => randomInt(0, highestUnit, random: random, secure: secure),
   );
-  if (charCode == null) {
+  if (convert == null) {
     return String.fromCharCodes(bytes);
   } else {
-    String converted = charCode.convert(bytes);
+    String converted = convert(bytes);
     if (converted.length != bytes.length) {
-      throw ArgumentError.value(charCode, "charCode", "Has to give out chars");
+      throw ArgumentError.value(convert, "charCode", "Has to give out chars");
     } else {
       return converted;
     }
@@ -559,12 +557,12 @@ String randomString({
 ///
 /// This advances [random] by `1` step.
 ///
-/// [charCode], is the generator of chars,
+/// [convert], is the generator of chars,
 /// if it gives out a `2` length string, then it throws a [ArgumentError].
-/// If [charCode] is `null`, then it uses [String.fromCharCodes].
+/// If [convert] is `null`, then it uses [String.fromCharCodes].
 ///
 /// [highestUnit] is the highest code unit that can be used
-/// (use if [charCode] is changed).
+/// (use if [convert] is changed).
 ///
 /// If you already have a pre-existent [Random],
 /// then use the [random] argument.
@@ -583,7 +581,7 @@ String randomString({
 ///
 /// Added in `2.8.1`.
 String randomChar({
-  Converter<List<int>, String>? charCode,
+  String Function(List<int>)? convert,
   int highestUnit = 1 << 16,
   Random? random,
   int? seed,
@@ -601,14 +599,16 @@ String randomChar({
   int code = randomInt(0, highestUnit, random: random);
   if (code == highestUnit) {
     return "";
-  } else if (charCode == null) {
+  } else if (convert == null) {
     return String.fromCharCode(code);
   } else {
-    String char = charCode.convert([code]);
+    String char = convert([code]);
     if (char.length != 1) {
-      throw ArgumentError.value(charCode, "charCode", "Has to give out chars");
+      throw ArgumentError.value(convert, "charCode", "Has to give out chars");
     } else {
       return char;
     }
   }
 }
+
+

@@ -318,11 +318,15 @@ extension ListE<E> on List<E> {
 
   /// Swaps elements at [a] & [b].
   ///
+  /// Returns element at [a] == element at [b].
+  ///
   /// Added in `2.8`.
-  void swap(int a, int b) {
+  bool swap(int a, int b, {bool Function(E, E)? equal}) {
+    equal ??= (a, b) => a == b;
     E element = this[a];
     this[a] = this[b];
     this[b] = element;
+    return equal(element, this[a]);
   }
 
   /// Overwrites each element from

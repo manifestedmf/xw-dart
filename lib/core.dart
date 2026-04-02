@@ -11,4 +11,8 @@ class UnexpectedError extends Error {
   final Object? message;
 
   UnexpectedError([this.message]);
+
+  @override
+  String toString() =>
+      (message == null) ? "Unexpected error" : "Unexpected error: $message";
 }

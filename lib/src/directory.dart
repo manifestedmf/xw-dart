@@ -74,6 +74,9 @@ abstract interface class DirectoryShort<F, S, T> implements Directory<F, S> {
     required T third,
   }) = _DirectoryShort.named;
 
+  /// Added in `2.8.1`.
+  Directory<F, S> get previous;
+
   @override
   /// Should normally give out:
   /// [first]`/`[second]`/`[third].
@@ -203,4 +206,7 @@ class _DirectoryShort<F, S, T> implements DirectoryShort<F, S, T> {
   @override
   toString({bool directory = true}) =>
       (directory) ? "$first/$second/$third" : "$first, $second, $third";
+
+  @override
+  Directory<F, S> get previous => Directory(first, second);
 }
