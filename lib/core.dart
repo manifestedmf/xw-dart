@@ -2,7 +2,7 @@
 library;
 
 export 'math.dart';
-export 'date.dart' hide hAdder;
+export 'date.dart';
 export 'mixins.dart';
 export 'extension.dart';
 export 'standard.dart';

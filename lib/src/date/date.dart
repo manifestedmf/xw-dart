@@ -1,6 +1,7 @@
 import '../extension.dart' show StringExt, NumExt;
 import '../mixins.dart' show Compare;
 import 'scanner.dart';
+import '../standard.dart' show hAdder;
 
 const monthsName = [
   "January",
@@ -961,41 +962,4 @@ class Date with Compare<Date> {
   @override
   int get hashCode => Object.hash(year, month, day);
   //int get hashCode => year*303 ^ (day*5067 ^ month*6153);
-}
-
-@Deprecated("2.8.1 use hAdder in 'standard' library")
-/// Makes so there is at least [amount] of zeroes.
-///
-/// [amount] being one or less will only return [number] (in a string form).
-///
-/// the `return`s length will always at least be above [amount],
-/// indicated by `return.length`.
-///
-/// used in the by-product of `package:xw/date.dart`.
-///
-/// ` `
-///
-/// [hAdder]`(50,2)` => `50`.
-///
-/// [hAdder]`(56,4)` => `0056`.
-///
-/// [hAdder]`(1896,4)` => `1896`.
-///
-/// Do note, that there is a problem if any instance of
-/// `int.parse(hAdder(n, x))` is not n (Where n & x is an unknown int).
-/// Do please report it to the creator of this function
-/// (manifestedmf on github) or on their repository
-/// (manifestedmf/xw-dart on github).
-///
-/// Added in `2.7`.
-String hAdder(int number, int amount) {
-  String mule = "$number";
-  if (number.length < amount) {
-    String messenger = "";
-    for (int index = 0; index < amount - number.length; index++) {
-      messenger += "0";
-    }
-    mule = (number >= 0) ? mule.insert(messenger) : mule.insert(messenger, 1);
-  }
-  return mule;
 }

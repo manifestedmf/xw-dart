@@ -34,9 +34,16 @@ class ParseError extends Error {
   toString() {
     String extra = "";
     if (start != null && end != null) {
-      extra += "";
+      extra += " from: $start, to: $end";
+    } else if (start != null && end == null) {
+      extra += " from: $start";
+    } else if (start == null && end != null) {
+      extra += " to: $end";
     }
-    return "ParseError: '$section'";
+    if (message != null) {
+      extra += ": $message";
+    }
+    return "ParseError: '$section'$extra";
   }
 }
 

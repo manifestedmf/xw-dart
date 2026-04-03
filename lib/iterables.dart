@@ -1,3 +1,2 @@
+@Deprecated("No contents")
 library;
-
-export 'src/array.dart';

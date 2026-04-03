@@ -17,7 +17,7 @@ class ArrayException {
 }
 
 // don't delete
-@Deprecated("2.8.1 this doesn't work as intended")
+// TODO: fix
 class Array<T> extends Iterable<T> {
   late final List<dynamic> _array;
   late final int _length;

@@ -823,98 +823,127 @@ extension StringExt on String {
   /// // ParseError (outside characters)
   /// print(String.parse(r'"' + r"'")); // ""'"
   /// print(String.parse(r"\u33")); // ParseError (\u not fulfilled)
+  /// print(String.parse(r"\uFFGF")); // FormatException (from int.parse)
   /// ```
   ///
   /// Added in `2.8.1`.
-  static String parse(String input, {bool containers = false}) {}
-
-  /// Tries to create a [String] like you would write it in `dart`.
-  ///
-  /// Examples:
-  /// ```
-  /// print(String.tryParse(r"\uFA56 enterprise")); // "節 enterprise"
-  /// print(String.tryParse(r"\x44 => \r t")); // " t"
-  /// print(String.tryParse(r"\x44 => \r t", containers: true)); // null
-  /// print(String.tryParse(r'"\t', containers: true)); // null
-  /// print(String.tryParse(r'"\t' + r'\y"', containers: true)); // "	y"
-  /// print(String.tryParse(r'"\t' + r'\y"')); // '"	y"'
-  /// print(String.tryParse(r"\\")); // "\"
-  /// print(String.tryParse(r'a""', containers: true)); // null
-  /// print(String.tryParse(r'"' + r"'")); // ""'"
-  /// print(String.tryParse(r"\u33")); // null
-  /// ```
-  ///
-  /// Added in `2.8.1`.
-  static String? tryParse(String input, {bool containers = false}) {
-    StringBuffer buffer = StringBuffer();
-    bool escaped, contained;
-    bool? isApos = null;
-    escaped = contained = false;
-    String char;
-    for (int index = 0; index < input.length; index++) {
-      char = input[index];
-      if (containers && !contained) {
-        if (char == r"'") {
-          contained = true;
-          isApos = true;
-        } else if (char == r'"') {
-          contained = true;
-          isApos = true;
-        } else {
-          return null;
+  static String parse(String input, {bool containers = false}) {
+    if (containers) {
+      if (input.length <= 1) {
+        throw ParseError(
+          input,
+          0,
+          input.length,
+          "Not enough length for containers",
+        );
+      }
+      String a = input.firstChar;
+      if (a != r"'" || a != r'"') {
+        StringBuffer buffer = StringBuffer(a);
+        for (int index = 1; index < input.length; index++) {
+          if (input[index] != r"'" && input[index] != r'"') {
+            buffer.write(input[index]);
+          } else {
+            throw ParseError(buffer.toString(), 0, index, "Outside elements");
+          }
         }
       }
-      if (escaped) {
-        switch (char) {
-          case "u":
-            if (index + 5 >= input.length) {
-              return null;
-            } else {
-              int? parsed = int.tryParse(
-                input.substring(index + 1, index + 5),
-                radix: 16,
-              );
-              if (parsed == null) {
-                return null;
-              } else {
-                buffer.write(String.fromCharCode(parsed));
-                index += 4;
-              }
-            }
-          case "x":
-            if (index + 5 >= input.length) {
-              return null;
-            } else {
-              int? parsed = int.tryParse(
-                input.substring(index + 1, index + 3),
-                radix: 16,
-              );
-              if (parsed == null) {
-                return null;
-              } else {
-                buffer.write(String.fromCharCode(parsed));
-                index += 4;
-              }
-            }
-          case _:
-            buffer.write(char);
+      if (input.lastChar != a) {
+        for (int index = input.length - 1; index >= 1; index--) {
+          if (input[index] == r"'" || input[index] == r'"') {
+            throw ParseError(
+              input.substring(index + 1),
+              index + 1,
+              input.length - 1,
+              "Outside elements",
+            );
+          }
         }
-        escaped = false;
-      } else {
-        switch (char) {
-          case r"\":
+      }
+      bool escaped = false;
+      for (int index = 1; index < input.length - 2; ++index) {
+        if (!escaped && input[index] == a) {
+          throw ParseError(
+            input[index],
+            index,
+            index + 1,
+            "Unexpected container inside text",
+          );
+        } else if (!escaped && input[index] == r"\") {
+          escaped = true;
+        } else if (escaped) {
+          escaped = false;
+        }
+      }
+      return parse(input.substring(1, input.length - 1), containers: false);
+    } else {
+      StringBuffer buffer = StringBuffer();
+      bool escaped = false;
+      String char;
+      for (int index = 0; index < input.length; index++) {
+        char = input[index];
+        if (!escaped) {
+          if (char == r"\") {
             escaped = true;
-          case r"'":
-            if (!containers) {
+          } else {
+            buffer.write(char);
+          }
+        } else {
+          switch (char) {
+            case r"u":
+              if (index + 5 >= input.length) {
+                throw ParseError(
+                  input.after(index),
+                  index,
+                  null,
+                  r"\u not fulfilled",
+                );
+              } else {
+                buffer.write(
+                  String.fromCharCode(
+                    int.parse(input.substring(index + 1, index + 5), radix: 16),
+                  ),
+                );
+                index += 4;
+                // for loop will increment it like it would be a += 5
+              }
+            case r"x":
+              if (index + 3 >= input.length) {
+                throw ParseError(
+                  input.after(index),
+                  index,
+                  null,
+                  r"\x not fulfilled",
+                );
+              } else {
+                buffer.write(
+                  String.fromCharCode(
+                    int.parse(input.substring(index + 1, index + 3), radix: 16),
+                  ),
+                );
+                index += 2;
+                // for loop will increment it like it would be a += 3
+              }
+            case r"t":
+              buffer.write("\t");
+            case r"r":
+              buffer.write("\r");
+            case r"f":
+              buffer.write("\f");
+            case r"v":
+              buffer.write("\v");
+            case r"b":
+              buffer.write("\b");
+            case r"n":
+              buffer.write("\n");
+            case _:
               buffer.write(char);
-            } else if (!contained) {
-              return null;
-            }
-            if (contained && isApos!) {}
+          }
+          escaped = false;
         }
       }
+      return buffer.toString();
     }
-    return buffer.toString();
   }
 
   /// Tries to create a [String] like you would write it in `dart`.
@@ -931,6 +960,7 @@ extension StringExt on String {
   /// print(String.tryParse(r'a""', containers: true)); // null
   /// print(String.tryParse(r'"' + r"'")); // ""'"
   /// print(String.tryParse(r"\u33")); // null
+  /// print(String.tryParse(r"\uFFGF")); // null
   /// ```
   ///
   /// Added in `2.8.1`.
@@ -942,15 +972,15 @@ extension StringExt on String {
       }
       bool escaped = false;
       for (int index = 1; index < input.length - 2; ++index) {
-        if (escaped && input[index] == a) {
+        if (!escaped && input[index] == a) {
           return null;
         } else if (!escaped && input[index] == r"\") {
           escaped = true;
-        } else if (!escaped) {
+        } else if (escaped) {
           escaped = false;
         }
       }
-      tryParse(input.substring(1, input.length - 1), containers: false);
+      return tryParse(input.substring(1, input.length - 1), containers: false);
     } else {
       StringBuffer buffer = StringBuffer();
       bool escaped = false;
@@ -997,9 +1027,22 @@ extension StringExt on String {
                   // for loop will increment it like it would be a += 3
                 }
               }
+            case r"t":
+              buffer.write("\t");
+            case r"r":
+              buffer.write("\r");
+            case r"f":
+              buffer.write("\f");
+            case r"v":
+              buffer.write("\v");
+            case r"b":
+              buffer.write("\b");
+            case r"n":
+              buffer.write("\n");
             case _:
               buffer.write(char);
           }
+          escaped = false;
         }
       }
       return buffer.toString();
