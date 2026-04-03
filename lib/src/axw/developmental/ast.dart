@@ -4,7 +4,7 @@ import 'dart:core' show List, String, override, int, ArgumentError;
 //
 // axw
 //    header
-//    declarations
+//    header declarations
 //
 // header
 //    ws "AXW1" ws ";" ws
@@ -63,6 +63,8 @@ import 'dart:core' show List, String, override, int, ArgumentError;
 // identifier
 //    characters
 
+import 'parser.dart' show Version;
+
 typedef TypeDecl = TypeDeclaration;
 typedef Expr<I> = Expression<I>;
 typedef TypeExpr<I> = TypeExpression<I>;
@@ -80,7 +82,8 @@ final class AXW {
 }
 
 final class Header {
-  const Header();
+  Version get version => Version.axw10;
+  const Header(Version version);
 }
 
 final class Declaration {

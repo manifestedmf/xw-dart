@@ -6,6 +6,23 @@ import 'math/math.dart' show pow, square, round, max, min, sum, properties;
 import '../sort.dart' as sort show inlineSort, SortAlg;
 import 'bitwise.dart' show readBit;
 import '../typedef.dart' show Words, Amount;
+import 'io/file.dart' show ParseError;
+import 'dart:core'
+    show
+        num,
+        bool,
+        int,
+        double,
+        List,
+        Object,
+        Set,
+        String,
+        Map,
+        MapEntry,
+        Iterable,
+        Deprecated,
+        StringBuffer;
+import 'dart:collection' show IterableExtensions;
 
 // class Char {
 //   final int char;
@@ -788,6 +805,212 @@ extension StringExt on String {
     }
     return mule;
   }
+
+  /// Tries to create a [String] like you would write it in `dart`.
+  ///
+  /// Examples:
+  /// ```
+  /// print(String.parse(r"\uFA56 enterprise")); // "節 enterprise"
+  /// print(String.parse(r"\x44 => \r t")); // " t"
+  /// print(String.parse(r"\x44 => \r t", containers: true));
+  /// // ParseError (no containers)
+  /// print(String.parse(r'"\t', containers: true));
+  /// // ParseError (no ending container)
+  /// print(String.parse(r'"\t' + r'\y"', containers: true)); // "	y"
+  /// print(String.parse(r'"\t' + r'\y"')); // '"	y"'
+  /// print(String.parse(r"\\")); // "\"
+  /// print(String.parse(r'a""', containers: true));
+  /// // ParseError (outside characters)
+  /// print(String.parse(r'"' + r"'")); // ""'"
+  /// print(String.parse(r"\u33")); // ParseError (\u not fulfilled)
+  /// ```
+  ///
+  /// Added in `2.8.1`.
+  static String parse(String input, {bool containers = false}) {}
+
+  /// Tries to create a [String] like you would write it in `dart`.
+  ///
+  /// Examples:
+  /// ```
+  /// print(String.tryParse(r"\uFA56 enterprise")); // "節 enterprise"
+  /// print(String.tryParse(r"\x44 => \r t")); // " t"
+  /// print(String.tryParse(r"\x44 => \r t", containers: true)); // null
+  /// print(String.tryParse(r'"\t', containers: true)); // null
+  /// print(String.tryParse(r'"\t' + r'\y"', containers: true)); // "	y"
+  /// print(String.tryParse(r'"\t' + r'\y"')); // '"	y"'
+  /// print(String.tryParse(r"\\")); // "\"
+  /// print(String.tryParse(r'a""', containers: true)); // null
+  /// print(String.tryParse(r'"' + r"'")); // ""'"
+  /// print(String.tryParse(r"\u33")); // null
+  /// ```
+  ///
+  /// Added in `2.8.1`.
+  static String? tryParse(String input, {bool containers = false}) {
+    StringBuffer buffer = StringBuffer();
+    bool escaped, contained;
+    bool? isApos = null;
+    escaped = contained = false;
+    String char;
+    for (int index = 0; index < input.length; index++) {
+      char = input[index];
+      if (containers && !contained) {
+        if (char == r"'") {
+          contained = true;
+          isApos = true;
+        } else if (char == r'"') {
+          contained = true;
+          isApos = true;
+        } else {
+          return null;
+        }
+      }
+      if (escaped) {
+        switch (char) {
+          case "u":
+            if (index + 5 >= input.length) {
+              return null;
+            } else {
+              int? parsed = int.tryParse(
+                input.substring(index + 1, index + 5),
+                radix: 16,
+              );
+              if (parsed == null) {
+                return null;
+              } else {
+                buffer.write(String.fromCharCode(parsed));
+                index += 4;
+              }
+            }
+          case "x":
+            if (index + 5 >= input.length) {
+              return null;
+            } else {
+              int? parsed = int.tryParse(
+                input.substring(index + 1, index + 3),
+                radix: 16,
+              );
+              if (parsed == null) {
+                return null;
+              } else {
+                buffer.write(String.fromCharCode(parsed));
+                index += 4;
+              }
+            }
+          case _:
+            buffer.write(char);
+        }
+        escaped = false;
+      } else {
+        switch (char) {
+          case r"\":
+            escaped = true;
+          case r"'":
+            if (!containers) {
+              buffer.write(char);
+            } else if (!contained) {
+              return null;
+            }
+            if (contained && isApos!) {}
+        }
+      }
+    }
+    return buffer.toString();
+  }
+
+  /// Tries to create a [String] like you would write it in `dart`.
+  ///
+  /// Examples:
+  /// ```
+  /// print(String.tryParse(r"\uFA56 enterprise")); // "節 enterprise"
+  /// print(String.tryParse(r"\x44 => \r t")); // " t"
+  /// print(String.tryParse(r"\x44 => \r t", containers: true)); // null
+  /// print(String.tryParse(r'"\t', containers: true)); // null
+  /// print(String.tryParse(r'"\t' + r'\y"', containers: true)); // "	y"
+  /// print(String.tryParse(r'"\t' + r'\y"')); // '"	y"'
+  /// print(String.tryParse(r"\\")); // "\"
+  /// print(String.tryParse(r'a""', containers: true)); // null
+  /// print(String.tryParse(r'"' + r"'")); // ""'"
+  /// print(String.tryParse(r"\u33")); // null
+  /// ```
+  ///
+  /// Added in `2.8.1`.
+  static String? tryParse(String input, {bool containers = false}) {
+    if (containers) {
+      String a = input.firstChar;
+      if (input.lastChar != a) {
+        return null;
+      }
+      bool escaped = false;
+      for (int index = 1; index < input.length - 2; ++index) {
+        if (escaped && input[index] == a) {
+          return null;
+        } else if (!escaped && input[index] == r"\") {
+          escaped = true;
+        } else if (!escaped) {
+          escaped = false;
+        }
+      }
+      tryParse(input.substring(1, input.length - 1), containers: false);
+    } else {
+      StringBuffer buffer = StringBuffer();
+      bool escaped = false;
+      String char;
+      for (int index = 0; index < input.length; index++) {
+        char = input[index];
+        if (!escaped) {
+          if (char == r"\") {
+            escaped = true;
+          } else {
+            buffer.write(char);
+          }
+        } else {
+          switch (char) {
+            case r"u":
+              if (index + 5 >= input.length) {
+                return null;
+              } else {
+                int? parsed = int.tryParse(
+                  input.substring(index + 1, index + 5),
+                  radix: 16,
+                );
+                if (parsed == null) {
+                  return null;
+                } else {
+                  buffer.write(String.fromCharCode(parsed));
+                  index += 4;
+                  // for loop will increment it like it would be a += 5
+                }
+              }
+            case r"x":
+              if (index + 3 >= input.length) {
+                return null;
+              } else {
+                int? parsed = int.tryParse(
+                  input.substring(index + 1, index + 3),
+                  radix: 16,
+                );
+                if (parsed == null) {
+                  return null;
+                } else {
+                  buffer.write(String.fromCharCode(parsed));
+                  index += 2;
+                  // for loop will increment it like it would be a += 3
+                }
+              }
+            case _:
+              buffer.write(char);
+          }
+        }
+      }
+      return buffer.toString();
+    }
+  }
+
+  /// Added in `2.8.1`.
+  String get firstChar => this[0];
+
+  /// Added in `2.8.1`.
+  String get lastChar => this[length - 1];
 
   // TODO: fix me
   /*

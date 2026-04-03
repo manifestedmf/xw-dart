@@ -22,13 +22,34 @@ class SyntaxError extends Error {
 }
 
 /// Added in `2.8.1`.
-abstract interface class File {
+class ParseError extends Error {
+  final String section;
+  final int? start;
+  final int? end;
+  final String? message;
+
+  ParseError(this.section, [this.start, this.end, this.message]);
+
+  @override
+  toString() {
+    String extra = "";
+    if (start != null && end != null) {
+      extra += "";
+    }
+    return "ParseError: '$section'";
+  }
+}
+
+/// Added in `2.8.1`.
+abstract interface class File<I, O> {
   /*
   /// Should give out `false` if process does not want to write.
   ///
   /// Added in `2.8.1`.
-  bool write(String string);
+  bool write(I input);
   */
+
+  /*O read();*/
 
   /*
   /// Added in `2.8.1`.

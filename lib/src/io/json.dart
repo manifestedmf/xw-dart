@@ -11,7 +11,7 @@ import 'json_internal.dart';
 export 'dart:convert' show AsciiCodec, Utf8Codec, Latin1Codec;
 
 /// Added in `2.8.1`.
-class Json implements File {
+class Json implements File<JsonType, JsonType> {
   late JsonType _json;
   // TODO: make to Json to a async class
   late Stream<List<int>> _contents;
