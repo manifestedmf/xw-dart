@@ -21,8 +21,12 @@ import 'dart:core'
         MapEntry,
         Iterable,
         Deprecated,
-        StringBuffer;
+        StringBuffer,
+        Stream,
+        Future;
 import 'dart:collection' show IterableExtensions;
+import 'dart:io' show File;
+import 'dart:convert' show Encoding, utf8;
 
 // class Char {
 //   final int char;
@@ -658,11 +662,21 @@ extension StringExt on String {
     return false;
   }
 
+  @Deprecated("2.7.2, use isWhitespace")
   bool get isWhiteSpace => computeIsWhiteSpace(this);
+  @Deprecated("2.7.2, use computeIsWhitespace")
   static bool computeIsWhiteSpace(String character) => switch (character) {
     " " => true,
     "\n" => true,
     "\t" => true,
+    String() => false,
+  };
+  bool get isWhitespace => computeIsWhitespace(this);
+  static bool computeIsWhitespace(String char) => switch (char) {
+    " " => true,
+    "\n" => true,
+    "\t" => true,
+    "\r" => true,
     String() => false,
   };
 
@@ -1063,4 +1077,60 @@ extension StringExt on String {
   /// Added in `2.8.1`.
   Never containsOne(Iterable<Pattern> patterns) => throw bool;
    */
+}
+
+/// Added in `2.8.1`.
+extension FileExt on File {
+  /// May crash due to seeing a value that
+  /// needs another value to determine it's character.
+  ///
+  /// Added in `2.8.1`.
+  Stream<String> openReadAsString({
+    int? start,
+    int? end,
+    Encoding encoding = utf8,
+  }) async* {
+    await for (List<int> bytes in openRead(start, end)) {
+      yield encoding.decode(bytes);
+    }
+    return;
+  }
+
+  /// Added in `2.8.1`.
+  Future<List<int>> openReadAsFuture([int? start, int? end]) async {
+    List<int> list = [];
+    await for (List<int> bytes in openRead(start, end)) {
+      list.addAll(bytes);
+    }
+    return list;
+  }
+
+  /// Added in `2.8.1`.
+  Stream<String> readAsLinesStream({
+    int? start,
+    int? end,
+    Encoding encoding = utf8,
+    bool sendEmpty = true,
+  }) async* {
+    StringBuffer line = StringBuffer();
+    await for (String string in openReadAsString(
+      start: start,
+      end: end,
+      encoding: encoding,
+    )) {
+      for (int index = 0; index < string.length; index++) {
+        if (string[index] == "\n") {
+          if (sendEmpty) {
+            yield line.toString();
+          } else if (line.isNotEmpty) {
+            yield line.toString();
+          }
+          line.clear();
+        } else {
+          line.write(string[index]);
+        }
+      }
+    }
+    return;
+  }
 }

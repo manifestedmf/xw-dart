@@ -10,6 +10,8 @@ import 'dart:convert' show Encoding, Utf8Codec;
 import 'json_internal.dart';
 export 'dart:convert' show AsciiCodec, Utf8Codec, Latin1Codec;
 
+
+/*
 /// Added in `2.8.1`.
 class Json implements File<JsonType, JsonType> {
   late JsonType _json;
@@ -1002,7 +1004,7 @@ class Json implements File<JsonType, JsonType> {
       throw SyntaxError(_string.substring(_pos - 4, _pos), _pos - 4);
     }
   }
-}
+}*/
 
 /// [I] is `internal`.
 ///

@@ -5,25 +5,27 @@ import '../../math.dart' show Fraction, pow;
 import 'ast.dart';
 import 'scan.dart' show Token, TokenType, IncompleteToken;
 
-
 enum Version with Compare<Version> {
-  AXW10("AXW1.0","AXW1"),
+  AXW10("AXW1.0", "AXW1"),
   AXW11("AXW1.1"),
   AXW12("AXW1.2"),
   AXW13("AXW1.3"),
   AXW14("AXW1.4"),
-  AXW20("AXW2.0","AXW2"),
-  AXW21("AXW2.1"),
-  ;
+  AXW20("AXW2.0", "AXW2"),
+  AXW21("AXW2.1");
+
   final String tag;
   final String? otherTag;
-  const Version(this.tag,[this.otherTag]);
+  const Version(this.tag, [this.otherTag]);
   static Version parse(String text) {
     for (Version version in values) {
-      if (version.tag == text) {return version;}
+      if (version.tag == text) {
+        return version;
+      }
     }
     throw "unknown version $text";
   }
+
   @override
   bool operator <(Version other) => index < other.index;
 }
@@ -64,7 +66,7 @@ class Parser {
     while (index < tokens.length) {
       declarations.add(parseDeclaration());
     }
-    return Manager(header,declarations);
+    return Manager(header, declarations);
   }
 
   /// grammar:
@@ -113,11 +115,9 @@ class Parser {
     Identifier identifier = parseIdentifier();
     if (identifier.name == "Struct") {
       return parseStructDeclaration();
-    }
-    else if (identifier.name == "enum" && version >= Version.AXW20) {
+    } else if (identifier.name == "enum" && version >= Version.AXW20) {
       return parseEnumDeclaration();
-    }
-    else {
+    } else {
       return parseExpressionDeclaration(identifier);
     }
   }
@@ -129,8 +129,11 @@ class Parser {
     parseToken(TokenType.equal);
     Token token = previewToken();
     Expression expression;
-    if (token.type == TokenType.semicolon) {expression = VoidExp();}
-    else {expression = parseExpression();}
+    if (token.type == TokenType.semicolon) {
+      expression = VoidExp();
+    } else {
+      expression = parseExpression();
+    }
     parseToken(TokenType.semicolon);
     return ExpressionDeclaration(identifier, expression);
   }
@@ -189,7 +192,7 @@ class Parser {
     }
     parseToken(TokenType.rightBrace);
     parseToken(TokenType.semicolon);
-    return EnumDeclaration(identifier,fields);
+    return EnumDeclaration(identifier, fields);
   }
 
   /// grammar:
@@ -224,21 +227,26 @@ class Parser {
       case TokenType.integer:
         return IntegerExp(int.parse(text));
       case TokenType.hexadecimal:
-        if (text.length <= 2) {throw IncompleteToken("hexadecimal cannot be just be 0x");}
+        if (text.length <= 2) {
+          throw IncompleteToken("hexadecimal cannot be just be 0x");
+        }
         return HexadecimalExp(text.substring(2));
       case TokenType.binary:
-        if (text.length <= 2) {throw IncompleteToken("binary cannot be just be 0n");}
+        if (text.length <= 2) {
+          throw IncompleteToken("binary cannot be just be 0n");
+        }
         return BinaryExp(text.substring(2));
       case TokenType.float:
         int position = text.indexOf('.');
-        String integerText = text.substring(0,position) + text.substring(position+1);
+        String integerText =
+            text.substring(0, position) + text.substring(position + 1);
         int integer = int.parse(integerText);
-        int denominator = pow(10,text.substring(position+1).length).toInt();
-        return FloatExp(Fraction.compressed(integer,denominator));
+        int denominator = pow(10, text.substring(position + 1).length).toInt();
+        return FloatExp(Fraction.compressed(integer, denominator));
       case TokenType.string:
-        return StringExp(text.substring(1,text.length-1));
+        return StringExp(text.substring(1, text.length - 1));
       case TokenType.char:
-        return CharExp(text.substring(1,text.length-1));
+        return CharExp(text.substring(1, text.length - 1));
       case TokenType.leftBrace:
         return parseDictRest();
       case TokenType.leftBracket:
@@ -257,16 +265,17 @@ class Parser {
   /// grammar:
   ///
   /// [[] ( [Expression] ( `,` [Expression] )* )? `]`
-  ListExp parseListRest() { // already consumed [
+  ListExp parseListRest() {
+    // already consumed [
     List<Expression> list = [];
     Token token = previewToken();
-    while (token.type != TokenType.rightBracket) { // != ]
+    while (token.type != TokenType.rightBracket) {
+      // != ]
       list.add(parseExpression());
       token = previewToken();
       if (token.type == TokenType.comma) {
         index++;
-      }
-      else if (token.type != TokenType.rightBracket) {
+      } else if (token.type != TokenType.rightBracket) {
         throw "expected ',' or ']' after $token";
       }
     }
@@ -279,18 +288,19 @@ class Parser {
   /// `{` ( [Identifier] `:` [Expression]
   ///
   /// ( `,` [Identifier] `:` [Expression] )* )? `}`
-  DictExp parseDictRest() { // already consumed {
-    Map<Identifier,Expression> dict = {};
+  DictExp parseDictRest() {
+    // already consumed {
+    Map<Identifier, Expression> dict = {};
     Token token = previewToken();
-    while (token.type != TokenType.rightBrace) { // != }
+    while (token.type != TokenType.rightBrace) {
+      // != }
       Identifier key = parseIdentifier();
       parseToken(TokenType.colon);
       Expression value = parseExpression();
       token = previewToken();
       if (token.type == TokenType.comma) {
         index++;
-      }
-      else if (token.type != TokenType.rightBrace) {
+      } else if (token.type != TokenType.rightBrace) {
         throw "expected ',' or '}' after $token";
       }
       dict[key] = value;
@@ -302,7 +312,8 @@ class Parser {
   /// gives back the [Token] and goes forward on the [index]
   ///
   /// if the [type] is the not the expected [type], the in crashes
-  Token parseToken([TokenType? type]) => tryParseToken(type) ?? (throw "expected $type at $index");
+  Token parseToken([TokenType? type]) =>
+      tryParseToken(type) ?? (throw "expected $type at $index");
 
   /// gives back the [Token]
   ///
@@ -323,7 +334,8 @@ class Parser {
   /// gives back the [Token] without going forward
   ///
   /// if the end of [tokens] is at this point, then it crashes
-  Token previewToken() => tryPreviewToken() ?? (throw "there is no next token at $index");
+  Token previewToken() =>
+      tryPreviewToken() ?? (throw "there is no next token at $index");
 
   /// gives back the [Token] without going forward
   ///

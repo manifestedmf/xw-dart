@@ -84,7 +84,9 @@ abstract interface class File<I, O> {
 
   /*
   /// Added in `2.8.1`.
-  File(String address, {bool protected});
+  File(String address, {required Encoding encoding});
+  /// Added in `2.8.1`.
+  File.unsecure(String address, {Encoding? encoding});
   */
 }
 

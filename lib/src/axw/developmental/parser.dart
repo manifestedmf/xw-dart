@@ -1,8 +1,9 @@
-import 'package:xw/src/io/file.dart' show SyntaxError;
-
+import 'package:xw/src/io/file.dart' show SyntaxError, ParseError;
+import 'dart:core' hide Type;
 import '../../mixins.dart' show Compare;
 import 'ast.dart';
 import 'scan.dart';
+import '../../extension.dart' show StringExt;
 
 enum Version with Compare<Version> {
   axw10("AXW1.0", "AXW1");
@@ -41,14 +42,22 @@ final class Parser {
   }
 
   Header parseHeader() {
-    String ver = parseToken(TokenType.identifier).text!;
-    if (isNextToken(TokenType.period)) {
-      parseToken();
-      ver += ".${parseToken(TokenType.integer).text!}";
-    }
-    parseToken(TokenType.semicolon);
-    Version version = Version.parse(ver);
+    String init = parseInitial();
+    Version version = Version.parse(init);
     return Header(version);
+  }
+
+  String parseInitial() {
+    Token init = parseToken(.initial);
+    Token token = parseToken();
+    switch (token.type) {
+      case .integer:
+      case .float:
+        parseToken(.semicolon);
+      case _:
+        throw this;
+    }
+    return r"AXW" + token.text!;
   }
 
   List<Declaration> parseDeclarations() {
@@ -67,19 +76,61 @@ final class Parser {
   }
 
   Declaration parseDeclaration() {
-    Identifier identifier = parseIdentifier();
+    Id id = parseIdentifier();
+    if (isToken(TokenType.identifier)) {
+      Id identifier = parseIdentifier();
+      parseToken(TokenType.equal);
+      Type type = typeIdentifier(id);
+      TypeExpr expression = parseTypeExpression(type);
+      parseToken(TokenType.semicolon);
+      return TypeDecl(type, identifier, expression);
+    } else {
+      parseToken(TokenType.equal);
+      Expr expression = parseExpression();
+      parseToken(TokenType.semicolon);
+      return Declaration(id, expression);
+    }
   }
 
+  Expr parseExpression() {
+    Token token = parseToken();
+    switch (token.type) {
+      case TokenType.string:
+        return StrExpr(StringExt.parse(token.text!));
+      case TokenType.integer:
+        return IntExpr(int.parse(token.text!));
+      case TokenType.boolean:
+        return BoolExpr(bool.parse(token.text!));
+      case _:
+        throw this;
+    }
+  }
 
+  Type typeIdentifier(Id identifier) => switch (identifier.identity) {
+    "string" => Type.string,
+    "int" => Type.int,
+    String() => throw ArgumentError.value(
+      identifier.toString(),
+      "identifier",
+      "not a type identifier",
+    ),
+  };
 
-  Identifier parseIdentifier() {
-    Token token = parseToken(TokenType.identifier);
+  TypeExpr parseTypeExpression(Type type) => switch (type) {
+    Type.string => STE(parseToken(.string).text!),
+    Type.int => ITE(int.parse(parseToken(.integer).text!)),
+    Type.bool => BTE(bool.parse(parseToken(.boolean).text!)),
+  };
 
-    return Identifier(token.text!);
+  Id parseIdentifier() {
+    Token token = parseToken(.identifier);
+
+    return Id(token.text!);
   }
 
   Token parseToken([TokenType? type]) =>
-      tryParseToken(type) ?? (throw ArgumentError.value(type, "type"));
+      tryParseToken(type) ??
+      (throw ArgumentError.value(type.toString(), "type"));
 
   Token? tryParseToken([TokenType? type]) {
     if (index < tokens.length) {
@@ -92,9 +143,10 @@ final class Parser {
     return null;
   }
 
-  bool isNextToken(TokenType type) => previewToken().type == type;
+  bool isToken(TokenType type) => previewToken().type == type;
 
-  Token previewToken() => tryPreviewToken() ?? (throw RangeError.index(index, tokens));
+  Token previewToken() =>
+      tryPreviewToken() ?? (throw RangeError.index(index, tokens));
 
   Token? tryPreviewToken() {
     if (index < tokens.length) {

@@ -1,4 +1,4 @@
-import 'dart:core' show List, String, override, int, ArgumentError;
+import 'dart:core' show List, String, override, int, ArgumentError, bool;
 
 // Current AXW1.0 ast
 //
@@ -70,20 +70,35 @@ typedef Expr<I> = Expression<I>;
 typedef TypeExpr<I> = TypeExpression<I>;
 typedef StrExpr = StringExpression;
 typedef IntExpr = IntExpression;
+typedef BoolExpr = BoolExpression;
 typedef STE = StringTypeExpression;
 typedef ITE = IntTypeExpression;
+typedef BTE = BoolTypeExpression;
 typedef Id = Identifier;
+typedef Body = AXW;
 
 final class AXW {
   final Header header;
   final List<Declaration> declarations;
 
   const AXW(this.header, this.declarations);
+
+  @override
+  toString({bool newline = false}) {
+    if (newline) {
+      return "$header\n${declarations.join("\n")}";
+    } else {
+      return "$header ${declarations.join(" ")}";
+    }
+  }
 }
 
 final class Header {
   Version get version => Version.axw10;
   const Header(Version version);
+
+  @override
+  toString() => "${version.tag};";
 }
 
 final class Declaration {
@@ -91,6 +106,9 @@ final class Declaration {
   final Expr expression;
 
   const Declaration(this.identifier, this.expression);
+
+  @override
+  toString() => "'$identifier' = $expression;";
 }
 
 final class TypeDeclaration implements Declaration {
@@ -101,15 +119,21 @@ final class TypeDeclaration implements Declaration {
   final TypeExpr expression;
 
   const TypeDeclaration(this.type, this.identifier, this.expression);
+
+  @override
+  toString() => "$type '$identifier' = $expression;";
 }
 
 enum Type {
   string("string"),
-  int("int");
+  int("int"),
+  bool("bool");
 
   final String annotation;
 
   const Type(this.annotation);
+  @override
+  toString() => annotation;
 }
 
 sealed class Expression<I> {
@@ -128,6 +152,9 @@ sealed class Expression<I> {
       return null;
     }
   }
+
+  @override
+  toString() => internal.toString();
 }
 
 final class StringExpression extends Expr<String> {
@@ -136,6 +163,9 @@ final class StringExpression extends Expr<String> {
 
   @override
   String get internal => string;
+
+  @override
+  toString() => '"$string"';
 }
 
 final class IntExpression extends Expr<int> {
@@ -144,6 +174,20 @@ final class IntExpression extends Expr<int> {
 
   @override
   int get internal => integer;
+
+  @override
+  toString() => integer.toString();
+}
+
+final class BoolExpression extends Expr<bool> {
+  final bool boolean;
+  const BoolExpression(this.boolean);
+
+  @override
+  bool get internal => boolean;
+
+  @override
+  toString() => boolean.toString();
 }
 
 sealed class TypeExpression<I> extends Expr<I> {
@@ -165,8 +209,18 @@ final class IntTypeExpression extends IntExpr implements TypeExpr<int> {
   const IntTypeExpression(super.integer);
 }
 
+final class BoolTypeExpression extends BoolExpr implements TypeExpr<bool> {
+  @override
+  Type get type => Type.bool;
+
+  const BoolTypeExpression(super.boolean);
+}
+
 final class Identifier {
   final String identity;
 
   const Identifier(this.identity);
+
+  @override
+  toString() => identity;
 }
