@@ -1,19 +1,30 @@
 import 'dart:core'
-    show int, String, List, StringBuffer, ArgumentError, bool, num;
+    show
+        int,
+        String,
+        List,
+        StringBuffer,
+        ArgumentError,
+        bool,
+        num,
+        Map,
+        MapEntry;
 import 'file.dart' show SyntaxError;
 import '../extension.dart' show StringExt;
-
+import 'json.dart' hide Json;
 
 enum JsonTypes {
-  objectStart(),
-  objectEnd(),
-  arrayStart(),
-  arrayEnd(),
+  leftBrace(),
+  rightBrace(),
+  leftBracket(),
+  rightBracket(),
   string(),
   number(),
   trueValue(),
   falseValue(),
   nullValue(),
+  comma(),
+  colon(),
 }
 
 /*
@@ -53,6 +64,8 @@ final class JsonScanner {
   JsonScanner(this.contents) {
     scanJson();
   }
+
+  static List<Token> scan(String contents) => JsonScanner(contents).tokens;
 
   void scanJson() {
     scanElement();
@@ -147,55 +160,11 @@ final class JsonScanner {
     tokens.add(Token(.string, buffer.toString()));
     ++index;
   }
-  /*
-  String scanNumber(String char) {
-    if (char == r"-") {
-      ++index;
-      return r"-" + scanAfterMinus(scanChar());
-    } else if (char.isDigit) {
-      return scanAfterMinus(char);
-    } else {
-      throw SyntaxError(char, index, "Invalid number");
-    }
-    /*switch (char) {
-      case "-":
-        ++index;
-        return r"-" + scanSigned();
-      case "0":
-        return r"0" + scanFraction() + scanExponent();
-      case "1":
-      case "2":
-      case "3":
-      case "4":
-      case "5":
-      case "6":
-      case "7":
-      case "8":
-      case "9":
-    }*/
-  }
-
-  String scanAfterMinus(String char) {
-    if (char == r"0") {
-      return r"0" + scanFraction() + scanExponent();
-    } else if (char.isDigit) {
-      return scanDigits(char) + scanFraction() + scanExponent();
-    } else {
-      throw SyntaxError(char, index, "Invalid number");
-    }
-  }
-
-  String scanDigits(String input) {
-    ++index;
-    String char = scanChar();
-    if (char.isDigit) {
-      return
-    }
-  }
-  */
 
   void scanNumber(String char) {
-    tokens.add(Token(.number, scanInteger(char) + scanFraction() + scanExponent()));
+    tokens.add(
+      Token(.number, scanInteger(char) + scanFraction() + scanExponent()),
+    );
   }
 
   String scanInteger(String char) {
@@ -292,21 +261,22 @@ final class JsonScanner {
 
   void scanObject() {
     ++index;
-    tokens.add(Token(.objectStart));
+    tokens.add(Token(.leftBrace));
     scanWs();
     if (scanChar() == r"}") {
       ++index;
-      tokens.add(Token(.objectEnd));
+      tokens.add(Token(.rightBrace));
     } else {
       scanMembers();
       ++index;
-      tokens.add(Token(.objectEnd));
+      tokens.add(Token(.rightBrace));
     }
   }
 
   void scanMembers() {
     scanMember();
     if (scanChar() == r",") {
+      tokens.add(Token(.comma));
       ++index;
       scanMembers();
     }
@@ -319,29 +289,31 @@ final class JsonScanner {
     if (scanChar() != r":") {
       throw SyntaxError(scanChar(), index, "Expected ':'");
     }
+    tokens.add(Token(.colon));
     ++index;
     scanElement();
   }
 
   void scanArray() {
     ++index;
-    tokens.add(Token(.arrayStart));
+    tokens.add(Token(.leftBracket));
     scanWs();
     if (scanChar() == r"]") {
       ++index;
-      tokens.add(Token(.arrayEnd));
+      tokens.add(Token(.rightBracket));
     } else {
       scanElements();
       ++index;
-      tokens.add(Token(.arrayEnd));
+      tokens.add(Token(.rightBracket));
     }
   }
 
   void scanElements() {
     scanElement();
     if (scanChar() != r",") {
-      throw SyntaxError(scanChar(), index, "Expected ','");
+      return;
     }
+    tokens.add(Token(.comma));
     ++index;
     scanElements();
   }
@@ -411,53 +383,159 @@ final class JsonScanner {
     tokens.add(Token(.nullValue));
   }
 
-  /*String scanNumber(String char, [bool signed = false]) {
-    StringBuffer buffer = StringBuffer();
-    buffer.write(char);
-    ++index;
-    if (char == r"-") {
-      buffer.write(scanNumber(scanChar()));
-      return buffer.toString();
-    } else if (char == r"0") {
-      buffer.write(scanFraction(false));
-      return buffer.toString();
-    } else if (char.isDigit) {
-      String? char;
-      while (true) {
-        char = tryScanChar();
-        switch (char) {
-          case null:
-            return buffer.toString();
-          case "0":
-          case "1":
-          case "2":
-          case "3":
-          case "4":
-          case "5":
-          case "6":
-          case "7":
-          case "8":
-          case "9":
-            buffer.write(char);
-          case ".":
-          case "e":
-          case "E":
-            buffer.write(scanFraction(true));
-          case String():
-            return buffer.toString();
-        }
-        ++index;
-      }
-    } else {
-      throw ArgumentError.value(char, "char");
-    }
-  }*/
-
   String scanChar() => contents[index];
 
   String? tryScanChar() {
     if (index < contents.length) {
       return contents[index];
+    }
+    return null;
+  }
+}
+
+final class JsonParser {
+  final List<Token> tokens;
+  late JsonType contents;
+
+  int index = 0;
+
+  JsonParser(this.tokens) {
+    parseJson();
+  }
+
+  static JsonType parse(List<Token> tokens) => JsonParser(tokens).contents;
+
+  void parseJson() {
+    contents = parseElement();
+  }
+
+  JsonType parseElement() {
+    Token token = previewToken();
+    switch (token.type) {
+      case .leftBrace:
+        return parseObject();
+      case .leftBracket:
+        return parseArray();
+      case .string:
+        return parseString();
+      case .number:
+        return parseNumber();
+      case .trueValue:
+        return parseTrue();
+      case .falseValue:
+        return parseFalse();
+      case .nullValue:
+        return parseNull();
+      case .rightBracket:
+        throw SyntaxError("]");
+      case .rightBrace:
+        throw SyntaxError("}");
+      case JsonTypes.comma:
+        throw SyntaxError(",");
+      case JsonTypes.colon:
+        throw SyntaxError(":");
+    }
+  }
+
+  JsonObject parseObject() {
+    parseToken(.leftBrace);
+    Token token = previewToken();
+    if (token.type == .rightBrace) {
+      parseToken(.rightBrace);
+      return JsonObject({});
+    } else {
+      Map<String, JsonType> map = parseMembers();
+      parseToken(.rightBrace);
+      return JsonObject(map);
+    }
+  }
+
+  Map<String, JsonType> parseMembers() =>
+      Map.fromEntries(parseMembersInternal());
+
+  List<MapEntry<String, JsonType>> parseMembersInternal() {
+    List<MapEntry<String, JsonType>> entries = [parseMember()];
+    if (previewToken().type == .comma) {
+      parseToken(.comma);
+      return entries..addAll(parseMembersInternal());
+    } else {
+      return entries;
+    }
+  }
+
+  MapEntry<String, JsonType> parseMember() {
+    String string = parseToken(.string).content!;
+    parseToken(.colon);
+    return MapEntry(string, parseElement());
+  }
+
+  JsonArray parseArray() {
+    parseToken(.leftBracket);
+    if (previewToken().type == .rightBracket) {
+      parseToken(.rightBracket);
+      return JsonArray([]);
+    } else {
+      List<JsonType> elements = parseElements();
+      parseToken(.rightBracket);
+      return JsonArray(elements);
+    }
+  }
+
+  List<JsonType> parseElements() {
+    List<JsonType> elements = [parseElement()];
+    if (previewToken().type == .comma) {
+      parseToken(.comma);
+      return elements..addAll(parseElements());
+    } else {
+      return elements;
+    }
+  }
+
+  JsonString parseString() => JsonString(parseToken(.string).content!);
+
+  JsonNumber parseNumber() =>
+      JsonNumber(num.parse(parseToken(.number).content!));
+
+  JsonBoolean parseTrue() {
+    parseToken(.trueValue);
+    return JsonBoolean(true);
+  }
+
+  JsonBoolean parseFalse() {
+    parseToken(.falseValue);
+    return JsonBoolean(false);
+  }
+
+  JsonNull parseNull() {
+    parseToken(.nullValue);
+    return JsonNull();
+  }
+
+  Token parseToken([JsonTypes? type]) {
+    Token token = tokens[index];
+    if (type == null || type == token.type) {
+      ++index;
+      return token;
+    }
+    throw this;
+  }
+
+  Token? tryParseToken([JsonTypes? type]) {
+    if (index < tokens.length) {
+      Token token = tokens[index];
+      if (type == null || type == token.type) {
+        ++index;
+        return token;
+      }
+    }
+    return null;
+  }
+
+  Token previewToken() => tokens[index];
+
+  Token? tryPreviewToken() {
+    if (index < tokens.length) {
+      return tokens[index];
     }
     return null;
   }
