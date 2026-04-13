@@ -1,29 +1,29 @@
-import 'extension.dart';
-import 'math/math.dart';
+import 'extension.dart' show BoolExt, NumExt, StringExt;
+import 'math/math.dart' show sum, minSimple, maxSimple;
 
-/// `true` = [a],
-/// `false` = [b],
-/// `null` = [c]
-V ternaryO<V>(bool? question, V a, V b, V c) {
+/// `true` = [t],
+/// `false` = [f],
+/// `null` = [n]
+V ternaryO<V>(bool? question, V t, V f, V n) {
   if (question == true) {
-    return a;
+    return t;
   } else if (question == false) {
-    return b;
+    return f;
   } else {
-    return c;
+    return n;
   }
 }
 
-/// `true` = [a],
-/// `false` = [b],
-/// `null` = [c]
-Object? ternaryI(bool? question, Function() a, [Function()? b, Function()? c]) {
+/// `true` = [t],
+/// `false` = [f],
+/// `null` = [n]
+Object? ternaryI(bool? question, dynamic Function() t, [dynamic Function()? f, dynamic Function()? n]) {
   if (question == true) {
-    return a();
+    return t();
   } else if (question == false) {
-    return (b != null) ? b() : b;
+    return (f != null) ? f() : f;
   } else {
-    return (c != null) ? c() : c;
+    return (n != null) ? n() : n;
   }
 }
 
@@ -139,3 +139,52 @@ String hAdder(int number, int amount) {
 
 /// Added in `2.8`.
 bool? invert(bool? input) => (input == null) ? null : !input;
+
+/// Gives the time it took to do [func].
+///
+/// [times] is the amount of times [func] is used (returns the average).
+///
+/// [sway] is the amount swayed by [Stopwatch]: `start()` and `stop()` functions.
+///
+/// Added in `2.8.1`.
+Duration timed(dynamic Function() func, {int times = 1, Duration? sway}) {
+  if (times == 0) {
+    return Duration();
+  } else if (times < 0) {
+    throw RangeError.range(times, 0, null, "times");
+  }
+  Duration swaySample;
+  if (sway == null) {
+    int amount = maxSimple(times, 5);
+    Stopwatch tester;
+    swaySample = Duration();
+    for (int i = 1; i <= amount; ++i) {
+      tester = Stopwatch();
+      tester.start();
+      tester.stop();
+      swaySample += tester.elapsed;
+    }
+    swaySample ~/= amount;
+  } else {
+    swaySample = sway;
+  }
+  Duration duration = Duration();
+  Stopwatch stopwatch;
+  for (int i = 1; i <= times; ++i) {
+    stopwatch = Stopwatch();
+    stopwatch.start();
+    func();
+    stopwatch.stop();
+    duration += stopwatch.elapsed;
+  }
+  duration ~/= times;
+  return duration - swaySample;
+}
+
+/// To use this function do
+/// ```
+/// await sleep(duration);
+/// ```
+///
+/// Added in `2.8.1`.
+Future<void> sleep(Duration duration) async => Future.delayed(duration);

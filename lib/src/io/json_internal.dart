@@ -56,79 +56,225 @@ final class Token {
 sealed class State {}
 
 final class JsonScanner {
+  // TODO: make items not always previewChar() fx scanNumber
   final String contents;
   List<Token> tokens = [];
 
   int index = 0;
 
   JsonScanner(this.contents) {
-    scanJson();
+    while (index < contents.length) {
+      scanElement();
+    }
   }
 
   static List<Token> scan(String contents) => JsonScanner(contents).tokens;
 
-  void scanJson() {
-    scanElement();
+  void scanItem() {
+    switch (previewChar()) {
+      case r"{":
+        parseChar();
+        tokens.add(Token(.leftBrace));
+      case r"}":
+        parseChar();
+        tokens.add(Token(.rightBrace));
+      case r"[":
+        parseChar();
+        tokens.add(Token(.leftBracket));
+      case r"]":
+        parseChar();
+        tokens.add(Token(.rightBracket));
+      case r'"':
+        scanString();
+      case r"0":
+      case r"1":
+      case r"2":
+      case r"3":
+      case r"4":
+      case r"5":
+      case r"6":
+      case r"7":
+      case r"8":
+      case r"9":
+      case r"-":
+        scanNumber();
+      case r"t":
+        parseChar();
+        parseChar("r");
+        parseChar("u");
+        parseChar("e");
+        tokens.add(Token(.trueValue));
+      case r"f":
+        parseChar();
+        parseChar("a");
+        parseChar("l");
+        parseChar("s");
+        parseChar("e");
+        tokens.add(Token(.falseValue));
+      case r"n":
+        parseChar();
+        parseChar("u");
+        parseChar("l");
+        parseChar("l");
+        tokens.add(Token(.nullValue));
+      case String():
+        throw SyntaxError(previewChar(), index, "Invalid starter character");
+    }
   }
 
   void scanElement() {
     scanWs();
-    scanValue();
+    scanItem();
     scanWs();
   }
 
   void scanWs() {
-    switch (tryScanChar()) {
-      case " ":
-      case "\n":
-      case "\r":
-      case "\t":
-        ++index;
-        scanWs();
-      case _:
-        break;
+    if (tryParseChar(" \n\r\t") == null) {
+      return;
+    } else {
+      scanWs();
     }
   }
 
-  void scanValue() {
-    String char = scanChar();
-    switch (char) {
-      case '"':
-        scanString();
-      case "-":
-      case "0":
-      case "1":
-      case "2":
-      case "3":
-      case "4":
-      case "5":
-      case "6":
-      case "7":
-      case "8":
-      case "9":
-        scanNumber(char);
-      case "{":
-        scanObject();
-      case "[":
-        scanArray();
-      case "t":
-        scanTrue();
-      case "f":
-        scanFalse();
-      case "n":
-        scanNull();
+  void scanNumber() {
+    String integer = scanInteger();
+    String fraction = scanFraction();
+    String exponent = scanExponent();
+    tokens.add(Token(.number, integer + fraction + exponent));
+  }
+
+  String scanInteger() {
+    String char = previewChar();
+    if (char == r"-") {
+      ++index;
+      return char + scanInt();
+    } else {
+      return scanInt();
     }
   }
+
+  String scanInt() {
+    String char = previewChar();
+    if (char == r"0") {
+      return char;
+    } else {
+      return scanDigits();
+    }
+  }
+
+  String scanDigits() {
+    String digit = scanDigit();
+    StringBuffer digits = StringBuffer(digit);
+    String char = previewChar();
+    while (char.isDigit) {
+      digits.write(char);
+      ++index;
+      char = previewChar();
+    }
+    return digits.toString();
+  }
+
+  String scanDigit() => parseChar("0123456789");
+
+  String scanFraction() {
+    String dot = previewChar();
+    if (dot == r".") {
+      ++index;
+      return dot + scanDigits();
+    } else {
+      return "";
+    }
+  }
+
+  String scanExponent() {
+    String e = previewChar();
+    if (e == r"e" || e == r"E") {
+      ++index;
+      return e + scanSign() + scanDigits();
+    } else {
+      return "";
+    }
+  }
+
+  String scanSign() {
+    String sign = previewChar();
+    if (sign == r"+" || sign == r"+") {
+      return sign;
+    } else {
+      return "";
+    }
+  }
+
+  /*void scanInt() {
+    String char = parseChar();
+    String? testChar;
+    StringBuffer buffer = StringBuffer(char);
+
+    /// booleans & 1 (is signed)
+    /// booleans & 1 << 1 >> 1 (isFraction)
+    /// booleans & 1 << 2 >> 2 (passed .)
+    /// booleans & 1 << 3 >> 3 (passed e)
+    /// booleans & 1 << 4 >> 4 (passed sign)
+    int booleans = 0;
+    /*
+    bool isSigned() => (booleans & 0x01) == 1;
+    void setAsSigned() {
+      booleans |= 0x01;
+    }*/
+    bool isFraction() => ((booleans & 0x02) >> 1) == 1;
+    void setAsFraction() {
+      booleans |= 0x02;
+    }
+
+    bool inDecimals() => ((booleans & 0x04) >> 2) == 1;
+    void setInDecimals() {
+      booleans |= 0x04;
+    }
+
+    bool passedE() => ((booleans & 0x08) >> 3) == 1;
+    void setAsPassedE() {
+      booleans |= 0x08;
+    }
+
+    bool passedSign() => ((booleans & 0x10) >> 4) == 1;
+    void setAsPassedSign() {
+      booleans |= 0x10;
+    }
+
+    if (char == r"-") {
+      /*setAsSigned();*/
+      char = parseChar();
+    }
+    if (char == r"0") {
+      setAsFraction(); // 2
+    }
+    while (!inDecimals() && !isFraction() && !passedE()) {
+      testChar = tryPreviewChar();
+      if (testChar == r".") {
+        buffer.write(parseChar());
+        setInDecimals();
+      } else if (testChar == r"e" || testChar == r"E") {
+        buffer.write(parseChar());
+        setAsPassedE();
+      }
+      if (testChar == null || !testChar.isDigit) {
+        tokens.add(Token(.number, buffer.toString()));
+        return;
+      } else {
+        buffer.write(parseChar());
+      }
+    }
+  }*/
 
   void scanString() {
     ++index;
     StringBuffer buffer = StringBuffer();
-    String char = scanChar();
+    String char = parseChar();
     while (char != '"') {
       switch (char) {
         case r"\":
           ++index;
-          char = scanChar();
+          char = parseChar();
           switch (char) {
             case r'"':
             case r"\":
@@ -147,245 +293,37 @@ final class JsonScanner {
             case r"u":
               String hex = contents.substring(index + 1, index + 5);
               index += 4;
-              buffer.write(String.fromCharCode(int.parse(hex, radix: 16)));
+              buffer.writeCharCode(int.parse(hex, radix: 16));
             case String():
               throw SyntaxError(char, index, "Invalid escape");
           }
         case String():
           buffer.write(char);
       }
-      ++index;
-      char = scanChar();
+      char = parseChar();
     }
     tokens.add(Token(.string, buffer.toString()));
     ++index;
   }
 
-  void scanNumber(String char) {
-    tokens.add(
-      Token(.number, scanInteger(char) + scanFraction() + scanExponent()),
-    );
-  }
+  String parseChar([String? chars]) =>
+      tryParseChar(chars) ??
+      (throw SyntaxError(contents[index], index, "Isn't one in \"$chars\""));
 
-  String scanInteger(String char) {
-    if (char == r"-") {
-      ++index;
-      return char + scanSigned(scanChar());
-    } else {
-      return scanSigned(char);
-    }
-  }
-
-  String scanSigned(String char) {
-    if (char == r"0") {
-      return char;
-    } else if (char.isDigit) {
-      ++index;
-      String c = scanChar();
-      if (c.isDigit) {
-        return char + scanDigits();
-      } else {
+  String? tryParseChar([String? chars]) {
+    if (index < contents.length) {
+      String char = contents[index];
+      if (chars == null || chars.contains(char)) {
+        ++index;
         return char;
       }
-    } else {
-      throw SyntaxError(char, index);
     }
+    return null;
   }
 
-  String scanDigits() {
-    String digit = scanDigit();
-    if (scanChar().isDigit) {
-      return digit + scanDigits();
-    } else {
-      return digit;
-    }
-  }
+  String previewChar() => contents[index];
 
-  String scanDigit() {
-    String char = scanChar();
-    if (char == r"0") {
-      ++index;
-      return char;
-    } else {
-      return scanOneNine(char);
-    }
-  }
-
-  String scanOneNine(String char) {
-    ++index;
-    switch (char) {
-      case "1":
-      case "2":
-      case "3":
-      case "4":
-      case "5":
-      case "6":
-      case "7":
-      case "8":
-      case "9":
-        return char;
-      case String():
-        throw SyntaxError(char, index - 1, "Invalid one through nine");
-    }
-  }
-
-  String scanFraction() {
-    String char = scanChar();
-    if (char != r".") {
-      return "";
-    } else {
-      ++index;
-      return char + scanDigits();
-    }
-  }
-
-  String scanExponent() {
-    String char = scanChar();
-    if (char != r"e" && char != r"E") {
-      return "";
-    } else {
-      ++index;
-      return char + scanSign() + scanDigits();
-    }
-  }
-
-  String scanSign() {
-    String char = scanChar();
-    if (char == r"+" || char == r"-") {
-      ++index;
-      return char;
-    } else {
-      return "";
-    }
-  }
-
-  void scanObject() {
-    ++index;
-    tokens.add(Token(.leftBrace));
-    scanWs();
-    if (scanChar() == r"}") {
-      ++index;
-      tokens.add(Token(.rightBrace));
-    } else {
-      scanMembers();
-      ++index;
-      tokens.add(Token(.rightBrace));
-    }
-  }
-
-  void scanMembers() {
-    scanMember();
-    if (scanChar() == r",") {
-      tokens.add(Token(.comma));
-      ++index;
-      scanMembers();
-    }
-  }
-
-  void scanMember() {
-    scanWs();
-    scanString();
-    scanWs();
-    if (scanChar() != r":") {
-      throw SyntaxError(scanChar(), index, "Expected ':'");
-    }
-    tokens.add(Token(.colon));
-    ++index;
-    scanElement();
-  }
-
-  void scanArray() {
-    ++index;
-    tokens.add(Token(.leftBracket));
-    scanWs();
-    if (scanChar() == r"]") {
-      ++index;
-      tokens.add(Token(.rightBracket));
-    } else {
-      scanElements();
-      ++index;
-      tokens.add(Token(.rightBracket));
-    }
-  }
-
-  void scanElements() {
-    scanElement();
-    if (scanChar() != r",") {
-      return;
-    }
-    tokens.add(Token(.comma));
-    ++index;
-    scanElements();
-  }
-
-  void scanTrue() {
-    ++index;
-    String char = scanChar();
-    if (char != "r") {
-      throw SyntaxError(char, index, "Expected 'r' at index 1 of 'true'");
-    }
-    ++index;
-    char = scanChar();
-    if (char != "u") {
-      throw SyntaxError(char, index, "Expected 'u' at index 2 of 'true'");
-    }
-    ++index;
-    char = scanChar();
-    if (char != "e") {
-      throw SyntaxError(char, index, "Expected 'e' at index 3 of 'true'");
-    }
-    ++index;
-    tokens.add(Token(.trueValue));
-  }
-
-  void scanFalse() {
-    ++index;
-    String char = scanChar();
-    if (char != "a") {
-      throw SyntaxError(char, index, "Expected 'a' at index 1 of 'false'");
-    }
-    ++index;
-    char = scanChar();
-    if (char != "l") {
-      throw SyntaxError(char, index, "Expected 'l' at index 2 of 'false'");
-    }
-    ++index;
-    char = scanChar();
-    if (char != "s") {
-      throw SyntaxError(char, index, "Expected 's' at index 3 of 'false'");
-    }
-    ++index;
-    char = scanChar();
-    if (char != "e") {
-      throw SyntaxError(char, index, "Expected 'e' at index 4 of 'false'");
-    }
-    ++index;
-    tokens.add(Token(.falseValue));
-  }
-
-  void scanNull() {
-    ++index;
-    String char = scanChar();
-    if (char != "u") {
-      throw SyntaxError(char, index, "Expected 'u' at index 1 of 'null'");
-    }
-    ++index;
-    char = scanChar();
-    if (char != "l") {
-      throw SyntaxError(char, index, "Expected 'l' at index 2 of 'null'");
-    }
-    ++index;
-    char = scanChar();
-    if (char != "l") {
-      throw SyntaxError(char, index, "Expected 'l' at index 3 of 'null'");
-    }
-    ++index;
-    tokens.add(Token(.nullValue));
-  }
-
-  String scanChar() => contents[index];
-
-  String? tryScanChar() {
+  String? tryPreviewChar() {
     if (index < contents.length) {
       return contents[index];
     }

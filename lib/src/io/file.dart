@@ -46,17 +46,22 @@ class ParseError extends Error {
     return "ParseError: '$section'$extra";
   }
 }
-
+/// [I] is `input`,
+///
+/// [O] is `output` &
+///
+/// [P] is `position`.
+///
 /// Added in `2.8.1`.
-abstract interface class File<I, O> {
+abstract interface class File<I, O, P> {
   /*
   /// Should give out `false` if process does not want to write.
   ///
   /// Added in `2.8.1`.
-  bool write(I input);
+  bool write(I input, P position);
   */
 
-  /*O read();*/
+  O read(P position);
 
   /*
   /// Added in `2.8.1`.
@@ -129,3 +134,16 @@ class _File implements File {
   _File get internal => this;
 }
  */
+
+typedef txt = TextFile;
+
+class TextFile implements File<String, String, int> {
+  @override
+  final String address;
+
+  TextFile(this.address);
+}
+
+class CSV implements TextFile {}
+
+class XML implements File<String, String, int> {}

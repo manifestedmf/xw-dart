@@ -9,24 +9,30 @@ import '../extension.dart' show StringExt, MapKV;
 import 'dart:convert' show Encoding, utf8;
 import 'json_internal.dart';
 
+typedef json = Json;
+
+/// The classic [Json] `FF` (File Format), use [json],
+/// to get the JsonItem in the [file].
+///
+/// Use [encoding] to decide what the file is encoded with.
+///
 /// Added in `2.8.1`.
-class Json implements File<JsonType, JsonType> {
+class Json implements File<JsonType, JsonType, List<int>> {
   late JsonType _json;
   // TODO: make to Json to a async class
   //late Stream<List<int>> _contents;
   late String _contents;
   io.File _file;
   final Encoding encoding;
-  //late String _string;
-  int _pos = 0;
-  /*String get _char => _string[_pos];
-  bool get _isEOF => _pos >= _string.length;*/
   bool get _isFinished => _isFinishedCompleter.isCompleted;
   Completer<void> _isFinishedCompleter = Completer();
 
   @override
   final String address;
 
+  /// Creates a [Json].
+  ///
+  /// Added in `2.8.1`.
   Json(this.address, {required this.encoding}) : _file = io.File(address) {
     _contents = _file.readAsStringSync(encoding: encoding);
     List<Token> tokens = JsonScanner.scan(_contents);
@@ -34,10 +40,21 @@ class Json implements File<JsonType, JsonType> {
     _isFinishedCompleter.complete();
   }
 
+  /// Gives the allowance to not give an encoding with.
+  ///
+  /// Added in `2.8.1`.
   factory Json.unsafe(String address, {Encoding encoding = utf8}) =>
       Json(address, encoding: encoding);
 
-  //JsonType get json => _json;
+  @override
+  ///
+  ///
+  /// Added in `2.8.1`.
+  JsonType read(List<int> position) {
+
+  }
+
+  JsonType get json => _json;
 
   @override
   toString({bool newlines = false}) {
