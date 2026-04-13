@@ -510,12 +510,6 @@ class Fraction extends Num with Compare<Fraction> {
 
   /// Flips [div] & [oper].
   ///
-  /// Added in `2.7`.
-  @Deprecated("2.7.1 use .flip()")
-  Fraction operator ~() => Fraction.compressed(div, oper);
-
-  /// Flips [div] & [oper].
-  ///
   /// Added in `2.8`.
   Fraction flip() => Fraction.compressed(div, oper);
 

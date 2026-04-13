@@ -46,6 +46,16 @@ class ParseError extends Error {
     return "ParseError: '$section'$extra";
   }
 }
+
+// TODO: make more items in @FetchError
+/// Added in `2.8.1`.
+class FetchError extends Error {
+  FetchError();
+
+  @override
+  toString() => "Failed to fetch item";
+}
+
 /// [I] is `input`,
 ///
 /// [O] is `output` &
@@ -62,6 +72,8 @@ abstract interface class File<I, O, P> {
   */
 
   O read(P position);
+
+  O? readOrNull(P position);
 
   /*
   /// Added in `2.8.1`.
@@ -135,6 +147,7 @@ class _File implements File {
 }
  */
 
+/*
 typedef txt = TextFile;
 
 class TextFile implements File<String, String, int> {
@@ -146,4 +159,4 @@ class TextFile implements File<String, String, int> {
 
 class CSV implements TextFile {}
 
-class XML implements File<String, String, int> {}
+class XML implements File<String, String, int> {}*/

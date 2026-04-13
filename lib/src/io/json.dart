@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:io' as io show File;
 import 'package:xw/core.dart';
+import 'package:xw/equal.dart';
 
 import 'file.dart';
 import '../extension.dart' show StringExt, MapKV;
@@ -47,16 +48,144 @@ class Json implements File<JsonType, JsonType, List<int>> {
       Json(address, encoding: encoding);
 
   @override
+  /// If you have a Json file that goes:
+  /// ```
+  /// {"age": 22.3, "family": ["tristan", "dean", "elizabeth"]}
+  /// ```
+  /// The [position] of these will do this:
   ///
+  /// [[]`0]` => [JsonObject]`(
+  /// {"age": 22.3, "family": ["tristan", "dean", "elizabeth"]}
+  /// )`
+  ///
+  /// [[]`0, 0]` => throw [FetchError] (Unable to give a `"age": 22.3`)
+  ///
+  /// [[]`0, 0, 1]` => [JsonNumber]`(22)`
+  ///
+  /// [[]`0, 1, 1]` => [JsonArray]`(`[[]`"tristan", "dean", "elizabeth"])`
+  ///
+  /// [[]`0, 1, 1, 2]` => [JsonString]`("elizabeth")`;
   ///
   /// Added in `2.8.1`.
   JsonType read(List<int> position) {
-
+    if (position.isEmpty) {
+      throw RangeError.range(0, 1, null, "position", "Can't have 0 elements");
+    } else if (position.isSingle) {
+      if (position.single != 0) {
+        throw RangeError.range(
+          position.single,
+          0,
+          0,
+          "position",
+          "There can not be more than 1 top tier json elements",
+        );
+      } else {
+        return json;
+      }
+    } else {
+      JsonType currentElement = json;
+      MapEntry<JsonString, JsonType>? currentEntry;
+      int index = 1;
+      while (index < position.length) {
+        if (currentEntry != null) {
+          int point = position[index++];
+          if (point > 1 || point < 0) {
+            throw RangeError.range(point, 0, 1);
+          } else if (point == 0) {
+            currentElement = currentEntry.key;
+            currentEntry = null;
+          } else {
+            currentElement = currentEntry.value;
+            currentEntry = null;
+          }
+        } else if (currentElement is JsonArray) {
+          currentElement = currentElement[position[index++]];
+        } else if (currentElement is JsonObject) {
+          currentEntry = currentElement.object.entries.elementAt(
+            position[index++],
+          );
+        } else {
+          throw this;
+        }
+      }
+      if (currentEntry == null) {
+        throw FetchError();
+      }
+      return currentElement;
+    }
   }
 
+  @override
+  /// If you have a Json file that goes:
+  /// ```
+  /// {"age": 22.3, "family": ["tristan", "dean", "elizabeth"]}
+  /// ```
+  /// The [position] of these will do this:
+  ///
+  /// [[]`0]` => [JsonObject]`(
+  /// {"age": 22.3, "family": `[[]`"tristan", "dean", "elizabeth"`[]]`}
+  /// )`
+  ///
+  /// [[]`0, 0]` => null
+  ///
+  /// [[]`0, 0, 1]` => [JsonNumber]`(22)`
+  ///
+  /// [[]`0, 1, 1]` => [JsonArray]`(`[[]`"tristan", "dean", "elizabeth"])`
+  ///
+  /// [[]`0, 1, 1, 2]` => [JsonString]`("elizabeth")`;
+  ///
+  /// Added in `2.8.1`.
+  JsonType? readOrNull(List<int> position) {
+    if (position.isEmpty) {
+      return null;
+    } else if (position.isSingle) {
+      if (position.single != 0) {
+        return null;
+      } else {
+        return json;
+      }
+    } else {
+      JsonType currentElement = json;
+      MapEntry<JsonString, JsonType>? currentEntry;
+      int index = 1;
+      while (index < position.length) {
+        if (currentEntry != null) {
+          int point = position[index++];
+          if (point > 1 || point < 0) {
+            return null;
+          } else if (point == 0) {
+            currentElement = currentEntry.key;
+            currentEntry = null;
+          } else {
+            currentElement = currentEntry.value;
+            currentEntry = null;
+          }
+        } else if (currentElement is JsonArray) {
+          currentElement = currentElement[position[index++]];
+        } else if (currentElement is JsonObject) {
+          currentEntry = currentElement.object.entries.elementAt(
+            position[index++],
+          );
+        } else {
+          return null;
+        }
+      }
+      if (currentEntry == null) {
+        throw FetchError();
+      }
+      return currentElement;
+    }
+  }
+
+  /// The highest [JsonType].
+  ///
+  /// Added in `2.8.1`.
   JsonType get json => _json;
 
   @override
+  /// The visual representation of the current [Json].
+  ///
+  /// Added in `2.8.1`.
   toString({bool newlines = false}) {
     if (!_isFinished) {
       return "Json('$address')";
@@ -65,12 +194,19 @@ class Json implements File<JsonType, JsonType, List<int>> {
     }
   }
 
+  /// Gives back the visual representation of the current [Json],
+  /// this is currently instantly, so no need to use this.
+  ///
+  /// Added in `2.8.1`.
   Future<String> toStringAsync({bool newlines = false}) async {
     return _isFinishedCompleter.future.then(
       (_) => toString(newlines: newlines),
     );
   }
 
+  /// Gives as if [json] is a [JsonObject].
+  ///
+  /// Added in `2.8.1`.
   JsonType? operator [](String key) => (_json as JsonObject)[key];
 }
 
@@ -84,7 +220,7 @@ sealed class JsonType<I> {
   /// Added in `2.8.1`.
   I get value;
 
-  /// Added in `2.8.1`.
+  // Added in `2.8.1`.
   //set value(I val);
 
   /// Added in `2.8.1`.
@@ -97,7 +233,7 @@ sealed class JsonType<I> {
       return JsonBoolean(val) as JsonType<I>;
     } else if (val is List<JsonType>) {
       return JsonArray(val) as JsonType<I>;
-    } else if (val is Map<String, JsonType>) {
+    } else if (val is Map<JsonString, JsonType>) {
       return JsonObject(val) as JsonType<I>;
     } else if (val == null) {
       return JsonNull() as JsonType<I>;
@@ -118,6 +254,7 @@ sealed class JsonType<I> {
   int get hashCode => value.hashCode;
 
   @override
+  /// Added in `2.8.1`.
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is JsonType<I> &&
@@ -212,16 +349,22 @@ final class JsonArray extends JsonType<List<JsonType>> {
 
   JsonType operator [](int index) => array[index];
   void operator []=(int index, JsonType type) => array[index] = type;
+
+  @override
+  // ignore: hash_and_equals
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JsonArray && listEqualsDeep(array, other.array);
 }
 
 /// Added in `2.8.1`.
-final class JsonObject extends JsonType<Map<String, JsonType>> {
-  final Map<String, JsonType> object;
+final class JsonObject extends JsonType<Map<JsonString, JsonType>> {
+  final Map<JsonString, JsonType> object;
 
   const JsonObject(this.object);
 
   @override
-  Map<String, JsonType> get value => object;
+  Map<JsonString, JsonType> get value => object;
 
   /*@override
   set value(Map<String, JsonType> val) {
@@ -231,16 +374,16 @@ final class JsonObject extends JsonType<Map<String, JsonType>> {
   @override
   String toString({bool newlines = false, int spaces = 0}) {
     if (!newlines) {
-      List<MapEntry<String, JsonType>> entries = object.entries.toList();
+      List<MapEntry<JsonString, JsonType>> entries = object.entries.toList();
       String string = "{";
-      MapEntry<String, JsonType> entry;
+      MapEntry<JsonString, JsonType> entry;
       if (entries.isNotEmpty) {
         entry = entries[0];
-        string += "\"${entry.key}\": ${entry.value}";
+        string += "${entry.key}: ${entry.value}";
       }
       for (int index = 1; index < entries.length; index++) {
         entry = entries[index];
-        string += ", \"${entry.key}\": ${entry.value}";
+        string += ", ${entry.key}: ${entry.value}";
       }
       return "$string}";
     } else {
@@ -261,8 +404,15 @@ final class JsonObject extends JsonType<Map<String, JsonType>> {
     }
   }
 
-  JsonType? operator [](String key) => object[key];
-  void operator []=(String key, JsonType value) => object[key] = value;
+  JsonType? operator [](String key) => object[JsonString(key)];
+  void operator []=(String key, JsonType value) =>
+      object[JsonString(key)] = value;
+
+  @override
+  // ignore: hash_and_equals
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JsonObject && mapEqualsDeep(object, other.object);
 }
 
 /// Added in `2.8.1`.

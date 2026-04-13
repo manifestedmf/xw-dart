@@ -117,6 +117,12 @@ final class JsonScanner {
         parseChar("l");
         parseChar("l");
         tokens.add(Token(.nullValue));
+      case r":":
+        parseChar();
+        tokens.add(Token(.colon));
+      case r",":
+        parseChar();
+        tokens.add(Token(.comma));
       case String():
         throw SyntaxError(previewChar(), index, "Invalid starter character");
     }
@@ -269,7 +275,7 @@ final class JsonScanner {
   void scanString() {
     ++index;
     StringBuffer buffer = StringBuffer();
-    String char = parseChar();
+    String char = previewChar();
     while (char != '"') {
       switch (char) {
         case r"\":
@@ -300,7 +306,8 @@ final class JsonScanner {
         case String():
           buffer.write(char);
       }
-      char = parseChar();
+      ++index;
+      char = previewChar();
     }
     tokens.add(Token(.string, buffer.toString()));
     ++index;
@@ -382,17 +389,17 @@ final class JsonParser {
       parseToken(.rightBrace);
       return JsonObject({});
     } else {
-      Map<String, JsonType> map = parseMembers();
+      Map<JsonString, JsonType> map = parseMembers();
       parseToken(.rightBrace);
       return JsonObject(map);
     }
   }
 
-  Map<String, JsonType> parseMembers() =>
+  Map<JsonString, JsonType> parseMembers() =>
       Map.fromEntries(parseMembersInternal());
 
-  List<MapEntry<String, JsonType>> parseMembersInternal() {
-    List<MapEntry<String, JsonType>> entries = [parseMember()];
+  List<MapEntry<JsonString, JsonType>> parseMembersInternal() {
+    List<MapEntry<JsonString, JsonType>> entries = [parseMember()];
     if (previewToken().type == .comma) {
       parseToken(.comma);
       return entries..addAll(parseMembersInternal());
@@ -401,10 +408,10 @@ final class JsonParser {
     }
   }
 
-  MapEntry<String, JsonType> parseMember() {
+  MapEntry<JsonString, JsonType> parseMember() {
     String string = parseToken(.string).content!;
     parseToken(.colon);
-    return MapEntry(string, parseElement());
+    return MapEntry(JsonString(string), parseElement());
   }
 
   JsonArray parseArray() {
